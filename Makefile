@@ -157,6 +157,7 @@ SourceDir_gl := src/gl
 Source_gl := 
 SourceMain_gl := \
 	hello_triangle.cpp \
+	glClear.cpp \
 
 CXXFLAGS_gl := \
 	$(CommonFlags_gl) \
