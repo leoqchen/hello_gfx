@@ -77,70 +77,72 @@ AllTargets :=
 #######################################################################################################
 
 #-------------------------------------------------------
-# glad
+# utils
 #-------------------------------------------------------
-CommonFlags_glad := \
+CommonFlags_utils := \
 	$(CommonFlagsC) \
 	$(CommonFlagsD) \
 	$(CommonFlagsI) \
 	-Isrc/utils \
 
-SourceDir_glad := src/utils/glad
-Source_glad := \
-	glad.c
-SourceMain_glad :=
+SourceDir_utils := src/utils/
+Source_utils := \
+	glad/glad.c \
+	myutils.cpp \
 
-CXXFLAGS_glad := \
-	$(CommonFlags_glad) \
-	$(patsubst %, -I%, $(SourceDir_glad)) \
+SourceMain_utils :=
 
-CFLAGS_glad := $(filter-out $(CXX_ONLY), $(CXXFLAGS_glad))  #remove c++ only flags
+CXXFLAGS_utils := \
+	$(CommonFlags_utils) \
+	$(patsubst %, -I%, $(SourceDir_utils)) \
 
-LocalLib_glad :=
-ExtLib_glad := 
+CFLAGS_utils := $(filter-out $(CXX_ONLY), $(CXXFLAGS_utils))  #remove c++ only flags
+
+LocalLib_utils :=
+ExtLib_utils := 
 #---------------------------------
 
-Object_glad := $(patsubst %.c, $(ObjectDir)/$(SourceDir_glad)/%.o, $(Source_glad))
-Object_glad := $(patsubst %.cpp, $(ObjectDir)/$(SourceDir_glad)/%.o, $(Object_glad))
-Object_glad := $(patsubst %.S, $(ObjectDir)/$(SourceDir_glad)/%.o, $(Object_glad))
+Object_utils := $(patsubst %.c, $(ObjectDir)/$(SourceDir_utils)/%.o, $(Source_utils))
+Object_utils := $(patsubst %.cpp, $(ObjectDir)/$(SourceDir_utils)/%.o, $(Object_utils))
+Object_utils := $(patsubst %.S, $(ObjectDir)/$(SourceDir_utils)/%.o, $(Object_utils))
 
-ObjectMain_glad := $(patsubst %.cpp, $(ObjectDir)/$(SourceDir_glad)/%.o, $(SourceMain_glad))
-BinaryMain_glad := $(patsubst %.cpp, $(ObjectDir)/$(SourceDir_glad)/%, $(SourceMain_glad))
-AR_glad := $(ObjectDir)/$(SourceDir_glad)/libglad.a
+ObjectMain_utils := $(patsubst %.cpp, $(ObjectDir)/$(SourceDir_utils)/%.o, $(SourceMain_utils))
+BinaryMain_utils := $(patsubst %.cpp, $(ObjectDir)/$(SourceDir_utils)/%, $(SourceMain_utils))
+AR_utils := $(ObjectDir)/$(SourceDir_utils)/libutils.a
 
-Depand_glad := $(Object_glad:.o=.d) $(ObjectMain_glad:.o=.d)
+Depand_utils := $(Object_utils:.o=.d) $(ObjectMain_utils:.o=.d)
 
 # *.o <-- *.c
-$(ObjectDir)/$(SourceDir_glad)/%.o: $(SourceDir_glad)/%.c
+$(ObjectDir)/$(SourceDir_utils)/%.o: $(SourceDir_utils)/%.c
 	@printf "\n" && mkdir -p $(@D)
-	$(CC) $(CFLAGS_glad) -c $< -o $@
+	$(CC) $(CFLAGS_utils) -c $< -o $@
 
 # *.o <-- *.cpp
-$(ObjectDir)/$(SourceDir_glad)/%.o: $(SourceDir_glad)/%.cpp
+$(ObjectDir)/$(SourceDir_utils)/%.o: $(SourceDir_utils)/%.cpp
 	@printf "\n" && mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS_glad) -c $< -o $@
+	$(CXX) $(CXXFLAGS_utils) -c $< -o $@
 
 # *.o <-- *.S
-$(ObjectDir)/$(SourceDir_glad)/%.o: $(SourceDir_glad)/%.S
+$(ObjectDir)/$(SourceDir_utils)/%.o: $(SourceDir_utils)/%.S
 	@printf "\n" && mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS_glad) -c $< -o $@
+	$(CXX) $(CXXFLAGS_utils) -c $< -o $@
 
 # *.a <-- *.o
-$(AR_glad): $(Object_glad)
+$(AR_utils): $(Object_utils)
 	@printf "\n" && mkdir -p $(@D)
 	$(AR) $(ARFLAGS) $@ $^
 
 # binary <-- *.o *.a
-$(ObjectDir)/$(SourceDir_glad)/%: $(ObjectDir)/$(SourceDir_glad)/%.o $(Object_glad) $(LocalLib_glad)
+$(ObjectDir)/$(SourceDir_utils)/%: $(ObjectDir)/$(SourceDir_utils)/%.o $(Object_utils) $(LocalLib_utils)
 	@printf "\n" && mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS_glad) -Wl,--start-group $^ $(ExtLib_glad) -Wl,--end-group -o $@
+	$(CXX) $(CXXFLAGS_utils) -Wl,--start-group $^ $(ExtLib_utils) -Wl,--end-group -o $@
 	@mkdir -p $(ObjectDir)/bin && ln -s -r -f $@ -t $(ObjectDir)/bin
 
-.PHONY: glad
-glad: $(Object_glad) $(AR_glad) $(ObjectMain_glad) $(BinaryMain_glad) 
+.PHONY: utils
+utils: $(Object_utils) $(AR_utils) $(ObjectMain_utils) $(BinaryMain_utils) 
 
--include $(Depand_glad)
-AllTargets += glad
+-include $(Depand_utils)
+AllTargets += utils
 
 
 #-------------------------------------------------------
@@ -165,7 +167,7 @@ CXXFLAGS_gl := \
 
 CFLAGS_gl := $(filter-out $(CXX_ONLY), $(CXXFLAGS_gl))  #remove c++ only flags
 
-LocalLib_gl := ${AR_glad}
+LocalLib_gl := ${AR_utils}
 ExtLib_gl := \
 	-ldl \
 	`pkg-config --libs glfw3` \
