@@ -67,9 +67,10 @@ CommonFlagsI :=
 
 # for compiler
 O := -O0
-CommonFlagsC := $(O) -std=c++20 -pipe -MMD -g -ggdb3 -fPIC -pthread -Wall -Werror
+STD := gnu++2a
+CommonFlagsC := $(O) -std=$(STD) -pipe -MMD -g -ggdb3 -fPIC -pthread -Wall -Werror
 CommonLinkFlags := $(O) -pipe -MMD -g -ggdb3 -pthread -Wl,--no-undefined
-CXX_ONLY := -std=c++20 -std=gnu++11 -std=gnu++17
+CXX_ONLY := -std=c++20 -std=c++2a -std=gnu++20 -std=gnu++2a -std=gnu++11 -std=gnu++17
 C_ONLY := -std=gnu99
 
 AllTargets :=
