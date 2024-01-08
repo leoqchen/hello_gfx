@@ -81,7 +81,8 @@ int main( int argc, const char* argv[] )
 
     // render loop
     // -----------
-    float color =  0.0f;
+    int i = 0;
+    int frame = 0;
     while (!glfwWindowShouldClose(window))
     {
         // input
@@ -90,16 +91,23 @@ int main( int argc, const char* argv[] )
 
         // render
         // ------
-        color += 0.001f;
-        if( color > 1.0f )
-            color = 0.0f;
-        glClearColor(color, (1.0f - color) / 2, 1.0f - color, 1.0f);
+        float blue = (float)((i % 10) + 1) * 0.1f;
+        float green = (float)(((i/10) % 10) + 1) * 0.1f;
+        float red = (float)(((i/100) % 10) + 1) * 0.1f;
+        glClearColor(red, green, blue, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
         glfwPollEvents();
+
+        frame++;
+        if( frame % 6 == 0 ){
+            if( ++i >= 1000 ){
+                i = 0;
+            }
+        }
     }
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
