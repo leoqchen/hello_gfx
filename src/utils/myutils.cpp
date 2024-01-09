@@ -1,6 +1,45 @@
 #include <time.h>
 #include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
 #include "myutils.h"
+
+api_t parse_api( const char* str )
+{
+    api_t api;
+    api.api = -1;
+    api.major = 0;
+    api.minor = 0;
+
+    int len = strlen( str );
+    if( len == 4
+        && strncmp(str, "gl", 2) == 0
+        && isdigit(str[2]) && isdigit(str[3]) )
+    {
+        api.api = 0;
+        api.major = str[2] - '0';
+        api.minor = str[3] - '0';
+    }
+    else if( len == 6
+             && strncmp(str, "gles", 4) == 0
+             && isdigit(str[4]) && isdigit(str[5]) )
+    {
+        api.api = 1;
+        api.major = str[4] - '0';
+        api.minor = str[5] - '0';
+    }
+    else if( len == 8
+             && strncmp(str, "vulkan", 6) == 0
+             && isdigit(str[6]) && isdigit(str[7]) )
+    {
+        api.api = 3;
+        api.major = str[4] - '0';
+        api.minor = str[5] - '0';
+    }
+
+    return api;
+}
 
 uint64_t PerfGetMillisecond()
 {

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <string.h>
+#include "myutils.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -16,36 +17,28 @@ int main( int argc, const char* argv[] )
 {
     if( argc != 2 ){
         Usage:
-        printf("Usage: %s [gl|gles]\n", argv[0]);
+        printf("Usage: %s [glXX|glesXX]\n", argv[0]);
         return 1;
     }
 
-    int isGLES = 0;
-    for( int i=1; i < argc; i++ ){
-        const char* arg = argv[i];
-        if( strcmp(arg, "gl") == 0 )
-            isGLES = 0;
-        else if( strcmp(arg, "gles") == 0 )
-            isGLES = 1;
-        else{
-            printf("invalid argument: %s\n", arg);
-            goto Usage;
-        }
+    api_t api = parse_api( argv[1] );
+    if( api.api == -1 ){
+        printf("invalid argument: %s\n", argv[1]);
+        goto Usage;
     }
+
 
     // glfw: initialize and configure
     // ------------------------------
     glfwInit();
-    if( isGLES ){
+    if( api.api == 1 ){
         glfwWindowHint( GLFW_CLIENT_API, GLFW_OPENGL_ES_API );
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
     }else {
         //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     }
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, api.major);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, api.minor);
 
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
