@@ -39,7 +39,7 @@ double PerfMeasureRate(PerfRateFunc f)
             subiters *= 2;
         } while (t1 - t0 < 0.1 * minDuration);
     }
-    printf("initial subIters = %u\n", subiters);
+    //printf("initial subIters = %u\n", subiters);
 
     while (1) {
         const double t0 = PerfGetSecond();
@@ -47,7 +47,7 @@ double PerfMeasureRate(PerfRateFunc f)
         double t1;
 
         do {
-            printf("f( subiters=%u )\n", subiters);//XXX
+            //printf("f( subiters=%u )\n", subiters);//XXX
             f(subiters); /* call the rendering function */
             t1 = PerfGetSecond();
             iters += subiters;
@@ -55,9 +55,7 @@ double PerfMeasureRate(PerfRateFunc f)
 
         rate = iters / (t1 - t0);
 
-        if (1)
-            printf("prevRate %f  rate  %f  ratio %f  iters %u\n",
-                        prevRate, rate, rate/prevRate, iters);
+        //printf("prevRate %f  rate  %f  ratio %f  iters %u\n", prevRate, rate, rate/prevRate, iters);
 
         /* Try and speed the search up by skipping a few steps:
          */
@@ -73,8 +71,7 @@ double PerfMeasureRate(PerfRateFunc f)
         prevRate = rate;
     }
 
-    if (0)
-        printf("%s returning iters %u  rate %f\n", __FUNCTION__, subiters, rate);
+    //printf("%s returning iters %u  rate %f\n", __FUNCTION__, subiters, rate);
     return rate;
 }
 
