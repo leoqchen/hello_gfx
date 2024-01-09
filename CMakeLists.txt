@@ -49,6 +49,7 @@ target_compile_options(
   # xxx
 )
 
+
 add_executable(
   glClear
   src/gl/glClear.cpp
@@ -59,6 +60,21 @@ target_link_libraries(
 )
 target_compile_options(
   glClear
+  PUBLIC
+  # xxx
+)
+
+
+add_executable(
+  perf_genmipmap
+  src/gl/perf_genmipmap.cpp
+)
+target_link_libraries(
+  perf_genmipmap
+  utils
+)
+target_compile_options(
+  perf_genmipmap
   PUBLIC
   # xxx
 )
