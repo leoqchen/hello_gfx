@@ -42,10 +42,10 @@ static void PerfInit(void)
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glVertexPointer(2, GL_FLOAT, sizeof(struct vertex), VOFFSET(x));
-    glTexCoordPointer(2, GL_FLOAT, sizeof(struct vertex), VOFFSET(s));
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glVertexPointer(2, GL_FLOAT, sizeof(struct vertex), VOFFSET(x)); //TODO:FIXME:GLES, only GL2.1
+    glTexCoordPointer(2, GL_FLOAT, sizeof(struct vertex), VOFFSET(s)); //TODO:FIXME:GLES, only GL2.1
+    glEnableClientState(GL_VERTEX_ARRAY);//TODO:FIXME:GLES, only GL2.1
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);//TODO:FIXME:GLES, only GL2.1
 
 
     /* setup fbo */
