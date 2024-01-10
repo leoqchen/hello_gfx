@@ -78,3 +78,18 @@ target_compile_options(
   PUBLIC
   # xxx
 )
+
+
+add_executable(
+  perf_copytex
+  src/gl/perf_copytex.cpp
+)
+target_link_libraries(
+  perf_copytex
+  utils
+)
+target_compile_options(
+  perf_copytex
+  PUBLIC
+  # xxx
+)
