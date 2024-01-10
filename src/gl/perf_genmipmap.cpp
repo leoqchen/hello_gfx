@@ -11,8 +11,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 
 // settings
-const unsigned int SCR_WIDTH = 200;
-const unsigned int SCR_HEIGHT = 200;
+const int WinWidth = 200;
+const int WinHeight = 200;
 
 static GLboolean DrawPoint = GL_TRUE;
 static GLuint VBO;
@@ -138,7 +138,7 @@ int main( int argc, const char* argv[] )
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(WinWidth, WinHeight, "LearnOpenGL", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
