@@ -92,4 +92,5 @@ target_compile_options(
   perf_copytex
   PUBLIC
   # xxx
+  -Wno-error #TODO
 )

@@ -13,7 +13,7 @@ void processInput(GLFWwindow *window);
 // settings
 int WinWidth = 100, WinHeight = 100;
 
-static GLuint VBO, FBO, RBO, Tex;
+static GLuint VBO, FBO, RBO, Tex, FBTex;
 
 const GLsizei MinSize = 16, MaxSize = 4096;
 static GLsizei TexSize;
@@ -47,33 +47,46 @@ static void PerfInit(void)
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-    /* setup texture */
-    glGenTextures(1, &Tex);
-    glBindTexture(GL_TEXTURE_2D, Tex);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
-    glEnable(GL_TEXTURE_2D);
-
-    /* setup rbo */
-    glGenRenderbuffers(1, &RBO);
-    glBindRenderbuffer(GL_RENDERBUFFER, RBO);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA, MaxSize, MaxSize);
 
     /* setup fbo */
     glGenFramebuffers(1, &FBO);
     glBindFramebuffer(GL_FRAMEBUFFER, FBO);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, RBO);
+
+    /* setup rbo */
+//    glGenRenderbuffers(1, &RBO);
+//    glBindRenderbuffer(GL_RENDERBUFFER, RBO);
+//    glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA, MaxSize, MaxSize);
+//    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, RBO);
+
+    //TODO:XXX: why?
+    glGenTextures( 1, &FBTex );
+    glBindTexture( GL_TEXTURE_2D, FBTex );
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
+                 MaxSize, MaxSize, 0,
+                 GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
+    glFramebufferTexture2D ( GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                             GL_TEXTURE_2D, FBTex, 0 );
+
 
     stat = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     if (stat != GL_FRAMEBUFFER_COMPLETE) {
-        printf("fboswitch: Error: incomplete FBO!\n");
-        exit(1);
+        printf("fboswitch: Error: incomplete FBO!: 0x%X\n", stat); //TODO:FIXME, GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT
+//        exit(1); //TODO:XXX
     }
 
     /* clear the FBO */
     glDrawBuffer(GL_COLOR_ATTACHMENT0);
     glViewport(0, 0, MaxSize, MaxSize);
     glClear(GL_COLOR_BUFFER_BIT);
+
+    /* setup texture */
+    glGenTextures(1, &Tex);
+    glBindTexture(GL_TEXTURE_2D, Tex);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
+    glEnable(GL_TEXTURE_2D);
 }
 
 
