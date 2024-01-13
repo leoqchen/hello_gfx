@@ -70,32 +70,37 @@ target_compile_options(
   ${GLES}
 )
 
-#add_executable(
-#  hello_triangle
-#  src/gl/hello_triangle.cpp
-#)
-#target_link_libraries(
-#  hello_triangle
-#)
-#target_compile_options(
-#  hello_triangle
-#  PUBLIC
-#)
-#
-#
-#add_executable(
-#  glClear
-#  src/gl/glClear.cpp
-#)
-#target_link_libraries(
-#  glClear
-#)
-#target_compile_options(
-#  glClear
-#  PUBLIC
-#)
-#
-#
+
+add_executable(
+  hello_triangle_gl
+  src/gl/hello_triangle.cpp
+)
+add_executable(
+  hello_triangle_gles
+  src/gl/hello_triangle.cpp
+)
+target_compile_options(
+  hello_triangle_gles
+  PUBLIC
+  ${GLES}
+)
+
+
+add_executable(
+  glClear_gl
+  src/gl/glClear.cpp
+)
+add_executable(
+  glClear_gles
+  src/gl/glClear.cpp
+)
+target_compile_options(
+  glClear_gles
+  PUBLIC
+  ${GLES}
+)
+
+
 #add_executable(
 #  perf_genmipmap
 #  src/gl/perf_genmipmap.cpp
@@ -107,8 +112,8 @@ target_compile_options(
 #  perf_genmipmap
 #  PUBLIC
 #)
-#
-#
+
+
 #add_executable(
 #  perf_copytex
 #  src/gl/perf_copytex.cpp

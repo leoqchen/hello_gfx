@@ -1,41 +1,32 @@
-#include <glad/glad.h>
+#if GLES
+#define GLAD_GLES2_IMPLEMENTATION
+  #include <glad/gles2.h>
+#else
+#define GLAD_GL_IMPLEMENTATION
+#include <glad/gl.h>
+#endif
+
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
-#include <iostream>
 #include <stdio.h>
 #include <string.h>
-#include "myutils.h"
-
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow *window);
+#include <ctype.h>
 
 // settings
 const unsigned int WinWidth = 800;
 const unsigned int WinHeight = 600;
 
-const char *vertexShaderSource_gl =
-    "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "}\n\0";
-const char *fragmentShaderSource_gl =
-    "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-    "}\n\0";
-
-const char *vertexShaderSource_gles =
+#if GLES
+const char *vertexShaderSource =
     "#version 320 es\n"
     "layout (location = 0) in vec3 aPos;\n"
     "void main()\n"
     "{\n"
     "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
     "}\n\0";
-const char *fragmentShaderSource_gles =
+
+const char *fragmentShaderSource =
     "#version 320 es\n"
     "precision mediump float;\n"
     "layout (location = 0 ) out vec4 FragColor;\n"
@@ -43,58 +34,101 @@ const char *fragmentShaderSource_gles =
     "{\n"
     "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
     "}\n\0";
+#else
+const char *vertexShaderSource =
+    "#version 330 core\n"
+    "layout (location = 0) in vec3 aPos;\n"
+    "void main()\n"
+    "{\n"
+    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "}\n\0";
+
+const char *fragmentShaderSource =
+    "#version 330 core\n"
+    "out vec4 FragColor;\n"
+    "void main()\n"
+    "{\n"
+    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+    "}\n\0";
+#endif
+
+static void error_callback(int error, const char* description)
+{
+    fprintf(stderr, "GLFW Error: %s\n", description);
+}
+
+// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
+// ---------------------------------------------------------------------------------------------------------
+static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, GLFW_TRUE);
+}
+
+// glfw: whenever the window size changed (by OS or user resize) this callback function executes
+// ---------------------------------------------------------------------------------------------
+static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    glViewport(0, 0, width, height);
+}
 
 int main( int argc, const char* argv[] )
 {
-    if( argc != 2 ){
-        Usage:
-        printf("Usage: %s [glXX|glesXX]\n", argv[0]);
-        return 1;
-    }
-
-    api_t api = parse_api( argv[1] );
-    if( api.api == -1 ){
-        printf("invalid argument: %s\n", argv[1]);
-        goto Usage;
-    }
+#if GLES
+    int major = 3;
+    int minor = 2;
+#else
+    int major = 3;
+    int minor = 3;
+#endif
+    if( argc >= 2 && isdigit(argv[1][0]) )
+        major = argv[1][0] - '0';
+    if( argc >= 3 && isdigit(argv[2][0]) )
+        minor = argv[2][0] - '0';
+    printf("command line: major = %d, minor = %d\n", major, minor);
 
     // glfw: initialize and configure
     // ------------------------------
-    glfwInit();
-    if( api.api == 1 ){
-        glfwWindowHint( GLFW_CLIENT_API, GLFW_OPENGL_ES_API );
-    }else {
-        //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
-    }
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, api.major);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, api.minor);
+    glfwSetErrorCallback(error_callback);
+    if (!glfwInit())
+        exit(EXIT_FAILURE);
 
-#ifdef __APPLE__
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#if GLES
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+    glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_EGL_CONTEXT_API);
+#else
+    //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
 #endif
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor);
 
     // glfw window creation
     // --------------------
     GLFWwindow* window = glfwCreateWindow(WinWidth, WinHeight, "LearnOpenGL", NULL, NULL);
-    if (window == NULL)
-    {
-        std::cout << "Failed to create GLFW window" << std::endl;
+    if (!window){
         glfwTerminate();
-        return -1;
+        exit(EXIT_FAILURE);
     }
-    glfwMakeContextCurrent(window);
+
+    glfwSetKeyCallback(window, key_callback);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        std::cout << "Failed to initialize GLAD" << std::endl;
-        return -1;
-    }
+    glfwMakeContextCurrent(window);
+#if GLES
+    int version = gladLoadGLES2(glfwGetProcAddress);
+#else
+    int version = gladLoadGL(glfwGetProcAddress);
+#endif
+    glfwSwapInterval(1);
 
-    printf("GL_VERSION = %s\n", glGetString(GL_VERSION));
+    printf("glad: %d.%d\n", GLAD_VERSION_MAJOR(version), GLAD_VERSION_MINOR(version));
+    printf("GL_VERSON = %s\n", glGetString(GL_VERSION));
+    glfwSetWindowTitle( window, (const char*)glGetString(GL_VERSION) );
+
+    // some query
     int major_version = 0;
     int minor_version = 0;
     glGetIntegerv(GL_MAJOR_VERSION, &major_version);
@@ -114,28 +148,30 @@ int main( int argc, const char* argv[] )
     // ------------------------------------
     // vertex shader
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, (api.api == 1) ? &vertexShaderSource_gles : &vertexShaderSource_gl, NULL);
+    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
     glCompileShader(vertexShader);
     // check for shader compile errors
     int success;
     char infoLog[512];
     glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
+    if (!success){
         glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+        printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
+        exit(EXIT_FAILURE);
     }
+
     // fragment shader
     unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, (api.api == 1) ? &fragmentShaderSource_gles :  &fragmentShaderSource_gl, NULL);
+    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
     glCompileShader(fragmentShader);
     // check for shader compile errors
     glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
+    if (!success){
         glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+        printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n", infoLog);
+        exit(EXIT_FAILURE);
     }
+
     // link shaders
     unsigned int shaderProgram = glCreateProgram();
     glAttachShader(shaderProgram, vertexShader);
@@ -145,7 +181,8 @@ int main( int argc, const char* argv[] )
     glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
     if (!success) {
         glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+        printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n",  infoLog);
+        exit(EXIT_FAILURE);
     }
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
@@ -185,10 +222,6 @@ int main( int argc, const char* argv[] )
     // -----------
     while (!glfwWindowShouldClose(window))
     {
-        // input
-        // -----
-        processInput(window);
-
         // render
         // ------
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -214,23 +247,7 @@ int main( int argc, const char* argv[] )
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
+    glfwDestroyWindow(window);
     glfwTerminate();
     return 0;
-}
-
-// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
-// ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow *window)
-{
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-}
-
-// glfw: whenever the window size changed (by OS or user resize) this callback function executes
-// ---------------------------------------------------------------------------------------------
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-    // make sure the viewport matches the new window dimensions; note that width and 
-    // height will be significantly larger than specified on retina displays.
-    glViewport(0, 0, width, height);
 }
