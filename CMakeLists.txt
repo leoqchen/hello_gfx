@@ -1,23 +1,24 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.4...3.20 FATAL_ERROR)
 project(hello_gfx)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/src/utils/cmake/modules/")
-#find_package(GLFW3 REQUIRED)
-find_package(glfw3 REQUIRED)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/ext/cmake/modules/")
+find_package(GLFW3 3.3 REQUIRED)
 message(STATUS "Found GLFW3 in ${GLFW3_INCLUDE_DIR}")
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
+
+
+#-----------------------------------------------------------------------------------------
+#  global settings
+#-----------------------------------------------------------------------------------------
 set(O -O0)
 set(STD -std=gnu++2a)
 set(CMAKE_CXX_FLAGS ${STD}) #only for c++
-
 add_compile_options(${O} -g -ggdb3 -fPIC -pthread -Wall -Werror)
-link_libraries(glfw dl)
-
 
 include_directories(
-  src/utils
-  src/utils/glad
+  "${CMAKE_SOURCE_DIR}/ext"
+  "${CMAKE_SOURCE_DIR}/src/utils"
 )
 
 
@@ -27,8 +28,13 @@ include_directories(
 add_library(
   utils
   STATIC
-  src/utils/glad/glad.c
   src/utils/myutils.cpp
+)
+
+link_libraries(
+  glfw
+  dl
+  utils
 )
 
 
@@ -36,61 +42,77 @@ add_library(
 #  targets
 #-----------------------------------------------------------------------------------------
 add_executable(
-  hello_triangle
-  src/gl/hello_triangle.cpp
+  triangle-opengl
+  src/gl/triangle-opengl.c
 )
 target_link_libraries(
-  hello_triangle
-  utils
+  triangle-opengl
 )
 target_compile_options(
-  hello_triangle
+  triangle-opengl
   PUBLIC
-  # xxx
 )
 
 
 add_executable(
-  glClear
-  src/gl/glClear.cpp
+  triangle-opengles
+  src/gl/triangle-opengles.c
 )
 target_link_libraries(
-  glClear
-  utils
+  triangle-opengles
 )
 target_compile_options(
-  glClear
+  triangle-opengles
   PUBLIC
-  # xxx
 )
 
-
-add_executable(
-  perf_genmipmap
-  src/gl/perf_genmipmap.cpp
-)
-target_link_libraries(
-  perf_genmipmap
-  utils
-)
-target_compile_options(
-  perf_genmipmap
-  PUBLIC
-  # xxx
-)
-
-
-add_executable(
-  perf_copytex
-  src/gl/perf_copytex.cpp
-)
-target_link_libraries(
-  perf_copytex
-  utils
-)
-target_compile_options(
-  perf_copytex
-  PUBLIC
-  # xxx
-  -Wno-error #TODO
-)
+#add_executable(
+#  hello_triangle
+#  src/gl/hello_triangle.cpp
+#)
+#target_link_libraries(
+#  hello_triangle
+#)
+#target_compile_options(
+#  hello_triangle
+#  PUBLIC
+#)
+#
+#
+#add_executable(
+#  glClear
+#  src/gl/glClear.cpp
+#)
+#target_link_libraries(
+#  glClear
+#)
+#target_compile_options(
+#  glClear
+#  PUBLIC
+#)
+#
+#
+#add_executable(
+#  perf_genmipmap
+#  src/gl/perf_genmipmap.cpp
+#)
+#target_link_libraries(
+#  perf_genmipmap
+#)
+#target_compile_options(
+#  perf_genmipmap
+#  PUBLIC
+#)
+#
+#
+#add_executable(
+#  perf_copytex
+#  src/gl/perf_copytex.cpp
+#)
+#target_link_libraries(
+#  perf_copytex
+#)
+#target_compile_options(
+#  perf_copytex
+#  PUBLIC
+#)
