@@ -21,6 +21,7 @@ include_directories(
   "${CMAKE_SOURCE_DIR}/src/utils"
 )
 
+set(GLES -DGLES=1)
 
 #-----------------------------------------------------------------------------------------
 #  libraries
@@ -41,29 +42,32 @@ link_libraries(
 #-----------------------------------------------------------------------------------------
 #  targets
 #-----------------------------------------------------------------------------------------
-add_executable(
-  triangle-opengl
-  src/gl/triangle-opengl.c
-)
-target_link_libraries(
-  triangle-opengl
-)
-target_compile_options(
-  triangle-opengl
-  PUBLIC
-)
+
+#add_executable(
+#  xxx
+#  xxx.c
+#)
+#target_link_libraries(
+#  xxx
+#)
+#target_compile_options(
+#  xxx
+#  PUBLIC
+#)
 
 
 add_executable(
-  triangle-opengles
-  src/gl/triangle-opengles.c
+  triangle_gl
+  src/gl/triangle.cpp
 )
-target_link_libraries(
-  triangle-opengles
+add_executable(
+  triangle_gles
+  src/gl/triangle.cpp
 )
 target_compile_options(
-  triangle-opengles
+  triangle_gles
   PUBLIC
+  ${GLES}
 )
 
 #add_executable(

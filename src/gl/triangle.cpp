@@ -1,13 +1,19 @@
-#define GLAD_GL_IMPLEMENTATION
-#include <glad/gl.h>
+#if GLES
+  #define GLAD_GLES2_IMPLEMENTATION
+  #include <glad/gles2.h>
+#else
+  #define GLAD_GL_IMPLEMENTATION
+  #include <glad/gl.h>
+#endif
+
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
-
-#include "linmath.h"
 
 #include <stdlib.h>
 #include <stddef.h>
 #include <stdio.h>
+#include <ctype.h>
+#include "linmath.h"
 
 typedef struct Vertex
 {
@@ -22,30 +28,55 @@ static const Vertex vertices[3] =
     { {   0.f,  0.6f }, { 0.f, 0.f, 1.f } }
 };
 
+#if GLES
 static const char* vertex_shader_text =
-"#version 330\n"
-"uniform mat4 MVP;\n"
-"in vec3 vCol;\n"
-"in vec2 vPos;\n"
-"out vec3 color;\n"
-"void main()\n"
-"{\n"
-"    gl_Position = MVP * vec4(vPos, 0.0, 1.0);\n"
-"    color = vCol;\n"
-"}\n";
+    "#version 320 es\n"
+    "precision mediump float;\n"
+    "uniform mat4 MVP;\n"
+    "layout (location = 0) in vec3 vCol;\n"
+    "layout (location = 1) in vec2 vPos;\n"
+    "layout (location = 0) out vec3 color;\n"
+    "void main()\n"
+    "{\n"
+    "    gl_Position = MVP * vec4(vPos, 0.0, 1.0);\n"
+    "    color = vCol;\n"
+    "}\n";
 
 static const char* fragment_shader_text =
-"#version 330\n"
-"in vec3 color;\n"
-"out vec4 fragment;\n"
-"void main()\n"
-"{\n"
-"    fragment = vec4(color, 1.0);\n"
-"}\n";
+    "#version 320 es\n"
+    "precision mediump float;\n"
+    "layout (location = 0) in vec3 color;\n"
+    "layout (location = 0) out vec4 FragColor;\n"
+    "void main()\n"
+    "{\n"
+    "    FragColor = vec4(color, 1.0);\n"
+    "}\n";
+#else
+static const char* vertex_shader_text =
+    "#version 420\n"
+    "uniform mat4 MVP;\n"
+    "layout (location = 0) in vec3 vCol;\n"
+    "layout (location = 1) in vec2 vPos;\n"
+    "layout (location = 0) out vec3 color;\n"
+    "void main()\n"
+    "{\n"
+    "    gl_Position = MVP * vec4(vPos, 0.0, 1.0);\n"
+    "    color = vCol;\n"
+    "}\n";
+
+static const char* fragment_shader_text =
+    "#version 420\n"
+    "layout (location = 0) in vec3 color;\n"
+    "layout (location = 0) out vec4 FragColor;\n"
+    "void main()\n"
+    "{\n"
+    "    FragColor = vec4(color, 1.0);\n"
+    "}\n";
+#endif
 
 static void error_callback(int error, const char* description)
 {
-    fprintf(stderr, "Error: %s\n", description);
+    fprintf(stderr, "GLFW Error: %s\n", description);
 }
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -54,16 +85,35 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
-int main(void)
+int main( int argc, const char* argv[] )
 {
+#if GLES
+    int major = 3;
+    int minor = 2;
+#else
+    int major = 3;
+    int minor = 3;
+#endif
+    if( argc >= 2 && isdigit(argv[1][0]) )
+        major = argv[1][0] - '0';
+    if( argc >= 3 && isdigit(argv[2][0]) )
+        minor = argv[2][0] - '0';
+    printf("command line: major = %d, minor = %d\n", major, minor);
+
     glfwSetErrorCallback(error_callback);
 
     if (!glfwInit())
         exit(EXIT_FAILURE);
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#if GLES
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+    glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_EGL_CONTEXT_API);
+#else
+    //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+#endif
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor);
 
     GLFWwindow* window = glfwCreateWindow(640, 480, "OpenGL Triangle", NULL, NULL);
     if (!window)
@@ -75,15 +125,20 @@ int main(void)
     glfwSetKeyCallback(window, key_callback);
 
     glfwMakeContextCurrent(window);
-    gladLoadGL(glfwGetProcAddress);
+#if GLES
+    int version = gladLoadGLES2(glfwGetProcAddress);
+#else
+    int version = gladLoadGL(glfwGetProcAddress);
+#endif
     glfwSwapInterval(1);
 
-    // NOTE: OpenGL error checks have been omitted for brevity
+    printf("glad: %d.%d\n", GLAD_VERSION_MAJOR(version), GLAD_VERSION_MINOR(version));
+    printf("GL_VERSON = %s\n", glGetString(GL_VERSION));
+    glfwSetWindowTitle( window, (const char*)glGetString(GL_VERSION) );
 
-    printf("GL_VERSON = %s\n", glGetString(GL_VERSION));//XXX
 //    float vertex[4];
 //    glVertexPointer( 2, GL_FLOAT, 4, vertex);//XXX
-    //XXX
+//    //XXX: 试验绑定FBO
 //    GLuint RBO, FBO;
 //    glGenFramebuffers(1, &FBO);
 //    glBindFramebuffer(GL_FRAMEBUFFER, FBO);
@@ -107,15 +162,40 @@ int main(void)
     const GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
     glCompileShader(vertex_shader);
+    // check for shader compile errors
+    int success;
+    char infoLog[512];
+    glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
+    if (!success)
+    {
+        glGetShaderInfoLog(vertex_shader, 512, NULL, infoLog);
+        printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n %s\n", infoLog);
+        exit(EXIT_FAILURE);
+    }
 
     const GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragment_shader, 1, &fragment_shader_text, NULL);
     glCompileShader(fragment_shader);
+    // check for shader compile errors
+    glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
+    if (!success)
+    {
+        glGetShaderInfoLog(fragment_shader, 512, NULL, infoLog);
+        printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n %s\n", infoLog);
+        exit(EXIT_FAILURE);
+    }
 
     const GLuint program = glCreateProgram();
     glAttachShader(program, vertex_shader);
     glAttachShader(program, fragment_shader);
     glLinkProgram(program);
+    // check for linking errors
+    glGetProgramiv(program, GL_LINK_STATUS, &success);
+    if (!success) {
+        glGetProgramInfoLog(program, 512, NULL, infoLog);
+        printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n %s\n", infoLog);
+        exit(EXIT_FAILURE);
+    }
 
     const GLint mvp_location = glGetUniformLocation(program, "MVP");
     const GLint vpos_location = glGetAttribLocation(program, "vPos");
@@ -125,9 +205,9 @@ int main(void)
     glGenVertexArrays(1, &vertex_array);
     glBindVertexArray(vertex_array);
     glEnableVertexAttribArray(vpos_location);
+    glEnableVertexAttribArray(vcol_location);
     glVertexAttribPointer(vpos_location, 2, GL_FLOAT, GL_FALSE,
                           sizeof(Vertex), (void*) offsetof(Vertex, pos));
-    glEnableVertexAttribArray(vcol_location);
     glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE,
                           sizeof(Vertex), (void*) offsetof(Vertex, col));
 
@@ -161,4 +241,3 @@ int main(void)
     exit(EXIT_SUCCESS);
 }
 
-//! [code]
