@@ -36,7 +36,7 @@ const char *fragmentShaderSource =
     "}\n\0";
 #else
 const char *vertexShaderSource =
-    "#version 330 core\n"
+    "#version 420\n"
     "layout (location = 0) in vec3 aPos;\n"
     "void main()\n"
     "{\n"
@@ -44,7 +44,7 @@ const char *vertexShaderSource =
     "}\n\0";
 
 const char *fragmentShaderSource =
-    "#version 330 core\n"
+    "#version 420\n"
     "out vec4 FragColor;\n"
     "void main()\n"
     "{\n"

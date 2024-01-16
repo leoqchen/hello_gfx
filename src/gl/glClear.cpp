@@ -120,6 +120,9 @@ int main( int argc, const char* argv[] )
         glfwPollEvents();
     }
 
+    // optional: de-allocate all resources once they've outlived their purpose:
+    // ------------------------------------------------------------------------
+
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
     glfwDestroyWindow(window);
