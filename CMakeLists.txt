@@ -126,6 +126,30 @@ target_compile_options(
 )
 
 
+add_executable(
+  glTexCoordPointer_gl_legacy
+  src/gl/glTexCoordPointer.cpp
+)
+target_compile_options(
+  glTexCoordPointer_gl_legacy
+  PUBLIC
+  ${GL_LEGACY}
+)
+add_executable(
+  glTexCoordPointer_gl
+  src/gl/glTexCoordPointer.cpp
+)
+add_executable(
+  glTexCoordPointer_gles
+  src/gl/glTexCoordPointer.cpp
+)
+target_compile_options(
+  glTexCoordPointer_gles
+  PUBLIC
+  ${GLES}
+)
+
+
 #add_executable(
 #  perf_genmipmap
 #  src/gl/perf_genmipmap.cpp
