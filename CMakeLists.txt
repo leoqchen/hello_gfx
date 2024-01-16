@@ -14,7 +14,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 set(O -O0)
 set(STD -std=gnu++2a)
 set(CMAKE_CXX_FLAGS ${STD}) #only for c++
-add_compile_options(${O} -g -ggdb3 -fPIC -pthread -Wall -Werror)
+add_compile_options(${O} -g -ggdb3 -fPIC -pthread -Wall )#-Werror
 
 include_directories(
   "${CMAKE_SOURCE_DIR}/ext"
@@ -22,6 +22,7 @@ include_directories(
 )
 
 set(GLES -DGLES=1)
+set(GL_LEGACY -DGL_LEGACY=1)
 
 #-----------------------------------------------------------------------------------------
 #  libraries
@@ -96,6 +97,30 @@ add_executable(
 )
 target_compile_options(
   glClear_gles
+  PUBLIC
+  ${GLES}
+)
+
+
+add_executable(
+  glVertexPointer_gl_legacy
+  src/gl/glVertexPointer.cpp
+)
+target_compile_options(
+  glVertexPointer_gl_legacy
+  PUBLIC
+  ${GL_LEGACY}
+)
+add_executable(
+  glVertexPointer_gl
+  src/gl/glVertexPointer.cpp
+)
+add_executable(
+  glVertexPointer_gles
+  src/gl/glVertexPointer.cpp
+)
+target_compile_options(
+  glVertexPointer_gles
   PUBLIC
   ${GLES}
 )
