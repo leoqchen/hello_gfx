@@ -57,98 +57,40 @@ link_libraries(
 #)
 
 
-add_executable(
+set(targets
   triangle_gl
-  src/gl/triangle.cpp
-)
-add_executable(
   triangle_gles
-  src/gl/triangle.cpp
-)
-target_compile_options(
-  triangle_gles
-  PUBLIC
-  ${GLES}
-)
 
-
-add_executable(
   hello_triangle_gl
-  src/gl/hello_triangle.cpp
-)
-add_executable(
   hello_triangle_gles
-  src/gl/hello_triangle.cpp
-)
-target_compile_options(
-  hello_triangle_gles
-  PUBLIC
-  ${GLES}
-)
 
-
-add_executable(
   glClear_gl
-  src/gl/glClear.cpp
-)
-add_executable(
   glClear_gles
-  src/gl/glClear.cpp
-)
-target_compile_options(
-  glClear_gles
-  PUBLIC
-  ${GLES}
-)
 
-
-add_executable(
   glVertexPointer_gl_legacy
-  src/gl/glVertexPointer.cpp
-)
-target_compile_options(
-  glVertexPointer_gl_legacy
-  PUBLIC
-  ${GL_LEGACY}
-)
-add_executable(
   glVertexPointer_gl
-  src/gl/glVertexPointer.cpp
-)
-add_executable(
   glVertexPointer_gles
-  src/gl/glVertexPointer.cpp
-)
-target_compile_options(
-  glVertexPointer_gles
-  PUBLIC
-  ${GLES}
-)
 
-
-add_executable(
   glTexCoordPointer_gl_legacy
-  src/gl/glTexCoordPointer.cpp
-)
-target_compile_options(
-  glTexCoordPointer_gl_legacy
-  PUBLIC
-  ${GL_LEGACY}
-)
-add_executable(
   glTexCoordPointer_gl
-  src/gl/glTexCoordPointer.cpp
-)
-add_executable(
   glTexCoordPointer_gles
-  src/gl/glTexCoordPointer.cpp
-)
-target_compile_options(
-  glTexCoordPointer_gles
-  PUBLIC
-  ${GLES}
 )
 
+foreach(target ${targets})
+  if(${target} MATCHES "_gl$")
+    string(REGEX REPLACE "_gl$" "" filename ${target})
+    set(compile_option "")
+  elseif(${target} MATCHES "_gl_legacy$")
+    string(REGEX REPLACE "_gl_legacy$" "" filename ${target})
+    set(compile_option ${GL_LEGACY})
+  elseif(${target} MATCHES "_gles$")
+    string(REGEX REPLACE "_gles$" "" filename ${target})
+    set(compile_option ${GLES})
+  endif()
+
+  add_executable(${target} src/gl/${filename}.cpp)
+  target_compile_options(${target} PUBLIC ${compile_option})
+endforeach(target)
 
 #add_executable(
 #  perf_genmipmap
