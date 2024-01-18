@@ -21,8 +21,8 @@ include_directories(
   "${CMAKE_SOURCE_DIR}/src/utils"
 )
 
-set(GLES -DGLES=1)
-set(GL_LEGACY -DGL_LEGACY=1)
+set(IS_GlEs -DIS_GlEs=1)
+set(IS_GlLegacy -DIS_GlLegacy=1)
 
 #-----------------------------------------------------------------------------------------
 #  libraries
@@ -62,21 +62,21 @@ set(targets
   # ----------------------------------------------------
 
   "triangle_gl   \; src/gl/triangle.cpp \; "
-  "triangle_gles \; src/gl/triangle.cpp \; ${GLES}"
+  "triangle_gles \; src/gl/triangle.cpp \; ${IS_GlEs}"
 
   "hello_triangle_gl   \; src/gl/hello_triangle.cpp \; "
-  "hello_triangle_gles \; src/gl/hello_triangle.cpp \; ${GLES}"
+  "hello_triangle_gles \; src/gl/hello_triangle.cpp \; ${IS_GlEs}"
 
   "glClear_gl   \; src/gl/glClear.cpp \; "
-  "glClear_gles \; src/gl/glClear.cpp \; ${GLES}"
+  "glClear_gles \; src/gl/glClear.cpp \; ${IS_GlEs}"
 
-  "glVertexPointer_gl_legacy \; src/gl/glVertexPointer.cpp \; ${GL_LEGACY}"
+  "glVertexPointer_gl_legacy \; src/gl/glVertexPointer.cpp \; ${IS_GlLegacy}"
   "glVertexPointer_gl        \; src/gl/glVertexPointer.cpp \; "
-  "glVertexPointer_gles      \; src/gl/glVertexPointer.cpp \; ${GLES}"
+  "glVertexPointer_gles      \; src/gl/glVertexPointer.cpp \; ${IS_GlEs}"
 
-  "glTexCoordPointer_gl_legacy \; src/gl/glTexCoordPointer.cpp \; ${GL_LEGACY}"
+  "glTexCoordPointer_gl_legacy \; src/gl/glTexCoordPointer.cpp \; ${IS_GlLegacy}"
   "glTexCoordPointer_gl        \; src/gl/glTexCoordPointer.cpp \; "
-  "glTexCoordPointer_gles      \; src/gl/glTexCoordPointer.cpp \; ${GLES}"
+  "glTexCoordPointer_gles      \; src/gl/glTexCoordPointer.cpp \; ${IS_GlEs}"
 )
 
 foreach(target ${targets})

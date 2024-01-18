@@ -3,7 +3,7 @@
  *
  */
 
-#if GLES
+#if IS_GlEs
 #define GLAD_GLES2_IMPLEMENTATION
   #include <glad/gles2.h>
 #else
@@ -43,7 +43,7 @@ static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
-#if GLES
+#if IS_GlEs
 const char *vertexShaderSource =
     "#version 320 es\n"
     "layout (location = 0) in vec4 a_position;\n"
@@ -90,7 +90,7 @@ const char *fragmentShaderSource =
 
 int main( int argc, const char* argv[] )
 {
-#if GLES
+#if IS_GlEs
     int major = 3;
     int minor = 2;
 #else
@@ -109,7 +109,7 @@ int main( int argc, const char* argv[] )
     if (!glfwInit())
         exit(EXIT_FAILURE);
 
-#if GLES
+#if IS_GlEs
     glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
     glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_EGL_CONTEXT_API);
 #else
@@ -133,7 +133,7 @@ int main( int argc, const char* argv[] )
     // glad: load all OpenGL function pointers
     // ---------------------------------------
     glfwMakeContextCurrent(window);
-#if GLES
+#if IS_GlEs
     int version = gladLoadGLES2(glfwGetProcAddress);
 #else
     int version = gladLoadGL(glfwGetProcAddress);
@@ -225,7 +225,7 @@ int main( int argc, const char* argv[] )
         };
         glClear(GL_COLOR_BUFFER_BIT );
 
-#if GL_LEGACY
+#if IS_GlLegacy
         {
             // legacy OpenGL
             glVertexPointer(3, GL_FLOAT, 5 * sizeof(GLfloat), vVertices );
