@@ -56,41 +56,45 @@ link_libraries(
 #  PUBLIC
 #)
 
-
 set(targets
-  triangle_gl
-  triangle_gles
+  # ----------------------------------------------------
+  # target_name \; sourcecode_name \; compile_options
+  # ----------------------------------------------------
 
-  hello_triangle_gl
-  hello_triangle_gles
+  "triangle_gl   \; src/gl/triangle.cpp \; "
+  "triangle_gles \; src/gl/triangle.cpp \; ${GLES}"
 
-  glClear_gl
-  glClear_gles
+  "hello_triangle_gl   \; src/gl/hello_triangle.cpp \; "
+  "hello_triangle_gles \; src/gl/hello_triangle.cpp \; ${GLES}"
 
-  glVertexPointer_gl_legacy
-  glVertexPointer_gl
-  glVertexPointer_gles
+  "glClear_gl   \; src/gl/glClear.cpp \; "
+  "glClear_gles \; src/gl/glClear.cpp \; ${GLES}"
 
-  glTexCoordPointer_gl_legacy
-  glTexCoordPointer_gl
-  glTexCoordPointer_gles
+  "glVertexPointer_gl_legacy \; src/gl/glVertexPointer.cpp \; ${GL_LEGACY}"
+  "glVertexPointer_gl        \; src/gl/glVertexPointer.cpp \; "
+  "glVertexPointer_gles      \; src/gl/glVertexPointer.cpp \; ${GLES}"
+
+  "glTexCoordPointer_gl_legacy \; src/gl/glTexCoordPointer.cpp \; ${GL_LEGACY}"
+  "glTexCoordPointer_gl        \; src/gl/glTexCoordPointer.cpp \; "
+  "glTexCoordPointer_gles      \; src/gl/glTexCoordPointer.cpp \; ${GLES}"
 )
 
 foreach(target ${targets})
-  if(${target} MATCHES "_gl$")
-    string(REGEX REPLACE "_gl$" "" filename ${target})
-    set(compile_option "")
-  elseif(${target} MATCHES "_gl_legacy$")
-    string(REGEX REPLACE "_gl_legacy$" "" filename ${target})
-    set(compile_option ${GL_LEGACY})
-  elseif(${target} MATCHES "_gles$")
-    string(REGEX REPLACE "_gles$" "" filename ${target})
-    set(compile_option ${GLES})
-  endif()
+  list(GET target 0 targetName)
+  list(GET target 1 targetSource)
+  list(GET target 2 targetCompile)
 
-  add_executable(${target} src/gl/${filename}.cpp)
-  target_compile_options(${target} PUBLIC ${compile_option})
+  string(STRIP ${targetName} targetName)
+  string(STRIP ${targetSource} targetSource)
+  string(STRIP ${targetCompile} targetCompile)
+
+  #message("target=${target}")
+  message("targetName=${targetName}, targetSource=${targetSource}, targetCompile=${targetCompile}")
+
+  add_executable(${targetName} ${targetSource})
+  target_compile_options(${targetName} PUBLIC ${targetCompile})
 endforeach(target)
+
 
 #add_executable(
 #  perf_genmipmap
