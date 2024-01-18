@@ -23,6 +23,8 @@ include_directories(
 
 set(IS_GlEs -DIS_GlEs=1)
 set(IS_GlLegacy -DIS_GlLegacy=1)
+set(IS_ColorAttachRenderBuffer -DIS_ColorAttachRenderBuffer=1)
+set(IS_ColorAttachTexture -DIS_ColorAttachTexture=1)
 
 #-----------------------------------------------------------------------------------------
 #  libraries
@@ -77,6 +79,11 @@ set(targets
   "glTexCoordPointer_gl_legacy \; src/gl/glTexCoordPointer.cpp \; ${IS_GlLegacy}"
   "glTexCoordPointer_gl        \; src/gl/glTexCoordPointer.cpp \; "
   "glTexCoordPointer_gles      \; src/gl/glTexCoordPointer.cpp \; ${IS_GlEs}"
+
+  "fbo_gl_ColorAttachRenderBuffer   \; src/gl/fbo.cpp \; ${IS_ColorAttachRenderBuffer}"
+  "fbo_gles_ColorAttachRenderBuffer \; src/gl/fbo.cpp \; ${IS_ColorAttachRenderBuffer} ${IS_GlEs}"
+  "fbo_gl_ColorAttachTexture        \; src/gl/fbo.cpp \; ${IS_ColorAttachTexture}"
+  "fbo_gles_ColorAttachTexture      \; src/gl/fbo.cpp \; ${IS_ColorAttachTexture} ${IS_GlEs}"
 )
 
 foreach(target ${targets})
@@ -87,6 +94,8 @@ foreach(target ${targets})
   string(STRIP ${targetName} targetName)
   string(STRIP ${targetSource} targetSource)
   string(STRIP ${targetCompile} targetCompile)
+
+  string(REPLACE " " ";" targetCompile "${targetCompile}")
 
   #message("target=${target}")
   message("targetName=${targetName}, targetSource=${targetSource}, targetCompile=${targetCompile}")
