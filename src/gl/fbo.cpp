@@ -228,7 +228,7 @@ int main( int argc, const char* argv[] )
     GLsizei textureWidth = 400;
     GLsizei textureHeight = 400;
 
-#if IS_ColorAttachRenderBuffer
+#if IS_ColorAttachRenderbuffer
     GLuint rb[4];
     glGenRenderbuffers( 4, &rb[0] );
     for( int i=0; i < 4; i++ )
@@ -337,7 +337,7 @@ int main( int argc, const char* argv[] )
 
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
-#if IS_ColorAttachRenderBuffer
+#if IS_ColorAttachRenderbuffer
     glDeleteRenderbuffers( 4, &rb[0] );
 #endif
 #if IS_ColorAttachTexture

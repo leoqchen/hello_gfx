@@ -23,7 +23,7 @@ include_directories(
 
 set(IS_GlEs -DIS_GlEs=1)
 set(IS_GlLegacy -DIS_GlLegacy=1)
-set(IS_ColorAttachRenderBuffer -DIS_ColorAttachRenderBuffer=1)
+set(IS_ColorAttachRenderbuffer -DIS_ColorAttachRenderbuffer=1)
 set(IS_ColorAttachTexture -DIS_ColorAttachTexture=1)
 
 #-----------------------------------------------------------------------------------------
@@ -59,46 +59,67 @@ link_libraries(
 #)
 
 set(targets
-  # ----------------------------------------------------
-  # target_name \; sourcecode_name \; compile_options
-  # ----------------------------------------------------
+  #-----------------------------------------------------------------------------------------
+  # target_name \; target_sourcecode \; target_compile_options \; target_link_libraries
+  #-----------------------------------------------------------------------------------------
 
-  "triangle_gl   \; src/gl/triangle.cpp \; "
-  "triangle_gles \; src/gl/triangle.cpp \; ${IS_GlEs}"
+  "triangle_gl   \; src/gl/triangle.cpp"
+  "triangle_gles \; src/gl/triangle.cpp"
 
-  "hello_triangle_gl   \; src/gl/hello_triangle.cpp \; "
-  "hello_triangle_gles \; src/gl/hello_triangle.cpp \; ${IS_GlEs}"
+  "hello_triangle_gl   \; src/gl/hello_triangle.cpp"
+  "hello_triangle_gles \; src/gl/hello_triangle.cpp"
 
-  "glClear_gl   \; src/gl/glClear.cpp \; "
-  "glClear_gles \; src/gl/glClear.cpp \; ${IS_GlEs}"
+  "glClear_gl   \; src/gl/glClear.cpp"
+  "glClear_gles \; src/gl/glClear.cpp"
 
-  "glVertexPointer_gl_legacy \; src/gl/glVertexPointer.cpp \; ${IS_GlLegacy}"
-  "glVertexPointer_gl        \; src/gl/glVertexPointer.cpp \; "
-  "glVertexPointer_gles      \; src/gl/glVertexPointer.cpp \; ${IS_GlEs}"
+  "glVertexPointer_gl_legacy \; src/gl/glVertexPointer.cpp"
+  "glVertexPointer_gl        \; src/gl/glVertexPointer.cpp"
+  "glVertexPointer_gles      \; src/gl/glVertexPointer.cpp"
 
-  "glTexCoordPointer_gl_legacy \; src/gl/glTexCoordPointer.cpp \; ${IS_GlLegacy}"
-  "glTexCoordPointer_gl        \; src/gl/glTexCoordPointer.cpp \; "
-  "glTexCoordPointer_gles      \; src/gl/glTexCoordPointer.cpp \; ${IS_GlEs}"
+  "glTexCoordPointer_gl_legacy \; src/gl/glTexCoordPointer.cpp"
+  "glTexCoordPointer_gl        \; src/gl/glTexCoordPointer.cpp"
+  "glTexCoordPointer_gles      \; src/gl/glTexCoordPointer.cpp"
 
-  "fbo_gl_ColorAttachRenderBuffer   \; src/gl/fbo.cpp \; ${IS_ColorAttachRenderBuffer}"
-  "fbo_gles_ColorAttachRenderBuffer \; src/gl/fbo.cpp \; ${IS_ColorAttachRenderBuffer} ${IS_GlEs}"
-  "fbo_gl_ColorAttachTexture        \; src/gl/fbo.cpp \; ${IS_ColorAttachTexture}"
-  "fbo_gles_ColorAttachTexture      \; src/gl/fbo.cpp \; ${IS_ColorAttachTexture} ${IS_GlEs}"
+  "fbo_ColorAttachRenderbuffer_gl   \; src/gl/fbo.cpp \; ${IS_ColorAttachRenderbuffer}"
+  "fbo_ColorAttachTexture_gl        \; src/gl/fbo.cpp \; ${IS_ColorAttachTexture}"
+  "fbo_ColorAttachRenderbuffer_gles \; src/gl/fbo.cpp \; ${IS_ColorAttachRenderbuffer}"
+  "fbo_ColorAttachTexture_gles      \; src/gl/fbo.cpp \; ${IS_ColorAttachTexture}"
 )
 
 foreach(target ${targets})
+  list(LENGTH target length)
+  #message("length=${length}")
+
   list(GET target 0 targetName)
-  list(GET target 1 targetSource)
-  list(GET target 2 targetCompile)
-
   string(STRIP ${targetName} targetName)
-  string(STRIP ${targetSource} targetSource)
-  string(STRIP ${targetCompile} targetCompile)
 
-  string(REPLACE " " ";" targetCompile "${targetCompile}")
+  list(GET target 1 targetSource)
+  string(STRIP ${targetSource} targetSource)
+
+  set(targetCompile "")
+  if(length GREATER_EQUAL 3)
+    list(GET target 2 targetCompile)
+    string(STRIP ${targetCompile} targetCompile)
+    string(REPLACE " " ";" targetCompile "${targetCompile}")
+  endif()
+
+  set(targetLink "")
+  if(length GREATER_EQUAL 4)
+    list(GET target 3 targetLink)
+    string(STRIP ${targetLink} targetLink)
+    string(REPLACE " " ";" targetLink "${targetLink}")
+  endif()
+
+  if(${targetName} MATCHES "_gl$")
+    # do nothing
+  elseif(${targetName} MATCHES "_gl_legacy$")
+    list(APPEND targetCompile ${IS_GlLegacy})
+  elseif(${targetName} MATCHES "_gles$")
+    list(APPEND targetCompile ${IS_GlEs})
+  endif()
 
   #message("target=${target}")
-  message("targetName=${targetName}, targetSource=${targetSource}, targetCompile=${targetCompile}")
+  message("targetName=${targetName}, targetSource=${targetSource}, targetCompile=${targetCompile}, targetLink=${targetLink}")
 
   add_executable(${targetName} ${targetSource})
   target_compile_options(${targetName} PUBLIC ${targetCompile})
