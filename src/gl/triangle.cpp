@@ -1,4 +1,4 @@
-#if GLES
+#if IS_GlEs
   #define GLAD_GLES2_IMPLEMENTATION
   #include <glad/gles2.h>
 #else
@@ -28,14 +28,14 @@ static const Vertex vertices[3] =
     { {   0.f,  0.6f }, { 0.f, 0.f, 1.f } }
 };
 
-#if GLES
+#if IS_GlEs
 static const char* vertex_shader_text =
     "#version 320 es\n"
     "precision mediump float;\n"
     "uniform mat4 MVP;\n"
     "layout (location = 0) in vec3 vCol;\n"
     "layout (location = 1) in vec2 vPos;\n"
-    "layout (location = 0) out vec3 color;\n"
+    "out vec3 color;\n"
     "void main()\n"
     "{\n"
     "    gl_Position = MVP * vec4(vPos, 0.0, 1.0);\n"
@@ -45,7 +45,7 @@ static const char* vertex_shader_text =
 static const char* fragment_shader_text =
     "#version 320 es\n"
     "precision mediump float;\n"
-    "layout (location = 0) in vec3 color;\n"
+    "in vec3 color;\n"
     "layout (location = 0) out vec4 FragColor;\n"
     "void main()\n"
     "{\n"
@@ -53,11 +53,11 @@ static const char* fragment_shader_text =
     "}\n";
 #else
 static const char* vertex_shader_text =
-    "#version 420\n"
+    "#version 400\n"
     "uniform mat4 MVP;\n"
     "layout (location = 0) in vec3 vCol;\n"
     "layout (location = 1) in vec2 vPos;\n"
-    "layout (location = 0) out vec3 color;\n"
+    "out vec3 color;\n"
     "void main()\n"
     "{\n"
     "    gl_Position = MVP * vec4(vPos, 0.0, 1.0);\n"
@@ -65,8 +65,8 @@ static const char* vertex_shader_text =
     "}\n";
 
 static const char* fragment_shader_text =
-    "#version 420\n"
-    "layout (location = 0) in vec3 color;\n"
+    "#version 400\n"
+    "in vec3 color;\n"
     "layout (location = 0) out vec4 FragColor;\n"
     "void main()\n"
     "{\n"
@@ -96,9 +96,12 @@ static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 int main( int argc, const char* argv[] )
 {
-#if GLES
+#if IS_GlEs
     int major = 3;
     int minor = 2;
+#elif IS_GlLegacy
+    int major = 3;
+    int minor = 0;
 #else
     int major = 3;
     int minor = 3;
@@ -115,12 +118,14 @@ int main( int argc, const char* argv[] )
     if (!glfwInit())
         exit(EXIT_FAILURE);
 
-#if GLES
+#if IS_GlEs
     glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
     glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_EGL_CONTEXT_API);
 #else
-    //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+    if( major >= 3 && minor >= 2 ) {
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+    }
 #endif
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor);
@@ -139,7 +144,7 @@ int main( int argc, const char* argv[] )
     // glad: load all OpenGL function pointers
     // ---------------------------------------
     glfwMakeContextCurrent(window);
-#if GLES
+#if IS_GlEs
     int version = gladLoadGLES2(glfwGetProcAddress);
 #else
     int version = gladLoadGL(glfwGetProcAddress);
@@ -150,23 +155,6 @@ int main( int argc, const char* argv[] )
     printf("GL_VERSON = %s\n", glGetString(GL_VERSION));
     glfwSetWindowTitle( window, (const char*)glGetString(GL_VERSION) );
 
-//    float vertex[4];
-//    glVertexPointer( 2, GL_FLOAT, 4, vertex);//XXX
-//    //XXX: 试验绑定FBO
-//    GLuint RBO, FBO;
-//    glGenFramebuffers(1, &FBO);
-//    glBindFramebuffer(GL_FRAMEBUFFER, FBO);
-//    /* setup rbo */
-//    glGenRenderbuffers(1, &RBO);
-//    glBindRenderbuffer(GL_RENDERBUFFER, RBO);
-//    glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA, 4096, 4096);
-//    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, RBO);
-//    GLenum stat = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-//    if (stat != GL_FRAMEBUFFER_COMPLETE) {
-//        printf("fboswitch: Error: incomplete FBO!: 0x%X\n", stat);
-//    }else{
-//        printf("framebuffer complete\n");
-//    }
 
     // build and compile our shader program
     // ------------------------------------
@@ -221,6 +209,9 @@ int main( int argc, const char* argv[] )
     const GLint mvp_location = glGetUniformLocation(program, "MVP");
     const GLint vpos_location = glGetAttribLocation(program, "vPos");
     const GLint vcol_location = glGetAttribLocation(program, "vCol");
+    printf("Uniform location: MVP=%d\n", mvp_location);
+    printf("Attrib location: vCol=%d\n", vcol_location);
+    printf("Attrib location: vPos=%d\n", vpos_location);
 
     GLuint vertex_array;
     glGenVertexArrays(1, &vertex_array);

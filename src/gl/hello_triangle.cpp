@@ -29,14 +29,14 @@ const char *vertexShaderSource =
 const char *fragmentShaderSource =
     "#version 320 es\n"
     "precision mediump float;\n"
-    "layout (location = 0 ) out vec4 FragColor;\n"
+    "layout (location = 0) out vec4 FragColor;\n"
     "void main()\n"
     "{\n"
     "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
     "}\n\0";
 #else
 const char *vertexShaderSource =
-    "#version 420\n"
+    "#version 400\n"
     "layout (location = 0) in vec3 aPos;\n"
     "void main()\n"
     "{\n"
@@ -44,8 +44,8 @@ const char *vertexShaderSource =
     "}\n\0";
 
 const char *fragmentShaderSource =
-    "#version 420\n"
-    "out vec4 FragColor;\n"
+    "#version 400\n"
+    "layout (location = 0) out vec4 FragColor;\n"
     "void main()\n"
     "{\n"
     "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
@@ -77,6 +77,9 @@ int main( int argc, const char* argv[] )
 #if IS_GlEs
     int major = 3;
     int minor = 2;
+#elif IS_GlLegacy
+    int major = 3;
+    int minor = 0;
 #else
     int major = 3;
     int minor = 3;
@@ -97,8 +100,10 @@ int main( int argc, const char* argv[] )
     glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
     glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_EGL_CONTEXT_API);
 #else
-    //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+    if( major >= 3 && minor >= 2 ) {
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+    }
 #endif
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor);
@@ -204,8 +209,10 @@ int main( int argc, const char* argv[] )
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
+    const GLint apos_location = glGetAttribLocation(shaderProgram, "aPos");
+    printf("Uniform location: aPos=%d\n", apos_location);
+    glVertexAttribPointer(apos_location, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray( apos_location );
 
     // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
     glBindBuffer(GL_ARRAY_BUFFER, 0); 

@@ -43,6 +43,9 @@ int main( int argc, const char* argv[] )
 #if IS_GlEs
     int major = 3;
     int minor = 2;
+#elif IS_GlLegacy
+    int major = 3;
+    int minor = 0;
 #else
     int major = 3;
     int minor = 3;
@@ -63,8 +66,10 @@ int main( int argc, const char* argv[] )
     glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
     glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_EGL_CONTEXT_API);
 #else
-    //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+    if( major >= 3 && minor >= 2 ) {
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+    }
 #endif
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor);

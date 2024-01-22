@@ -67,7 +67,7 @@ const char *fragmentShaderSource =
     "}\n\0";
 #else
 const char *vertexShaderSource =
-    "#version 420\n"
+    "#version 400\n"
     "layout (location = 0) in vec4 a_position;\n"
     "layout (location = 1) in vec2 a_texCoord;\n"
     "out vec2 v_texCoord;\n"
@@ -78,7 +78,7 @@ const char *vertexShaderSource =
     "}\n\0";
 
 const char *fragmentShaderSource =
-    "#version 420\n"
+    "#version 400\n"
     "in vec2 v_texCoord;\n"
     "layout (location = 0) out vec4 outColor;\n"
     "uniform sampler2D s_texture;\n"
@@ -93,6 +93,9 @@ int main( int argc, const char* argv[] )
 #if IS_GlEs
     int major = 3;
     int minor = 2;
+#elif IS_GlLegacy
+    int major = 3;
+    int minor = 0;
 #else
     int major = 3;
     int minor = 3;
@@ -113,8 +116,10 @@ int main( int argc, const char* argv[] )
     glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
     glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_EGL_CONTEXT_API);
 #else
-    //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+    if( major >= 3 && minor >= 2 ) {
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+    }
 #endif
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor);
