@@ -18,6 +18,7 @@ add_compile_options(${O} -g -ggdb3 -fPIC -pthread -Wall )#-Werror
 
 include_directories(
   "${CMAKE_SOURCE_DIR}/ext"
+  "${CMAKE_SOURCE_DIR}/ext/glad/include"
   "${CMAKE_SOURCE_DIR}/src/utils"
 )
 
@@ -33,6 +34,18 @@ add_library(
   utils
   STATIC
   src/utils/myutils.cpp
+)
+
+add_library(
+  glad_gl
+  STATIC
+  ext/glad/src/gl.c
+)
+
+add_library(
+  glad_gles2
+  STATIC
+  ext/glad/src/gles2.c
 )
 
 link_libraries(
@@ -96,33 +109,36 @@ foreach(target ${targets})
   list(GET target 1 targetSource)
   string(STRIP ${targetSource} targetSource)
 
-  set(targetCompile "")
+  set(targetCompileOptions "")
   if(length GREATER_EQUAL 3)
-    list(GET target 2 targetCompile)
-    string(STRIP ${targetCompile} targetCompile)
-    string(REPLACE " " ";" targetCompile "${targetCompile}")
+    list(GET target 2 targetCompileOptions)
+    string(STRIP ${targetCompileOptions} targetCompileOptions)
+    string(REPLACE " " ";" targetCompileOptions "${targetCompileOptions}")
   endif()
 
-  set(targetLink "")
+  set(targetLinkLibraries "")
   if(length GREATER_EQUAL 4)
-    list(GET target 3 targetLink)
-    string(STRIP ${targetLink} targetLink)
-    string(REPLACE " " ";" targetLink "${targetLink}")
+    list(GET target 3 targetLinkLibraries)
+    string(STRIP ${targetLinkLibraries} targetLinkLibraries)
+    string(REPLACE " " ";" targetLinkLibraries "${targetLinkLibraries}")
   endif()
 
   if(${targetName} MATCHES "_gl$")
-    # do nothing
+    list(APPEND targetLinkLibraries glad_gl)
   elseif(${targetName} MATCHES "_gl_legacy$")
-    list(APPEND targetCompile ${IS_GlLegacy})
+    list(APPEND targetCompileOptions ${IS_GlLegacy})
+    list(APPEND targetLinkLibraries glad_gl)
   elseif(${targetName} MATCHES "_gles$")
-    list(APPEND targetCompile ${IS_GlEs})
+    list(APPEND targetCompileOptions ${IS_GlEs})
+    list(APPEND targetLinkLibraries glad_gles2)
   endif()
 
   #message("target=${target}")
-  message("targetName=${targetName}, targetSource=${targetSource}, targetCompile=${targetCompile}, targetLink=${targetLink}")
+  message("targetName=${targetName}, targetSource=${targetSource}, targetCompileOptions=${targetCompileOptions}, targetLinkLibraries=${targetLinkLibraries}")
 
   add_executable(${targetName} ${targetSource})
-  target_compile_options(${targetName} PUBLIC ${targetCompile})
+  target_compile_options(${targetName} PUBLIC ${targetCompileOptions})
+  target_link_libraries(${targetName} ${targetLinkLibraries})
 endforeach(target)
 
 

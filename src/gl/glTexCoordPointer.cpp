@@ -4,16 +4,15 @@
  */
 
 #if IS_GlEs
-#define GLAD_GLES2_IMPLEMENTATION
-  #include <glad/gles2.h>
+#include <glad/gles2.h>
 #else
-#define GLAD_GL_IMPLEMENTATION
 #include <glad/gl.h>
 #endif
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
