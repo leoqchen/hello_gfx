@@ -5,6 +5,7 @@
 
 #include "myutils.h"
 
+#if 0
 api_t parse_api( const char* str )
 {
     api_t api;
@@ -40,6 +41,7 @@ api_t parse_api( const char* str )
 
     return api;
 }
+#endif
 
 uint64_t PerfGetMillisecond()
 {

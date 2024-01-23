@@ -12,6 +12,9 @@
 #include <stdio.h>
 #include <ctype.h>
 #include "linmath.h"
+#include "glutils.h"
+#include "glfwutils.h"
+#include "myutils.h"
 
 typedef struct Vertex
 {
@@ -29,7 +32,6 @@ static const Vertex vertices[3] =
 #if IS_GlEs
 static const char* vertex_shader_text =
     "#version 320 es\n"
-    "precision mediump float;\n"
     "uniform mat4 MVP;\n"
     "layout (location = 0) in vec3 vCol;\n"
     "layout (location = 1) in vec2 vPos;\n"
@@ -72,128 +74,29 @@ static const char* fragment_shader_text =
     "}\n";
 #endif
 
-static void error_callback(int error, const char* description)
-{
-    fprintf(stderr, "GLFW Error: %s\n", description);
-}
-
-// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
-// ---------------------------------------------------------------------------------------------------------
-static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, GLFW_TRUE);
-}
-
-// glfw: whenever the window size changed (by OS or user resize) this callback function executes
-// ---------------------------------------------------------------------------------------------
-static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-    glViewport(0, 0, width, height);
-}
 
 int main( int argc, const char* argv[] )
 {
 #if IS_GlEs
-    int major = 3;
-    int minor = 2;
+    api_t api = {.api = API_GLES, .major = 3, .minor = 2};
 #elif IS_GlLegacy
-    int major = 3;
-    int minor = 0;
+    api_t api = {.api = API_GLLegacy, .major = 3, .minor = 0};
 #else
-    int major = 3;
-    int minor = 3;
+    api_t api = {.api = API_GL, .major = 3, .minor = 3};
 #endif
     if( argc >= 2 && isdigit(argv[1][0]) )
-        major = argv[1][0] - '0';
+        api.major = argv[1][0] - '0';
     if( argc >= 3 && isdigit(argv[2][0]) )
-        minor = argv[2][0] - '0';
-    printf("command line: major = %d, minor = %d\n", major, minor);
+        api.minor = argv[2][0] - '0';
+    printf("command line: major = %d, minor = %d\n", api.major, api.minor);
 
     // glfw: initialize and configure
     // ------------------------------
-    glfwSetErrorCallback(error_callback);
-    if (!glfwInit())
-        exit(EXIT_FAILURE);
-
-#if IS_GlEs
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
-    glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_EGL_CONTEXT_API);
-#else
-    if( major >= 3 && minor >= 2 ) {
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
-    }
-#endif
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor);
-
-    // glfw window creation
-    // --------------------
-    GLFWwindow* window = glfwCreateWindow(640, 480, "OpenGL Triangle", NULL, NULL);
-    if (!window){
-        glfwTerminate();
-        exit(EXIT_FAILURE);
-    }
-
-    glfwSetKeyCallback(window, key_callback);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
-    // glad: load all OpenGL function pointers
-    // ---------------------------------------
-    glfwMakeContextCurrent(window);
-#if IS_GlEs
-    int version = gladLoadGLES2(glfwGetProcAddress);
-#else
-    int version = gladLoadGL(glfwGetProcAddress);
-#endif
-    glfwSwapInterval(1);
-
-    printf("glad: %d.%d\n", GLAD_VERSION_MAJOR(version), GLAD_VERSION_MINOR(version));
-    printf("GL_VERSON = %s\n", glGetString(GL_VERSION));
-    glfwSetWindowTitle( window, (const char*)glGetString(GL_VERSION) );
-
+    GLFWwindow* window = glfwInit_CreateWindow( api, 640, 480 );
 
     // build and compile our shader program
     // ------------------------------------
-    // vertex shader
-    const GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
-    glCompileShader(vertex_shader);
-    // check for shader compile errors
-    int success;
-    char infoLog[512];
-    glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
-    if (!success){
-        glGetShaderInfoLog(vertex_shader, 512, NULL, infoLog);
-        printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n %s\n", infoLog);
-        exit(EXIT_FAILURE);
-    }
-
-    // fragment shader
-    const GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment_shader, 1, &fragment_shader_text, NULL);
-    glCompileShader(fragment_shader);
-    // check for shader compile errors
-    glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
-    if (!success){
-        glGetShaderInfoLog(fragment_shader, 512, NULL, infoLog);
-        printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n %s\n", infoLog);
-        exit(EXIT_FAILURE);
-    }
-
-    // link shaders
-    const GLuint program = glCreateProgram();
-    glAttachShader(program, vertex_shader);
-    glAttachShader(program, fragment_shader);
-    glLinkProgram(program);
-    // check for linking errors
-    glGetProgramiv(program, GL_LINK_STATUS, &success);
-    if (!success) {
-        glGetProgramInfoLog(program, 512, NULL, infoLog);
-        printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n %s\n", infoLog);
-        exit(EXIT_FAILURE);
-    }
+    const GLuint program = CreateProgramFromSource( vertex_shader_text, fragment_shader_text );
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -250,6 +153,9 @@ int main( int argc, const char* argv[] )
 
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
+    glDeleteVertexArrays( 1, &vertex_array );
+    glDeleteBuffers( 1, &vertex_buffer );
+    glDeleteProgram( program );
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------

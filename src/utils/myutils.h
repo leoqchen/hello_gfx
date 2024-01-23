@@ -1,12 +1,18 @@
 #pragma once
 #include <stdint.h>
 
+
+#define API_Invalid   (-1)
+#define API_GLLegacy  0
+#define API_GL        1
+#define API_GLES      2
+#define API_VUKAN     3
+
 typedef struct{
-    int8_t api; // -1--invalid, 0--gl, 1--gles, 2--vulkan
+    int8_t api;
     int8_t major;
     int8_t minor;
 }api_t;
-api_t parse_api( const char* str );
 
 uint64_t PerfGetMillisecond();
 double PerfGetSecond();

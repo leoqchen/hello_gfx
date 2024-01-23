@@ -7,10 +7,11 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
-#include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
 #include <ctype.h>
+#include "glutils.h"
+#include "glfwutils.h"
+#include "myutils.h"
 
 // settings
 const unsigned int WinWidth = 800;
@@ -51,86 +52,25 @@ const char *fragmentShaderSource =
     "}\n\0";
 #endif
 
-static void error_callback(int error, const char* description)
-{
-    fprintf(stderr, "GLFW Error: %s\n", description);
-}
-
-// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
-// ---------------------------------------------------------------------------------------------------------
-static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, GLFW_TRUE);
-}
-
-// glfw: whenever the window size changed (by OS or user resize) this callback function executes
-// ---------------------------------------------------------------------------------------------
-static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-    glViewport(0, 0, width, height);
-}
 
 int main( int argc, const char* argv[] )
 {
 #if IS_GlEs
-    int major = 3;
-    int minor = 2;
+    api_t api = {.api = API_GLES, .major = 3, .minor = 2};
 #elif IS_GlLegacy
-    int major = 3;
-    int minor = 0;
+    api_t api = {.api = API_GLLegacy, .major = 3, .minor = 0};
 #else
-    int major = 3;
-    int minor = 3;
+    api_t api = {.api = API_GL, .major = 3, .minor = 3};
 #endif
     if( argc >= 2 && isdigit(argv[1][0]) )
-        major = argv[1][0] - '0';
+        api.major = argv[1][0] - '0';
     if( argc >= 3 && isdigit(argv[2][0]) )
-        minor = argv[2][0] - '0';
-    printf("command line: major = %d, minor = %d\n", major, minor);
+        api.minor = argv[2][0] - '0';
+    printf("command line: major = %d, minor = %d\n", api.major, api.minor);
 
     // glfw: initialize and configure
     // ------------------------------
-    glfwSetErrorCallback(error_callback);
-    if (!glfwInit())
-        exit(EXIT_FAILURE);
-
-#if IS_GlEs
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
-    glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_EGL_CONTEXT_API);
-#else
-    if( major >= 3 && minor >= 2 ) {
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
-    }
-#endif
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor);
-
-    // glfw window creation
-    // --------------------
-    GLFWwindow* window = glfwCreateWindow(WinWidth, WinHeight, "LearnOpenGL", NULL, NULL);
-    if (!window){
-        glfwTerminate();
-        exit(EXIT_FAILURE);
-    }
-
-    glfwSetKeyCallback(window, key_callback);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
-    // glad: load all OpenGL function pointers
-    // ---------------------------------------
-    glfwMakeContextCurrent(window);
-#if IS_GlEs
-    int version = gladLoadGLES2(glfwGetProcAddress);
-#else
-    int version = gladLoadGL(glfwGetProcAddress);
-#endif
-    glfwSwapInterval(1);
-
-    printf("glad: %d.%d\n", GLAD_VERSION_MAJOR(version), GLAD_VERSION_MINOR(version));
-    printf("GL_VERSON = %s\n", glGetString(GL_VERSION));
-    glfwSetWindowTitle( window, (const char*)glGetString(GL_VERSION) );
+    GLFWwindow* window = glfwInit_CreateWindow( api, WinWidth, WinHeight );
 
     // some query
     int major_version = 0;
@@ -150,46 +90,7 @@ int main( int argc, const char* argv[] )
 
     // build and compile our shader program
     // ------------------------------------
-    // vertex shader
-    unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-    // check for shader compile errors
-    int success;
-    char infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if (!success){
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
-        exit(EXIT_FAILURE);
-    }
-
-    // fragment shader
-    unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-    // check for shader compile errors
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    if (!success){
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n", infoLog);
-        exit(EXIT_FAILURE);
-    }
-
-    // link shaders
-    unsigned int shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-    // check for linking errors
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if (!success) {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n",  infoLog);
-        exit(EXIT_FAILURE);
-    }
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
+    const GLuint program = CreateProgramFromSource( vertexShaderSource, fragmentShaderSource );
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -208,7 +109,7 @@ int main( int argc, const char* argv[] )
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    const GLint apos_location = glGetAttribLocation(shaderProgram, "aPos");
+    const GLint apos_location = glGetAttribLocation(program, "aPos");
     printf("Uniform location: aPos=%d\n", apos_location);
     glVertexAttribPointer(apos_location, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray( apos_location );
@@ -218,7 +119,7 @@ int main( int argc, const char* argv[] )
 
     // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
     // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
-    glBindVertexArray(0); 
+    glBindVertexArray(0);
 
 
     // uncomment this call to draw in wireframe polygons.
@@ -234,7 +135,7 @@ int main( int argc, const char* argv[] )
         glClear(GL_COLOR_BUFFER_BIT);
 
         // draw our first triangle
-        glUseProgram(shaderProgram);
+        glUseProgram(program);
         glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
         glDrawArrays(GL_TRIANGLES, 0, 3);
         // glBindVertexArray(0); // no need to unbind it every time 
@@ -249,7 +150,7 @@ int main( int argc, const char* argv[] )
     // ------------------------------------------------------------------------
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
-    glDeleteProgram(shaderProgram);
+    glDeleteProgram(program);
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------

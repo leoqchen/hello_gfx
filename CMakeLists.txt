@@ -30,12 +30,16 @@ set(IS_ColorAttachTexture -DIS_ColorAttachTexture=1)
 #-----------------------------------------------------------------------------------------
 #  libraries
 #-----------------------------------------------------------------------------------------
+
+# utils
 add_library(
   utils
   STATIC
   src/utils/myutils.cpp
 )
 
+
+# glad
 add_library(
   glad_gl
   STATIC
@@ -47,6 +51,45 @@ add_library(
   STATIC
   ext/glad/src/gles2.c
 )
+
+
+# gl utils
+add_library(
+  glutils_gl
+  STATIC
+  src/utils/glutils.cpp
+)
+
+add_library(
+  glutils_gles2
+  STATIC
+  src/utils/glutils.cpp
+)
+target_compile_options(
+  glutils_gles2
+  PUBLIC
+  ${IS_GlEs}
+)
+
+
+# glfw utils
+add_library(
+  glfwutils_gl
+  STATIC
+  src/utils/glfwutils.cpp
+)
+
+add_library(
+  glfwutils_gles2
+  STATIC
+  src/utils/glfwutils.cpp
+)
+target_compile_options(
+  glfwutils_gles2
+  PUBLIC
+  ${IS_GlEs}
+)
+
 
 link_libraries(
   glfw
@@ -63,12 +106,12 @@ link_libraries(
 #  xxx
 #  xxx.c
 #)
-#target_link_libraries(
-#  xxx
-#)
 #target_compile_options(
 #  xxx
 #  PUBLIC
+#)
+#target_link_libraries(
+#  xxx
 #)
 
 set(targets
@@ -85,11 +128,11 @@ set(targets
   "glClear_gl   \; src/gl/glClear.cpp"
   "glClear_gles \; src/gl/glClear.cpp"
 
-  "glVertexPointer_gl_legacy \; src/gl/glVertexPointer.cpp"
+  "glVertexPointer_glLegacy  \; src/gl/glVertexPointer.cpp"
   "glVertexPointer_gl        \; src/gl/glVertexPointer.cpp"
   "glVertexPointer_gles      \; src/gl/glVertexPointer.cpp"
 
-  "glTexCoordPointer_gl_legacy \; src/gl/glTexCoordPointer.cpp"
+  "glTexCoordPointer_glLegacy  \; src/gl/glTexCoordPointer.cpp"
   "glTexCoordPointer_gl        \; src/gl/glTexCoordPointer.cpp"
   "glTexCoordPointer_gles      \; src/gl/glTexCoordPointer.cpp"
 
@@ -124,13 +167,13 @@ foreach(target ${targets})
   endif()
 
   if(${targetName} MATCHES "_gl$")
-    list(APPEND targetLinkLibraries glad_gl)
-  elseif(${targetName} MATCHES "_gl_legacy$")
+    list(APPEND targetLinkLibraries glad_gl glutils_gl glfwutils_gl)
+  elseif(${targetName} MATCHES "_glLegacy$")
     list(APPEND targetCompileOptions ${IS_GlLegacy})
-    list(APPEND targetLinkLibraries glad_gl)
+    list(APPEND targetLinkLibraries glad_gl glutils_gl glfwutils_gl)
   elseif(${targetName} MATCHES "_gles$")
     list(APPEND targetCompileOptions ${IS_GlEs})
-    list(APPEND targetLinkLibraries glad_gles2)
+    list(APPEND targetLinkLibraries glad_gles2 glutils_gles2 glfwutils_gles2)
   endif()
 
   #message("target=${target}")
