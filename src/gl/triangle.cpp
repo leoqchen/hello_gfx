@@ -100,29 +100,30 @@ int main( int argc, const char* argv[] )
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
+    GLuint vertex_array;
+    glGenVertexArrays(1, &vertex_array);
+    glBindVertexArray(vertex_array);
+
     GLuint vertex_buffer;
     glGenBuffers(1, &vertex_buffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    // set up uniform data
-    // ------------------------------------------------------------------
-    const GLint mvp_location = glGetUniformLocation(program, "MVP");
     const GLint vpos_location = glGetAttribLocation(program, "vPos");
     const GLint vcol_location = glGetAttribLocation(program, "vCol");
-    printf("Uniform location: MVP=%d\n", mvp_location);
     printf("Attrib location: vCol=%d\n", vcol_location);
     printf("Attrib location: vPos=%d\n", vpos_location);
-
-    GLuint vertex_array;
-    glGenVertexArrays(1, &vertex_array);
-    glBindVertexArray(vertex_array);
     glEnableVertexAttribArray(vpos_location);
     glEnableVertexAttribArray(vcol_location);
     glVertexAttribPointer(vpos_location, 2, GL_FLOAT, GL_FALSE,
                           sizeof(Vertex), (void*) offsetof(Vertex, pos));
     glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE,
                           sizeof(Vertex), (void*) offsetof(Vertex, col));
+
+    // set up uniform data
+    // ------------------------------------------------------------------
+    const GLint mvp_location = glGetUniformLocation(program, "MVP");
+    printf("Uniform location: MVP=%d\n", mvp_location);
 
     // render loop
     // -----------
