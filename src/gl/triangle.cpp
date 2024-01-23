@@ -111,8 +111,8 @@ int main( int argc, const char* argv[] )
 
     const GLint vpos_location = glGetAttribLocation(program, "vPos");
     const GLint vcol_location = glGetAttribLocation(program, "vCol");
-    printf("Attrib location: vCol=%d\n", vcol_location);
     printf("Attrib location: vPos=%d\n", vpos_location);
+    printf("Attrib location: vCol=%d\n", vcol_location);
     glEnableVertexAttribArray(vpos_location);
     glEnableVertexAttribArray(vcol_location);
     glVertexAttribPointer(vpos_location, 2, GL_FLOAT, GL_FALSE,

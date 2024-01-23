@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
+#include "linmath.h"
 #include "glutils.h"
 #include "glfwutils.h"
 #include "myutils.h"
@@ -26,17 +27,22 @@
 const unsigned int WinWidth = 800;
 const unsigned int WinHeight = 600;
 
+typedef struct Vertex{
+    vec2 pos;
+    vec3 col;
+} Vertex;
+
 
 #if IS_GlEs
 const char *vertexShaderSource =
     "#version 320 es\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "layout (location = 1) in vec3 aColor;\n"
+    "layout (location = 0) in vec2 vPos;\n"
+    "layout (location = 1) in vec3 vCol;\n"
     "out vec3 Color;\n"
     "void main()\n"
     "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "   Color = aColor;\n"
+    "   gl_Position = vec4(vPos.x, vPos.y, 0.0, 1.0);\n"
+    "   Color = vCol;\n"
     "}\n\0";
 
 const char *fragmentShaderSource =
@@ -51,13 +57,13 @@ const char *fragmentShaderSource =
 #else
 const char *vertexShaderSource =
     "#version 400\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "layout (location = 1) in vec3 aColor;\n"
+    "layout (location = 0) in vec2 vPos;\n"
+    "layout (location = 1) in vec3 vCol;\n"
     "out vec3 Color;\n"
     "void main()\n"
     "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "   Color = aColor;\n"
+    "   gl_Position = vec4(vPos.x, vPos.y, 0.0, 1.0);\n"
+    "   Color = vCol;\n"
     "}\n\0";
 
 const char *fragmentShaderSource =
@@ -95,6 +101,42 @@ int main( int argc, const char* argv[] )
     const GLuint program = CreateProgramFromSource( vertexShaderSource, fragmentShaderSource );
 #endif
 
+    // set up vertex data (and buffer(s)) and configure vertex attributes
+    // ------------------------------------------------------------------
+    static const Vertex vertices[3] = {
+        { { -1, -1 }, { 1, 0, 0 } },
+        { {  1, -1 }, { 0, 1, 0 } },
+        { {   0,  1 }, { 0, 0, 1 } }
+    };
+#if IS_GlLegacy
+    // legacy OpenGL
+    glVertexPointer(2, GL_FLOAT, sizeof(Vertex), &vertices[0].pos);
+    glColorPointer(3, GL_FLOAT, sizeof(Vertex), &vertices[0].col);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
+#else
+    // modern OpenGL
+    GLuint vertex_array;
+    glGenVertexArrays(1, &vertex_array);
+    glBindVertexArray(vertex_array);
+
+    GLuint vertex_buffer;
+    glGenBuffers(1, &vertex_buffer);
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    const GLint vpos_location = glGetAttribLocation(program, "vPos");
+    const GLint vcol_location = glGetAttribLocation(program, "vCol");
+    printf("Attrib location: vPos=%d\n", vpos_location);
+    printf("Attrib location: vCol=%d\n", vcol_location);
+    glEnableVertexAttribArray(vpos_location);
+    glEnableVertexAttribArray(vcol_location);
+    glVertexAttribPointer(vpos_location, 2, GL_FLOAT, GL_FALSE,
+                          sizeof(Vertex), (void *) offsetof(Vertex, pos));
+    glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE,
+                          sizeof(Vertex), (void *) offsetof(Vertex, col));
+#endif
+
     // render loop
     // -----------
     glClearColor(0.4, 0.4, 0.4, 0.0);
@@ -102,44 +144,15 @@ int main( int argc, const char* argv[] )
     {
         // render
         // ------
-        static const GLfloat verts[3][2] = {
-                { -1, -1 },
-                {  1, -1 },
-                {  0,  1 }
-        };
-        static const GLfloat colors[3][3] = {
-                { 1, 0, 0 },
-                { 0, 1, 0 },
-                { 0, 0, 1 }
-        };
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 #if IS_GlLegacy
-        {
-            // legacy OpenGL
-            glVertexPointer(2, GL_FLOAT, 0, verts);
-            glColorPointer(3, GL_FLOAT, 0, colors);
-            glEnableClientState(GL_VERTEX_ARRAY);
-            glEnableClientState(GL_COLOR_ARRAY);
-
-            glDrawArrays(GL_TRIANGLES, 0, 3);
-
-            glDisableClientState(GL_VERTEX_ARRAY);
-            glDisableClientState(GL_COLOR_ARRAY);
-        }
+        // legacy OpenGL
+        glDrawArrays(GL_TRIANGLES, 0, 3);
 #else
-        {
-            // modern OpenGL
-            glErrorCheck();
-            glVertexAttribPointer( 0, 2, GL_FLOAT, GL_FALSE, 0, verts );
-            glEnableVertexAttribArray( 0 );
-            glErrorCheck(); //TODO:FIXME
-            glVertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, 0, colors );
-            glEnableVertexAttribArray( 1 );
-
-            glUseProgram(program);
-            glDrawArrays(GL_TRIANGLES, 0, 3);
-        }
+        // modern OpenGL
+        glUseProgram(program);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
 #endif
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
@@ -151,6 +164,8 @@ int main( int argc, const char* argv[] )
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
 #if !IS_GlLegacy
+    glDeleteVertexArrays( 1, &vertex_array );
+    glDeleteBuffers( 1, &vertex_buffer );
     glDeleteProgram(program);
 #endif
 

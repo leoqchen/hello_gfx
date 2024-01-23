@@ -26,13 +26,13 @@ const unsigned int WinHeight = 600;
 #if IS_GlEs
 const char *vertexShaderSource =
     "#version 320 es\n"
-    "layout (location = 0) in vec4 a_position;\n"
-    "layout (location = 1) in vec2 a_texCoord;\n"
+    "layout (location = 0) in vec3 vPos;\n"
+    "layout (location = 1) in vec2 vTexCoord;\n"
     "out vec2 v_texCoord;\n"
     "void main()\n"
     "{\n"
-    "   gl_Position = a_position;\n"
-    "   v_texCoord = a_texCoord;\n"
+    "   gl_Position = vec4( vPos.x, vPos.y, vPos.z, 1.0f );\n"
+    "   v_texCoord = vTexCoord;\n"
     "}\n\0";
 
 const char *fragmentShaderSource =
@@ -48,13 +48,13 @@ const char *fragmentShaderSource =
 #else
 const char *vertexShaderSource =
     "#version 400\n"
-    "layout (location = 0) in vec4 a_position;\n"
-    "layout (location = 1) in vec2 a_texCoord;\n"
+    "layout (location = 0) in vec3 vPos;\n"
+    "layout (location = 1) in vec2 vTexCoord;\n"
     "out vec2 v_texCoord;\n"
     "void main()\n"
     "{\n"
-    "   gl_Position = a_position;\n"
-    "   v_texCoord = a_texCoord;\n"
+    "   gl_Position = vec4( vPos.x, vPos.y, vPos.z, 1.0f );\n"
+    "   v_texCoord = vTexCoord;\n"
     "}\n\0";
 
 const char *fragmentShaderSource =
@@ -109,6 +109,49 @@ int main( int argc, const char* argv[] )
     glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
     glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 
+    // set up vertex data (and buffer(s)) and configure vertex attributes
+    // ------------------------------------------------------------------
+    static const GLfloat vVertices[] = {
+        -0.5f,  0.5f, 0.0f,  // Position 0
+        0.0f,  0.0f,        // TexCoord 0
+        -0.5f, -0.5f, 0.0f,  // Position 1
+        0.0f,  1.0f,        // TexCoord 1
+        0.5f, -0.5f, 0.0f,  // Position 2
+        1.0f,  1.0f,        // TexCoord 2
+        0.5f,  0.5f, 0.0f,  // Position 3
+        1.0f,  0.0f         // TexCoord 3
+    };
+    static const GLushort indices[] = {
+        0, 1, 2, 0, 2, 3
+    };
+#if IS_GlLegacy
+    // legacy OpenGL
+    glVertexPointer(3, GL_FLOAT, 5 * sizeof(GLfloat), vVertices );
+    glTexCoordPointer( 2, GL_FLOAT, 5 * sizeof(GLfloat), &vVertices[3] );
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+#else
+    // modern OpenGL
+    GLuint vertex_array;
+    glGenVertexArrays(1, &vertex_array);
+    glBindVertexArray(vertex_array);
+
+    GLuint vertex_buffer;
+    glGenBuffers(1, &vertex_buffer);
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vVertices), vVertices, GL_STATIC_DRAW);
+
+    const GLint vPos_location = glGetAttribLocation(program, "vPos");
+    const GLint vTexCoord_location = glGetAttribLocation(program, "vTexCoord");
+    printf("Attrib location: vPos=%d\n", vPos_location);
+    printf("Attrib location: vTexCoord=%d\n", vTexCoord_location);
+    glEnableVertexAttribArray(vPos_location);
+    glEnableVertexAttribArray(vTexCoord_location);
+    glVertexAttribPointer(vPos_location, 3, GL_FLOAT, GL_FALSE,
+                          sizeof(GLfloat) * 5, (void*)0);
+    glVertexAttribPointer(vTexCoord_location, 2, GL_FLOAT, GL_FALSE,
+                          sizeof(GLfloat) * 5, (void *) (sizeof(GLfloat) * 3));
+#endif
 
     // render loop
     // -----------
@@ -116,57 +159,25 @@ int main( int argc, const char* argv[] )
     {
         // render
         // ------
-        static const GLfloat vVertices[] = {
-            -0.5f,  0.5f, 0.0f,  // Position 0
-            0.0f,  0.0f,        // TexCoord 0
-            -0.5f, -0.5f, 0.0f,  // Position 1
-            0.0f,  1.0f,        // TexCoord 1
-            0.5f, -0.5f, 0.0f,  // Position 2
-            1.0f,  1.0f,        // TexCoord 2
-            0.5f,  0.5f, 0.0f,  // Position 3
-            1.0f,  0.0f         // TexCoord 3
-        };
-        static const GLushort indices[] = {
-            0, 1, 2, 0, 2, 3
-        };
         glClear(GL_COLOR_BUFFER_BIT );
 
 #if IS_GlLegacy
-        {
-            // legacy OpenGL
-            glVertexPointer(3, GL_FLOAT, 5 * sizeof(GLfloat), vVertices );
-            glTexCoordPointer( 2, GL_FLOAT, 5 * sizeof(GLfloat), &vVertices[3] );
-            glEnableClientState(GL_VERTEX_ARRAY);
-            glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        // legacy OpenGL
+        glBindTexture( GL_TEXTURE_2D, textureId );
+        glEnable(GL_TEXTURE_2D);
 
-            glBindTexture( GL_TEXTURE_2D, textureId );
-            glEnable(GL_TEXTURE_2D);
-
-            glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices );
-
-            glDisableClientState(GL_VERTEX_ARRAY);
-            glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-        }
+        glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices );
 #else
-        {
-            // modern OpenGL
-            glErrorCheck();
-            glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), vVertices );
-            glEnableVertexAttribArray( 0 );
-            glErrorCheck(); //TODO:FIXME
-            glVertexAttribPointer( 1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), &vVertices[3] );
-            glEnableVertexAttribArray( 1 );
+        // modern OpenGL
+        glActiveTexture( GL_TEXTURE0 );
+        glBindTexture( GL_TEXTURE_2D, textureId );
 
-            glActiveTexture( GL_TEXTURE0 );
-            glBindTexture( GL_TEXTURE_2D, textureId );
+        glUseProgram(program);
 
-            glUseProgram(program);
+        // set the sampler texture unit to 0
+        glUniform1i( samplerLoc, 0 );
 
-            // set the sampler texture unit to 0
-            glUniform1i( samplerLoc, 0 );
-
-            glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices );
-        }
+        glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices );
 #endif
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
