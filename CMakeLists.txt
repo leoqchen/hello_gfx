@@ -140,6 +140,14 @@ set(targets
   "fbo_ColorAttachTexture_gl        \; src/gl/fbo.cpp \; ${IS_ColorAttachTexture}"
   "fbo_ColorAttachRenderbuffer_gles \; src/gl/fbo.cpp \; ${IS_ColorAttachRenderbuffer}"
   "fbo_ColorAttachTexture_gles      \; src/gl/fbo.cpp \; ${IS_ColorAttachTexture}"
+
+  "perf_genmipmap_glLegacy  \; src/gl/perf_genmipmap.cpp"
+  "perf_genmipmap_gl        \; src/gl/perf_genmipmap.cpp"
+  "perf_genmipmap_gles      \; src/gl/perf_genmipmap.cpp"
+
+  "perf_copytex_glLegacy  \; src/gl/perf_copytex.cpp"
+  "perf_copytex_gl        \; src/gl/perf_copytex.cpp"
+  "perf_copytex_gles      \; src/gl/perf_copytex.cpp"
 )
 
 foreach(target ${targets})
@@ -183,29 +191,3 @@ foreach(target ${targets})
   target_compile_options(${targetName} PUBLIC ${targetCompileOptions})
   target_link_libraries(${targetName} ${targetLinkLibraries})
 endforeach(target)
-
-
-#add_executable(
-#  perf_genmipmap
-#  src/gl/perf_genmipmap.cpp
-#)
-#target_link_libraries(
-#  perf_genmipmap
-#)
-#target_compile_options(
-#  perf_genmipmap
-#  PUBLIC
-#)
-
-
-#add_executable(
-#  perf_copytex
-#  src/gl/perf_copytex.cpp
-#)
-#target_link_libraries(
-#  perf_copytex
-#)
-#target_compile_options(
-#  perf_copytex
-#  PUBLIC
-#)
