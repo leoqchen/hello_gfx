@@ -14,7 +14,6 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
-#include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
 #include "linmath.h"
@@ -129,12 +128,12 @@ int main( int argc, const char* argv[] )
     const GLint vcol_location = glGetAttribLocation(program, "vCol");
     printf("Attrib location: vPos=%d\n", vpos_location);
     printf("Attrib location: vCol=%d\n", vcol_location);
-    glEnableVertexAttribArray(vpos_location);
-    glEnableVertexAttribArray(vcol_location);
     glVertexAttribPointer(vpos_location, 2, GL_FLOAT, GL_FALSE,
                           sizeof(Vertex), (void *) offsetof(Vertex, pos));
     glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE,
                           sizeof(Vertex), (void *) offsetof(Vertex, col));
+    glEnableVertexAttribArray(vpos_location);
+    glEnableVertexAttribArray(vcol_location);
 #endif
 
     // render loop

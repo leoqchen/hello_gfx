@@ -94,6 +94,8 @@ int main( int argc, const char* argv[] )
     GLint samplerLoc = glGetUniformLocation( program, "s_texture" );
 #endif
 
+    // set up texture data and configure texture attributes
+    // ------------------------------------------------------------------
     // Create a 2x2 texture image
     GLuint textureId;
     static const GLubyte pixels[4 * 3] = {
@@ -145,12 +147,12 @@ int main( int argc, const char* argv[] )
     const GLint vTexCoord_location = glGetAttribLocation(program, "vTexCoord");
     printf("Attrib location: vPos=%d\n", vPos_location);
     printf("Attrib location: vTexCoord=%d\n", vTexCoord_location);
-    glEnableVertexAttribArray(vPos_location);
-    glEnableVertexAttribArray(vTexCoord_location);
     glVertexAttribPointer(vPos_location, 3, GL_FLOAT, GL_FALSE,
                           sizeof(GLfloat) * 5, (void*)0);
     glVertexAttribPointer(vTexCoord_location, 2, GL_FLOAT, GL_FALSE,
                           sizeof(GLfloat) * 5, (void *) (sizeof(GLfloat) * 3));
+    glEnableVertexAttribArray(vPos_location);
+    glEnableVertexAttribArray(vTexCoord_location);
 #endif
 
     // render loop
