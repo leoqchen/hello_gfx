@@ -112,6 +112,24 @@ int main( int argc, const char* argv[] )
     // ------------------------------------
     const GLuint program = CreateProgramFromSource( vertexShaderSource, fragmentShaderSource );
 
+    // set up vertex data (and buffer(s)) and configure vertex attributes
+    // ------------------------------------------------------------------
+    static const GLfloat vVertices[] = {
+        -1.0f,  1.0f, 0.0f,
+        -1.0f, -1.0f, 0.0f,
+        1.0f, -1.0f, 0.0f,
+        1.0f,  1.0f, 0.0f,
+    };
+    static const GLushort indices[] = { 0, 1, 2, 0, 2, 3 };
+    GLuint vertex_array;
+    glGenVertexArrays(1, &vertex_array);
+    glBindVertexArray(vertex_array);
+
+    GLuint vertex_buffer;
+    glGenBuffers(1, &vertex_buffer);
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vVertices), vVertices, GL_STATIC_DRAW);
+
     // Setup fbo
     // ------------------------------------
     GLint defaultFramebuffer = 0;
@@ -182,19 +200,12 @@ int main( int argc, const char* argv[] )
         glDrawBuffers ( 4, attachments );
 
         // draw
-        static const GLfloat vVertices[] = {
-            -1.0f,  1.0f, 0.0f,
-            -1.0f, -1.0f, 0.0f,
-            1.0f, -1.0f, 0.0f,
-            1.0f,  1.0f, 0.0f,
-        };
-        static const GLushort indices[] = { 0, 1, 2, 0, 2, 3 };
 
         // Use the program object
         glUseProgram ( program );
 
         // Load the vertex position
-        glVertexAttribPointer( 0, 3, GL_FLOAT,GL_FALSE, 3 * sizeof (GLfloat), vVertices );
+        glVertexAttribPointer( 0, 3, GL_FLOAT,GL_FALSE, 3 * sizeof (GLfloat), (void*)0 );
         glEnableVertexAttribArray( 0 );
 
         // Draw a quad
@@ -246,6 +257,9 @@ int main( int argc, const char* argv[] )
 #if IS_ColorAttachTexture
     glDeleteTextures( 4, &colorTexId[0] );
 #endif
+    glDeleteVertexArrays( 1, &vertex_array );
+    glDeleteBuffers( 1, &vertex_buffer );
+    glDeleteFramebuffers( 1, &fbo );
     glDeleteProgram(program);
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
