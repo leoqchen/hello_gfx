@@ -129,7 +129,7 @@ int main( int argc, const char* argv[] )
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vVertices), vVertices, GL_STATIC_DRAW);
 
-    // Setup fbo
+    // setup fbo
     // ------------------------------------
     GLint defaultFramebuffer = 0;
     glGetIntegerv ( GL_FRAMEBUFFER_BINDING, &defaultFramebuffer );
@@ -177,7 +177,7 @@ int main( int argc, const char* argv[] )
 
     GLenum stat = glCheckFramebufferStatus( GL_FRAMEBUFFER );
     if( stat != GL_FRAMEBUFFER_COMPLETE ){
-        printf("Error: incomplete FBO!: 0x%X\n", stat);
+        printf("Error: incomplete FBO!: 0x%X, %s\n", stat, framebufferStatusName(stat));
         exit(1);
     }
 

@@ -13,6 +13,7 @@
 
 const char* glErrorName( GLenum error );
 const char* glShaderTypeName( GLenum shaderType );
+const char* framebufferStatusName( GLenum status );
 const char* glslVersion( api_t api );
 
 #define glErrorCheck() \
