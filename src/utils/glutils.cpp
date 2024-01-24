@@ -68,6 +68,38 @@ const char* framebufferStatusName( GLenum status )
     }
 }
 
+const char* glContextProfileBitName( GLint profileBit )
+{
+    switch( profileBit ){
+#if !IS_GlEs
+        case GL_CONTEXT_CORE_PROFILE_BIT:
+            return "GL_CONTEXT_CORE_PROFILE_BIT";
+        case GL_CONTEXT_COMPATIBILITY_PROFILE_BIT:
+            return "GL_CONTEXT_COMPATIBILITY_PROFILE_BIT";
+#endif
+        default:
+            return "";
+    }
+}
+
+const char* glContextFlagName( GLint flag )
+{
+    switch( flag ){
+#if !IS_GlEs
+        case GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT:
+            return "GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT";
+#endif
+        case GL_CONTEXT_FLAG_DEBUG_BIT:
+            return "GL_CONTEXT_FLAG_DEBUG_BIT";
+        case GL_CONTEXT_FLAG_ROBUST_ACCESS_BIT:
+            return "GL_CONTEXT_FLAG_ROBUST_ACCESS_BIT";
+        case GL_CONTEXT_FLAG_NO_ERROR_BIT:
+            return "GL_CONTEXT_FLAG_NO_ERROR_BIT";
+        default:
+            return "";
+    }
+}
+
 const char* glslVersion( api_t api )
 {
     // https://en.wikipedia.org/wiki/OpenGL_Shading_Language

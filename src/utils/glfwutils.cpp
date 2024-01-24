@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "glfwutils.h"
+#include "glutils.h"
 
 static void error_callback(int error, const char* description)
 {
@@ -69,10 +70,24 @@ GLFWwindow* glfwInit_CreateWindow( api_t api, int width, int height )
 #endif
     glfwSwapInterval(1);
 
+    // some queries
+    // ---------------------------------------
     printf("%s: glad version: %d.%d\n", __func__, GLAD_VERSION_MAJOR(version), GLAD_VERSION_MINOR(version));
     const char* glversion = (const char*)glGetString(GL_VERSION);
     printf("%s: GL_VERSON = %s\n", __func__, glversion);
     glfwSetWindowTitle( window, glversion );
+
+#if !IS_GlEs
+    GLint profileBit;
+    glGetIntegerv( GL_CONTEXT_PROFILE_MASK, &profileBit );
+    printf("%s: GL_CONTEXT_PROFILE_MASK = %s\n", __func__, glContextProfileBitName(profileBit));
+#endif
+
+    GLint contextFlag;
+    glGetIntegerv( GL_CONTEXT_FLAGS, &contextFlag );
+    printf("%s: GL_CONTEXT_FLAGS = 0x%x\n", __func__, contextFlag);
+
+    printf("%s: GL_SHADING_LANGUAGE_VERSION = %s\n", __func__, glGetString(GL_SHADING_LANGUAGE_VERSION));
 
     return window;
 }

@@ -14,6 +14,8 @@
 const char* glErrorName( GLenum error );
 const char* glShaderTypeName( GLenum shaderType );
 const char* framebufferStatusName( GLenum status );
+const char* glContextProfileBitName( GLint profileBit );
+const char* glContextFlagName( GLint flag );
 const char* glslVersion( api_t api );
 
 #define glErrorCheck() \
