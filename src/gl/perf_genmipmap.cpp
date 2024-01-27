@@ -164,7 +164,7 @@ static void GenMipmap(unsigned count)
     glFinish();
 }
 
-static void PerfDraw(void)
+static void PerfDraw()
 {
     const GLint NumLevels = 12;
     const GLint TexWidth = 2048, TexHeight = 2048;

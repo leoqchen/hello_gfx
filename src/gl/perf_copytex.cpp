@@ -244,7 +244,7 @@ CopyTexSubImage(unsigned count)
     glFinish();
 }
 
-void PerfDraw(void)
+void PerfDraw()
 {
     double rate, mbPerSec;
     GLint sub, maxTexSize;
