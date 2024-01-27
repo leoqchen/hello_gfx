@@ -119,6 +119,8 @@ set(targets
   # target_name \; target_sourcecode \; target_compile_options \; target_link_libraries
   #-----------------------------------------------------------------------------------------
 
+  # 等价性测试
+  #----------------------------------------------------
   "triangle_gl   \; src/gl/triangle.cpp"
   "triangle_gles \; src/gl/triangle.cpp"
 
@@ -141,13 +143,19 @@ set(targets
   "fbo_ColorAttachRenderbuffer_gles \; src/gl/fbo.cpp \; ${IS_ColorAttachRenderbuffer}"
   "fbo_ColorAttachTexture_gles      \; src/gl/fbo.cpp \; ${IS_ColorAttachTexture}"
 
-  "perf_genmipmap_glLegacy  \; src/gl/perf_genmipmap.cpp"
-  "perf_genmipmap_gl        \; src/gl/perf_genmipmap.cpp"
-  "perf_genmipmap_gles      \; src/gl/perf_genmipmap.cpp"
+  # perf test
+  #----------------------------------------------------
+  "perf_drawoverhead_glLegacy  \; src/gl/perf_drawoverhead.cpp"
+  "perf_drawoverhead_gl        \; src/gl/perf_drawoverhead.cpp"
+  "perf_drawoverhead_gles      \; src/gl/perf_drawoverhead.cpp"
 
   "perf_copytex_glLegacy  \; src/gl/perf_copytex.cpp"
   "perf_copytex_gl        \; src/gl/perf_copytex.cpp"
   "perf_copytex_gles      \; src/gl/perf_copytex.cpp"
+
+  "perf_genmipmap_glLegacy  \; src/gl/perf_genmipmap.cpp"
+  "perf_genmipmap_gl        \; src/gl/perf_genmipmap.cpp"
+  "perf_genmipmap_gles      \; src/gl/perf_genmipmap.cpp"
 )
 
 foreach(target ${targets})
