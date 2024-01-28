@@ -145,13 +145,17 @@ set(targets
 
   # perf test
   #----------------------------------------------------
+  "perf_copytex_glLegacy  \; src/gl/perf_copytex.cpp"
+  "perf_copytex_gl        \; src/gl/perf_copytex.cpp"
+  "perf_copytex_gles      \; src/gl/perf_copytex.cpp"
+
   "perf_drawoverhead_glLegacy  \; src/gl/perf_drawoverhead.cpp"
   "perf_drawoverhead_gl        \; src/gl/perf_drawoverhead.cpp"
   "perf_drawoverhead_gles      \; src/gl/perf_drawoverhead.cpp"
 
-  "perf_copytex_glLegacy  \; src/gl/perf_copytex.cpp"
-  "perf_copytex_gl        \; src/gl/perf_copytex.cpp"
-  "perf_copytex_gles      \; src/gl/perf_copytex.cpp"
+  "perf_fbobind_glLegacy  \; src/gl/perf_fbobind.cpp"
+  "perf_fbobind_gl        \; src/gl/perf_fbobind.cpp"
+  "perf_fbobind_gles      \; src/gl/perf_fbobind.cpp"
 
   "perf_genmipmap_glLegacy  \; src/gl/perf_genmipmap.cpp"
   "perf_genmipmap_gl        \; src/gl/perf_genmipmap.cpp"
