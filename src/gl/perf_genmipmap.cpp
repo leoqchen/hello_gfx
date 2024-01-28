@@ -86,11 +86,6 @@ const char *fragmentShaderSource =
 
 static void PerfInit(void)
 {
-    //if( !glfwExtensionSupported("GL_ARB_framebuffer_object") ){
-    //    printf("Sorry, this test requires GL_ARB_framebuffer_object\n");
-    //    exit(1);
-    //}
-
     // build and compile our shader program
     // ------------------------------------
 #if !IS_GlLegacy

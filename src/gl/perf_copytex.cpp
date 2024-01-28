@@ -16,7 +16,7 @@
 
 
 // settings
-int WinWidth = 100, WinHeight = 100;
+int WinWidth = 200, WinHeight = 200;
 
 static GLuint VAO, VBO, FBO, RBO, Tex, FBTex;
 static GLuint program;
@@ -88,11 +88,6 @@ static void PerfInit(void)
 {
     const GLenum filter = GL_LINEAR;
     GLenum stat;
-
-    //if (!PerfExtensionSupported("GL_EXT_framebuffer_object")) {
-    //    perf_printf("copytex: GL_EXT_framebuffer_object not supported\n");
-    //    exit(0);
-    //}
 
     // build and compile our shader program
     // ------------------------------------
