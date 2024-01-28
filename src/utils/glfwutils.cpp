@@ -89,5 +89,6 @@ GLFWwindow* glfwInit_CreateWindow( api_t api, int width, int height )
 
     printf("%s: GL_SHADING_LANGUAGE_VERSION = %s\n", __func__, glGetString(GL_SHADING_LANGUAGE_VERSION));
 
+    printf("\n");
     return window;
 }

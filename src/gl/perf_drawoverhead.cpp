@@ -76,6 +76,7 @@ static void PerfInit(void)
     // ------------------------------------
 #if !IS_GlLegacy
     program = CreateProgramFromSource( vertexShaderSource, fragmentShaderSource );
+    glUseProgram(program);
 #endif
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
