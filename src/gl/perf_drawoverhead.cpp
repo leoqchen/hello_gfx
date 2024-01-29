@@ -135,7 +135,6 @@ static void DrawStateChange(unsigned count)
 {
     unsigned i;
     for (i = 0; i < count; i++) {
-#if IS_GlLegacy
         if (i & 1){
             //glEnable(GL_TEXTURE_GEN_S);
             glEnable(GL_DEPTH_TEST);
@@ -143,7 +142,6 @@ static void DrawStateChange(unsigned count)
             //glDisable(GL_TEXTURE_GEN_S);
             glDisable(GL_DEPTH_TEST);
         }
-#endif
         glDrawArrays(GL_POINTS, 0, 4);
     }
     glFinish();
