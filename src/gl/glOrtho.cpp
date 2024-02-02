@@ -1,5 +1,5 @@
 /*
- * glRotate, glOrtho 的等价实现
+ * glOrtho 的等价实现
  */
 
 #if IS_GlEs
@@ -11,8 +11,6 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
-#include <stdlib.h>
-#include <stddef.h>
 #include <stdio.h>
 #include <ctype.h>
 #include "linmath.h"
@@ -20,64 +18,61 @@
 #include "glfwutils.h"
 #include "myutils.h"
 
-typedef struct Vertex
-{
-    vec2 pos;
+
+// settings
+const unsigned int WinWidth = 800;
+const unsigned int WinHeight = 800;
+
+typedef struct Vertex{
+    vec3 pos;
     vec3 col;
 } Vertex;
 
-static const Vertex vertices[3] =
-{
-    { { -0.6f, -0.4f }, { 1.f, 0.f, 0.f } },
-    { {  0.6f, -0.4f }, { 0.f, 1.f, 0.f } },
-    { {   0.f,  0.6f }, { 0.f, 0.f, 1.f } }
-};
 
 #if IS_GlEs
-static const char* vertex_shader_text =
+const char *vertexShaderSource =
     "#version 320 es\n"
     "uniform mat4 MVP;\n"
-    "layout (location = 0) in vec3 vCol;\n"
-    "layout (location = 1) in vec2 vPos;\n"
-    "out vec3 color;\n"
+    "layout (location = 0) in vec3 vPos;\n"
+    "layout (location = 1) in vec3 vCol;\n"
+    "out vec3 Color;\n"
     "void main()\n"
     "{\n"
-    "    gl_Position = MVP * vec4(vPos, 0.0, 1.0);\n"
-    "    color = vCol;\n"
-    "}\n";
+    "   gl_Position = MVP * vec4(vPos.x, vPos.y, vPos.z, 1.0);\n"
+    "   Color = vCol;\n"
+    "}\n\0";
 
-static const char* fragment_shader_text =
+const char *fragmentShaderSource =
     "#version 320 es\n"
     "precision mediump float;\n"
-    "in vec3 color;\n"
+    "in vec3 Color;\n"
     "layout (location = 0) out vec4 FragColor;\n"
     "void main()\n"
     "{\n"
-    "    FragColor = vec4(color, 1.0);\n"
-    "}\n";
+    "   FragColor = vec4( Color.r, Color.g, Color.b, 1.0f );\n"
+    "}\n\0";
 #else
-static const char* vertex_shader_text =
+const char *vertexShaderSource =
     "#version 400\n"
     "uniform mat4 MVP;\n"
-    "layout (location = 0) in vec3 vCol;\n"
-    "layout (location = 1) in vec2 vPos;\n"
-    "out vec3 color;\n"
+    "layout (location = 0) in vec3 vPos;\n"
+    "layout (location = 1) in vec3 vCol;\n"
+    "out vec3 Color;\n"
     "void main()\n"
     "{\n"
-    "    gl_Position = MVP * vec4(vPos, 0.0, 1.0);\n"
-    "    color = vCol;\n"
-    "}\n";
+    "   gl_Position = MVP * vec4(vPos.x, vPos.y, vPos.z, 1.0);\n"
+    "   Color = vCol;\n"
+    "}\n\0";
 
-static const char* fragment_shader_text =
+const char *fragmentShaderSource =
     "#version 400\n"
-    "in vec3 color;\n"
+    "in vec3 Color;\n"
     "layout (location = 0) out vec4 FragColor;\n"
     "void main()\n"
     "{\n"
-    "    FragColor = vec4(color, 1.0);\n"
-    "}\n";
+    "   FragColor = vec4( Color.r, Color.g, Color.b, 1.0f );\n"
+    "}\n\0";
 #endif
-
 
 int main( int argc, const char* argv[] )
 {
@@ -96,12 +91,12 @@ int main( int argc, const char* argv[] )
 
     // glfw: initialize and configure
     // ------------------------------
-    GLFWwindow* window = glfwInit_CreateWindow( api, 640, 480 );
+    GLFWwindow* window = glfwInit_CreateWindow( api, WinWidth, WinHeight );
 
 #if !IS_GlLegacy
     // build and compile our shader program
     // ------------------------------------
-    const GLuint program = CreateProgramFromSource( vertex_shader_text, fragment_shader_text );
+    const GLuint program = CreateProgramFromSource( vertexShaderSource, fragmentShaderSource );
 
     // set up uniform data
     // ------------------------------------------------------------------
@@ -111,12 +106,21 @@ int main( int argc, const char* argv[] )
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
+    static const float Z = 30.0f;
+    static const Vertex vertices[] = {
+        { { 0.25, 0.25, Z }, { 1, 0, 0 } },
+        { { 0.75, 0.25, Z }, { 1, 1, 0 } },
+        { { 0.75, 0.75, Z }, { 1, 0, 1 } },
+        { { 0.25, 0.75, Z }, { 0, 1, 1 } },
+    };
 #if IS_GlLegacy
+    // legacy OpenGL
     glVertexPointer(3, GL_FLOAT, sizeof(Vertex), &vertices[0].pos);
     glColorPointer(3, GL_FLOAT, sizeof(Vertex), &vertices[0].col);
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
 #else
+    // modern OpenGL
     GLuint vertex_array;
     glGenVertexArrays(1, &vertex_array);
     glBindVertexArray(vertex_array);
@@ -130,51 +134,65 @@ int main( int argc, const char* argv[] )
     const GLint vcol_location = glGetAttribLocation(program, "vCol");
     printf("Attrib location: vPos=%d\n", vpos_location);
     printf("Attrib location: vCol=%d\n", vcol_location);
-    glVertexAttribPointer(vpos_location, 2, GL_FLOAT, GL_FALSE,
-                          sizeof(Vertex), (void*) offsetof(Vertex, pos));
+    glVertexAttribPointer(vpos_location, 3, GL_FLOAT, GL_FALSE,
+                          sizeof(Vertex), (void *) offsetof(Vertex, pos));
     glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE,
-                          sizeof(Vertex), (void*) offsetof(Vertex, col));
+                          sizeof(Vertex), (void *) offsetof(Vertex, col));
     glEnableVertexAttribArray(vpos_location);
     glEnableVertexAttribArray(vcol_location);
 #endif
 
-
     // render loop
     // -----------
+    int frame = 0;
+    GLdouble zNear = (Z == 0.0f) ? -1.0f : -Z;
+    GLdouble zFar = (Z == 0.0f) ? 1.0f : Z;
+    GLdouble left = -1.0f;
+    GLdouble right = 1.0f;
+    GLdouble bottom = -1.0f;
+    GLdouble top = 1.0f;
+
+    glClearColor(0.0, 0.0, 0.0, 0.0);
     while (!glfwWindowShouldClose(window))
     {
-        int width, height;
-        glfwGetFramebufferSize(window, &width, &height);
-        const float ratio = width / (float) height;
+        // render
+        // ------
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glClear(GL_COLOR_BUFFER_BIT);
-
+        // set up mvp matrix
+        // -------------------
+        if( frame == 0 ){
+            //只显示右上角
+            left = 0.0f;
+            bottom = 0.0f;
+        }else if( frame == 90 ){
+            //恢复默认
+            left = -1.0f;
+            bottom = -1.0f;
+        }else if( frame == 180 ){
+            frame = -1;
+        }
 #if IS_GlLegacy
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-        glRotatef( DegreeFromRadian( glfwGetTime() ), 0.0, 0.0, 1.0 );
+        // legacy OpenGL
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        glOrtho(-ratio, ratio, -1.0, 1.0, 1.0, -1.0);
+        glOrtho(left, right, bottom, top, zNear, zFar);
 #else
-        mat4x4 m, p, mvp;
-        mat4x4_identity(m);
-        mat4x4_rotate_Z(m, m, (float) glfwGetTime());
-        mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
-        mat4x4_mul(mvp, p, m);
+        // modern OpenGL
+        mat4x4 mvp;
+        mat4x4_identity(mvp);
+        mat4x4_ortho(mvp, left, right, bottom, top, zNear, zFar);
 
         glUseProgram(program);
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) &mvp);
-
-        glBindVertexArray(vertex_array);
 #endif
-
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
         glfwPollEvents();
+        frame++;
     }
 
     // optional: de-allocate all resources once they've outlived their purpose:
@@ -182,13 +200,12 @@ int main( int argc, const char* argv[] )
 #if !IS_GlLegacy
     glDeleteVertexArrays( 1, &vertex_array );
     glDeleteBuffers( 1, &vertex_buffer );
-    glDeleteProgram( program );
+    glDeleteProgram(program);
 #endif
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
     glfwDestroyWindow(window);
     glfwTerminate();
-    exit(EXIT_SUCCESS);
+    return 0;
 }
-

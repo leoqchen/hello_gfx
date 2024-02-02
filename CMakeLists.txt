@@ -139,6 +139,10 @@ set(targets
   "glTexCoordPointer_gl        \; src/gl/glTexCoordPointer.cpp"
   "glTexCoordPointer_gles      \; src/gl/glTexCoordPointer.cpp"
 
+  "glOrtho_glLegacy  \; src/gl/glOrtho.cpp"
+  "glOrtho_gl        \; src/gl/glOrtho.cpp"
+  "glOrtho_gles      \; src/gl/glOrtho.cpp"
+
   "fbo_ColorAttachRenderbuffer_gl   \; src/gl/fbo.cpp \; ${IS_ColorAttachRenderbuffer}"
   "fbo_ColorAttachTexture_gl        \; src/gl/fbo.cpp \; ${IS_ColorAttachTexture}"
   "fbo_ColorAttachRenderbuffer_gles \; src/gl/fbo.cpp \; ${IS_ColorAttachRenderbuffer}"
