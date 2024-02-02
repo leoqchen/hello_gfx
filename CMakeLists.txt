@@ -121,11 +121,12 @@ set(targets
 
   # 等价性测试
   #----------------------------------------------------
-  "triangle_gl   \; src/gl/triangle.cpp"
-  "triangle_gles \; src/gl/triangle.cpp"
-
   "hello_triangle_gl   \; src/gl/hello_triangle.cpp"
   "hello_triangle_gles \; src/gl/hello_triangle.cpp"
+
+  "triangle_glLegacy \; src/gl/triangle.cpp"
+  "triangle_gl       \; src/gl/triangle.cpp"
+  "triangle_gles     \; src/gl/triangle.cpp"
 
   "glClear_gl   \; src/gl/glClear.cpp"
   "glClear_gles \; src/gl/glClear.cpp"

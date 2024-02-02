@@ -94,12 +94,25 @@ int main( int argc, const char* argv[] )
     // ------------------------------
     GLFWwindow* window = glfwInit_CreateWindow( api, 640, 480 );
 
+#if !IS_GlLegacy
     // build and compile our shader program
     // ------------------------------------
     const GLuint program = CreateProgramFromSource( vertex_shader_text, fragment_shader_text );
 
+    // set up uniform data
+    // ------------------------------------------------------------------
+    const GLint mvp_location = glGetUniformLocation(program, "MVP");
+    printf("Uniform location: MVP=%d\n", mvp_location);
+#endif
+
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
+#if IS_GlLegacy
+    glVertexPointer(3, GL_FLOAT, sizeof(Vertex), &vertices[0].pos);
+    glColorPointer(3, GL_FLOAT, sizeof(Vertex), &vertices[0].col);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
+#else
     GLuint vertex_array;
     glGenVertexArrays(1, &vertex_array);
     glBindVertexArray(vertex_array);
@@ -119,11 +132,8 @@ int main( int argc, const char* argv[] )
                           sizeof(Vertex), (void*) offsetof(Vertex, col));
     glEnableVertexAttribArray(vpos_location);
     glEnableVertexAttribArray(vcol_location);
+#endif
 
-    // set up uniform data
-    // ------------------------------------------------------------------
-    const GLint mvp_location = glGetUniformLocation(program, "MVP");
-    printf("Uniform location: MVP=%d\n", mvp_location);
 
     // render loop
     // -----------
@@ -135,6 +145,14 @@ int main( int argc, const char* argv[] )
 
         glClear(GL_COLOR_BUFFER_BIT);
 
+#if IS_GlLegacy
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        glRotatef( DegreeFromRadian( glfwGetTime() ), 0.0, 0.0, 1.0 );
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(-ratio, ratio, -1.0, 1.0, 1.0, -1.0);
+#else
         mat4x4 m, p, mvp;
         mat4x4_identity(m);
         mat4x4_rotate_Z(m, m, (float) glfwGetTime());
@@ -143,7 +161,10 @@ int main( int argc, const char* argv[] )
 
         glUseProgram(program);
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) &mvp);
+
         glBindVertexArray(vertex_array);
+#endif
+
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
@@ -154,9 +175,11 @@ int main( int argc, const char* argv[] )
 
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
+#if !IS_GlLegacy
     glDeleteVertexArrays( 1, &vertex_array );
     glDeleteBuffers( 1, &vertex_buffer );
     glDeleteProgram( program );
+#endif
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------

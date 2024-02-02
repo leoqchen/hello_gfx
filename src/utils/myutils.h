@@ -19,3 +19,6 @@ double PerfGetSecond();
 typedef void (*PerfRateFunc)(unsigned count);
 double PerfMeasureRate(PerfRateFunc f);
 const char* PerfHumanFloat( double d );
+
+float DegreeFromRadian( float radian );
+float RadianFromDegree( float degree );

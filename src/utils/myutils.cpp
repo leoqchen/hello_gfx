@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <math.h>
 
 #include "myutils.h"
 
@@ -132,4 +133,14 @@ const char* PerfHumanFloat( double d )
         snprintf(buf, sizeof(buf), "%.1f", d);
 
     return buf;
+}
+
+float DegreeFromRadian( float radian )
+{
+    return radian * 180 / M_PI;
+}
+
+float RadianFromDegree( float degree )
+{
+    return degree * M_PI / 180;
 }
