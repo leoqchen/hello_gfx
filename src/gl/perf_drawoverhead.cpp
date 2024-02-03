@@ -35,9 +35,12 @@ static const struct vertex vertices[4] = {
 };
 
 
-#if IS_GlEs
 const char *vertexShaderSource =
+#if IS_GlEs
     "#version 320 es\n"
+#else
+    "#version 400\n"
+#endif
     "layout (location = 0) in vec2 vPos;\n"
     "void main()\n"
     "{\n"
@@ -45,30 +48,17 @@ const char *vertexShaderSource =
     "}\n\0";
 
 const char *fragmentShaderSource =
+#if IS_GlEs
     "#version 320 es\n"
     "precision mediump float;\n"
-    "layout (location = 0) out vec4 outColor;\n"
-    "void main()\n"
-    "{\n"
-    "   outColor = vec4( 1.0f, 0.0f, 0.0f, 1.0f );\n"
-    "}\n\0";
 #else
-const char *vertexShaderSource =
     "#version 400\n"
-    "layout (location = 0) in vec2 vPos;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4( vPos.x, vPos.y, 0.0f, 1.0f );\n"
-    "}\n\0";
-
-const char *fragmentShaderSource =
-    "#version 400\n"
+#endif
     "layout (location = 0) out vec4 outColor;\n"
     "void main()\n"
     "{\n"
     "   outColor = vec4( 1.0f, 0.0f, 0.0f, 1.0f );\n"
     "}\n\0";
-#endif
 
 static void PerfInit(void)
 {

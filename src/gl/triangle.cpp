@@ -33,9 +33,12 @@ static const Vertex vertices[3] =
     { {   0.f,  0.6f }, { 0.f, 0.f, 1.f } }
 };
 
-#if IS_GlEs
 static const char* vertex_shader_text =
+#if IS_GlEs
     "#version 320 es\n"
+#else
+    "#version 400\n"
+#endif
     "uniform mat4 MVP;\n"
     "layout (location = 0) in vec3 vCol;\n"
     "layout (location = 1) in vec2 vPos;\n"
@@ -47,36 +50,18 @@ static const char* vertex_shader_text =
     "}\n";
 
 static const char* fragment_shader_text =
+#if IS_GlEs
     "#version 320 es\n"
     "precision mediump float;\n"
-    "in vec3 color;\n"
-    "layout (location = 0) out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "    FragColor = vec4(color, 1.0);\n"
-    "}\n";
 #else
-static const char* vertex_shader_text =
     "#version 400\n"
-    "uniform mat4 MVP;\n"
-    "layout (location = 0) in vec3 vCol;\n"
-    "layout (location = 1) in vec2 vPos;\n"
-    "out vec3 color;\n"
-    "void main()\n"
-    "{\n"
-    "    gl_Position = MVP * vec4(vPos, 0.0, 1.0);\n"
-    "    color = vCol;\n"
-    "}\n";
-
-static const char* fragment_shader_text =
-    "#version 400\n"
+#endif
     "in vec3 color;\n"
     "layout (location = 0) out vec4 FragColor;\n"
     "void main()\n"
     "{\n"
     "    FragColor = vec4(color, 1.0);\n"
     "}\n";
-#endif
 
 
 int main( int argc, const char* argv[] )

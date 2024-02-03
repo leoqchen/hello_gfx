@@ -27,9 +27,12 @@ const unsigned int WinWidth = 800;
 const unsigned int WinHeight = 600;
 
 
-#if IS_GlEs
 const char *vertexShaderSource =
+#if IS_GlEs
     "#version 320 es\n"
+#else
+    "#version 400\n"
+#endif
     "layout (location = 0) in vec4 a_position;\n"
     "void main()\n"
     "{\n"
@@ -37,37 +40,12 @@ const char *vertexShaderSource =
     "}\n\0";
 
 const char *fragmentShaderSource =
+#if IS_GlEs
     "#version 320 es\n"
     "precision mediump float;\n"
-    "layout(location = 0) out vec4 fragData0;\n"
-    "layout(location = 1) out vec4 fragData1;\n"
-    "layout(location = 2) out vec4 fragData2;\n"
-    "layout(location = 3) out vec4 fragData3;\n"
-    "void main()\n"
-    "{\n"
-    "  // first buffer will contain red color\n"
-    "  fragData0 = vec4 ( 1, 0, 0, 1 );\n"
-    "\n"
-    "  // second buffer will contain green color\n"
-    "  fragData1 = vec4 ( 0, 1, 0, 1 );\n"
-    "\n"
-    "  // third buffer will contain blue color\n"
-    "  fragData2 = vec4 ( 0, 0, 1, 1 );\n"
-    "\n"
-    "  // fourth buffer will contain gray color\n"
-    "  fragData3 = vec4 ( 0.5, 0.5, 0.5, 1 );\n"
-    "}\n\0";
 #else
-const char *vertexShaderSource =
     "#version 400\n"
-    "layout (location = 0) in vec4 a_position;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = a_position;\n"
-    "}\n\0";
-
-const char *fragmentShaderSource =
-    "#version 400\n"
+#endif
     "layout(location = 0) out vec4 fragData0;\n"
     "layout(location = 1) out vec4 fragData1;\n"
     "layout(location = 2) out vec4 fragData2;\n"
@@ -86,7 +64,6 @@ const char *fragmentShaderSource =
     "  // fourth buffer will contain gray color\n"
     "  fragData3 = vec4 ( 0.5, 0.5, 0.5, 1 );\n"
     "}\n\0";
-#endif
 
 int main( int argc, const char* argv[] )
 {

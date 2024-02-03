@@ -17,9 +17,12 @@
 const unsigned int WinWidth = 800;
 const unsigned int WinHeight = 600;
 
-#if IS_GlEs
 const char *vertexShaderSource =
+#if IS_GlEs
     "#version 320 es\n"
+#else
+    "#version 400\n"
+#endif
     "layout (location = 0) in vec3 aPos;\n"
     "void main()\n"
     "{\n"
@@ -27,30 +30,17 @@ const char *vertexShaderSource =
     "}\n\0";
 
 const char *fragmentShaderSource =
+#if IS_GlEs
     "#version 320 es\n"
     "precision mediump float;\n"
-    "layout (location = 0) out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-    "}\n\0";
 #else
-const char *vertexShaderSource =
     "#version 400\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "}\n\0";
-
-const char *fragmentShaderSource =
-    "#version 400\n"
+#endif
     "layout (location = 0) out vec4 FragColor;\n"
     "void main()\n"
     "{\n"
     "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
     "}\n\0";
-#endif
 
 
 int main( int argc, const char* argv[] )

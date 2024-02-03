@@ -23,9 +23,12 @@ const unsigned int WinWidth = 800;
 const unsigned int WinHeight = 600;
 
 
-#if IS_GlEs
 const char *vertexShaderSource =
+#if IS_GlEs
     "#version 320 es\n"
+#else
+    "#version 400\n"
+#endif
     "layout (location = 0) in vec3 vPos;\n"
     "layout (location = 1) in vec2 vTexCoord;\n"
     "out vec2 v_texCoord;\n"
@@ -36,29 +39,12 @@ const char *vertexShaderSource =
     "}\n\0";
 
 const char *fragmentShaderSource =
+#if IS_GlEs
     "#version 320 es\n"
     "precision mediump float;\n"
-    "in vec2 v_texCoord;\n"
-    "layout (location = 0) out vec4 outColor;\n"
-    "uniform sampler2D s_texture;\n"
-    "void main()\n"
-    "{\n"
-    "   outColor = texture( s_texture, v_texCoord );\n"
-    "}\n\0";
 #else
-const char *vertexShaderSource =
     "#version 400\n"
-    "layout (location = 0) in vec3 vPos;\n"
-    "layout (location = 1) in vec2 vTexCoord;\n"
-    "out vec2 v_texCoord;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4( vPos.x, vPos.y, vPos.z, 1.0f );\n"
-    "   v_texCoord = vTexCoord;\n"
-    "}\n\0";
-
-const char *fragmentShaderSource =
-    "#version 400\n"
+#endif
     "in vec2 v_texCoord;\n"
     "layout (location = 0) out vec4 outColor;\n"
     "uniform sampler2D s_texture;\n"
@@ -66,7 +52,6 @@ const char *fragmentShaderSource =
     "{\n"
     "   outColor = texture( s_texture, v_texCoord );\n"
     "}\n\0";
-#endif
 
 int main( int argc, const char* argv[] )
 {

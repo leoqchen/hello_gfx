@@ -32,9 +32,12 @@ typedef struct Vertex{
 } Vertex;
 
 
-#if IS_GlEs
 const char *vertexShaderSource =
+#if IS_GlEs
     "#version 320 es\n"
+#else
+    "#version 400\n"
+#endif
     "layout (location = 0) in vec2 vPos;\n"
     "layout (location = 1) in vec3 vCol;\n"
     "out vec3 Color;\n"
@@ -45,35 +48,18 @@ const char *vertexShaderSource =
     "}\n\0";
 
 const char *fragmentShaderSource =
+#if IS_GlEs
     "#version 320 es\n"
     "precision mediump float;\n"
-    "in vec3 Color;\n"
-    "layout (location = 0) out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "   FragColor = vec4( Color.r, Color.g, Color.b, 1.0f );\n"
-    "}\n\0";
 #else
-const char *vertexShaderSource =
     "#version 400\n"
-    "layout (location = 0) in vec2 vPos;\n"
-    "layout (location = 1) in vec3 vCol;\n"
-    "out vec3 Color;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(vPos.x, vPos.y, 0.0, 1.0);\n"
-    "   Color = vCol;\n"
-    "}\n\0";
-
-const char *fragmentShaderSource =
-    "#version 400\n"
+#endif
     "in vec3 Color;\n"
     "layout (location = 0) out vec4 FragColor;\n"
     "void main()\n"
     "{\n"
     "   FragColor = vec4( Color.r, Color.g, Color.b, 1.0f );\n"
     "}\n\0";
-#endif
 
 int main( int argc, const char* argv[] )
 {

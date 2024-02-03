@@ -22,8 +22,9 @@ include_directories(
   "${CMAKE_SOURCE_DIR}/src/utils"
 )
 
-set(IS_GlEs -DIS_GlEs=1)
 set(IS_GlLegacy -DIS_GlLegacy=1)
+set(IS_Gl -DIS_Gl=1)
+set(IS_GlEs -DIS_GlEs=1)
 set(IS_ColorAttachRenderbuffer -DIS_ColorAttachRenderbuffer=1)
 set(IS_ColorAttachTexture -DIS_ColorAttachTexture=1)
 
@@ -192,6 +193,7 @@ foreach(target ${targets})
   endif()
 
   if(${targetName} MATCHES "_gl$")
+    list(APPEND targetCompileOptions ${IS_Gl})
     list(APPEND targetLinkLibraries glad_gl glutils_gl glfwutils_gl)
   elseif(${targetName} MATCHES "_glLegacy$")
     list(APPEND targetCompileOptions ${IS_GlLegacy})
