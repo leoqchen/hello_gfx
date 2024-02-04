@@ -1,3 +1,6 @@
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
+
 #include <time.h>
 #include <stdio.h>
 #include <string.h>
@@ -73,6 +76,8 @@ double PerfMeasureRate(PerfRateFunc f)
      */
     subiters = 2;
     {
+        glfwPollEvents();
+
         const double t0 = PerfGetSecond();
         double t1;
         do {
@@ -84,6 +89,8 @@ double PerfMeasureRate(PerfRateFunc f)
     //printf("initial subIters = %u\n", subiters);
 
     while (1) {
+        glfwPollEvents();
+
         const double t0 = PerfGetSecond();
         unsigned iters = 0;
         double t1;
