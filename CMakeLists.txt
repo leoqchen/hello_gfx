@@ -144,6 +144,9 @@ set(targets
   "glOrtho_gl        \; src/gl/glOrtho.cpp"
   "glOrtho_gles      \; src/gl/glOrtho.cpp"
 
+  "glUniform_gl        \; src/gl/glUniform.cpp"
+  "glUniform_gles      \; src/gl/glUniform.cpp"
+
   "fbo_ColorAttachRenderbuffer_gl   \; src/gl/fbo.cpp \; ${IS_ColorAttachRenderbuffer}"
   "fbo_ColorAttachTexture_gl        \; src/gl/fbo.cpp \; ${IS_ColorAttachTexture}"
   "fbo_ColorAttachRenderbuffer_gles \; src/gl/fbo.cpp \; ${IS_ColorAttachRenderbuffer}"
