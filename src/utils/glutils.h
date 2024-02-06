@@ -30,3 +30,5 @@ const char* glslVersion( api_t api );
 GLuint CreateShaderFromSource( GLenum type, const char *shaderSource );
 GLuint CreateProgramFromShader( GLuint vertShader, GLuint fragShader );
 GLuint CreateProgramFromSource( const char *vertShaderSource, const char *fragShaderSource );
+
+GLuint CreateTexture_FillWithCheckboard( GLsizei width, GLsizei height );

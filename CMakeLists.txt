@@ -166,6 +166,10 @@ set(targets
   "perf_fbobind_gl        \; src/gl/perf_fbobind.cpp"
   "perf_fbobind_gles      \; src/gl/perf_fbobind.cpp"
 
+  "perf_fill_glLegacy  \; src/gl/perf_fill_glLegacy.cpp"
+  "perf_fill_gl        \; src/gl/perf_fill_gl.cpp"
+  "perf_fill_gles      \; src/gl/perf_fill_gl.cpp"
+
   "perf_genmipmap_glLegacy  \; src/gl/perf_genmipmap.cpp"
   "perf_genmipmap_gl        \; src/gl/perf_genmipmap.cpp"
   "perf_genmipmap_gles      \; src/gl/perf_genmipmap.cpp"
