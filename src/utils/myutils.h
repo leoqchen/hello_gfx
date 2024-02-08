@@ -22,3 +22,6 @@ const char* PerfHumanFloat( double d );
 
 float DegreeFromRadian( float radian );
 float RadianFromDegree( float degree );
+
+uint8_t *GenerateCheckboard_RGBA( int width, int height, int checkSize );
+uint8_t *GenerateCheckboard_RGB( int width, int height, int checkSize );

@@ -151,3 +151,57 @@ float RadianFromDegree( float degree )
 {
     return degree * M_PI / 180;
 }
+
+
+uint8_t *GenerateCheckboard_RGBA( int width, int height, int checkSize )
+{
+    uint8_t *pixels = (uint8_t*) malloc( width * height * 4 );
+    if( pixels == NULL )
+        return NULL;
+
+    int k = 0;
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            uint8_t color;
+            if (((y / checkSize) ^ (x / checkSize)) & 1)
+                color = 0xff;
+            else
+                color = 0x0;
+
+            pixels[k++] = color;
+            pixels[k++] = color;
+            pixels[k++] = color;
+            pixels[k++] = color;
+        }
+    }
+
+    return pixels;
+}
+
+uint8_t *GenerateCheckboard_RGB( int width, int height, int checkSize )
+{
+    uint8_t *pixels = (uint8_t*) malloc( width * height * 3 );
+    if( pixels == NULL )
+        return NULL;
+
+    for (int y = 0; y < height; y++ ) {
+        for (int x = 0; x < width; x++) {
+            uint8_t rColor = 0;
+            uint8_t bColor = 0;
+
+            if ((x / checkSize) % 2 == 0) {
+                rColor = 255 * ((y / checkSize) % 2);
+                bColor = 255 * (1 - ((y / checkSize) % 2));
+            } else {
+                bColor = 255 * ((y / checkSize) % 2);
+                rColor = 255 * (1 - ((y / checkSize) % 2));
+            }
+
+            pixels[(y * width + x) * 3] = rColor;
+            pixels[(y * width + x) * 3 + 1] = 0;
+            pixels[(y * width + x) * 3 + 2] = bColor;
+        }
+    }
+
+    return pixels;
+}

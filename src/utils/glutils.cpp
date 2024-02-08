@@ -217,28 +217,10 @@ GLuint CreateProgramFromSource( const char *vertShaderSource, const char *fragSh
 
 GLuint CreateTexture_FillWithCheckboard( GLsizei width, GLsizei height )
 {
+    GLubyte *img = GenerateCheckboard_RGBA( width, height, 8 );
+
     const GLenum filter = GL_NEAREST;
-    GLubyte *img = (GLubyte *) malloc(width * height * 4);
-    GLint i, j, k;
     GLuint obj;
-
-    k = 0;
-    for (i = 0; i < height; i++) {
-        for (j = 0; j < width; j++) {
-            GLubyte color;
-            if (((i / 8) ^ (j / 8)) & 1) {
-                color = 0xff;
-            }
-            else {
-                color = 0x0;
-            }
-            img[k++] = color;
-            img[k++] = color;
-            img[k++] = color;
-            img[k++] = color;
-        }
-    }
-
     glGenTextures(1, &obj);
     glBindTexture(GL_TEXTURE_2D, obj);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
