@@ -1,8 +1,8 @@
 /*
- * 分别用 Legacy OpenGL、Modern OpenGL 这两种不同写法实现顶点上传、颜色上传
+ * 等价性测试： 顶点/颜色 上传
+ * glVertexPointer + glColorPointer
+ * VertexArray + VertexBuffer + glVertexAttribPointer + glEnableVertexAttribArray
  *
- * glVertexPointer 等价于 glVertexAttribPointer( index = 0 )
- * glColorPointer 无法用 glVertexAttribPointer()等价实现
  */
 
 #if IS_GlEs

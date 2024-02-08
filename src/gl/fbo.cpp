@@ -1,4 +1,5 @@
 /*
+ * 等价性测试：
  * OpenGL、OpenGLES在实现color attachment绑定有差异
  * 对于OpenGL，用render buffer、texture2D 绑定到color attachment均可
  * 对于OpenGLES，只能用texture2D 绑定到color attachment

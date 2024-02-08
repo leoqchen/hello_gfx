@@ -1,5 +1,7 @@
 /*
- * 分别用 Legacy OpenGL、Modern OpenGL 这两种不同写法实现纹理坐标上传
+ * 等价性测试： 顶点/纹理坐标 上传
+ * glVertexPointer + glTexCoordPointer
+ * VertexArray + VertexBuffer + glVertexAttribPointer + glEnableVertexAttribArray
  *
  */
 

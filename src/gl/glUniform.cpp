@@ -1,4 +1,5 @@
 /*
+ * 行为测试：
  * 测试glUniform设置是否能被记录在program里，无需glDraw触发
  */
 

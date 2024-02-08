@@ -1,4 +1,5 @@
 /*
+ * 等价性测试：
  * glRotate, glOrtho 的等价实现
  */
 
