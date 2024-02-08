@@ -160,8 +160,10 @@ uint8_t *GenerateCheckboard_RGBA( int width, int height, int checkSize )
         return NULL;
 
     int k = 0;
-    for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
+    for (int y = 0; y < height; y++)
+    {
+        for (int x = 0; x < width; x++)
+        {
             uint8_t color;
             if (((y / checkSize) ^ (x / checkSize)) & 1)
                 color = 0xff;
@@ -184,8 +186,10 @@ uint8_t *GenerateCheckboard_RGB( int width, int height, int checkSize )
     if( pixels == NULL )
         return NULL;
 
-    for (int y = 0; y < height; y++ ) {
-        for (int x = 0; x < width; x++) {
+    for (int y = 0; y < height; y++ )
+    {
+        for (int x = 0; x < width; x++)
+        {
             uint8_t rColor = 0;
             uint8_t bColor = 0;
 
@@ -205,3 +209,66 @@ uint8_t *GenerateCheckboard_RGB( int width, int height, int checkSize )
 
     return pixels;
 }
+
+int GenerateNextLevelMipmap_RGB( const uint8_t *src, uint8_t **dst, int srcWidth, int srcHeight, int *dstWidth, int *dstHeight )
+{
+    const int texelSize = 3;
+
+    *dstWidth = srcWidth / 2;
+    if ( *dstWidth <= 0 )
+    {
+        *dstWidth = 1;
+    }
+
+    *dstHeight = srcHeight / 2;
+    if ( *dstHeight <= 0 )
+    {
+        *dstHeight = 1;
+    }
+
+    *dst = (uint8_t*) malloc( sizeof (uint8_t) * texelSize * (*dstWidth) * (*dstHeight) );
+    if ( *dst == NULL )
+    {
+        return 0;
+    }
+
+    for (int y = 0; y < *dstHeight; y++ )
+    {
+        for (int x = 0; x < *dstWidth; x++ )
+        {
+            int srcIndex[4];
+            float r = 0.0f;
+            float g = 0.0f;
+            float b = 0.0f;
+            int sample;
+
+            // Compute the offsets for 2x2 grid of pixels in previous
+            // image to perform box filter
+            srcIndex[0] = ( (((y * 2) + 0) * srcWidth) + (x * 2 + 0) ) * texelSize;
+            srcIndex[1] = ( (((y * 2) + 0) * srcWidth) + (x * 2 + 1) ) * texelSize;
+            srcIndex[2] = ( (((y * 2) + 1) * srcWidth) + (x * 2 + 0) ) * texelSize;
+            srcIndex[3] = ( (((y * 2) + 1) * srcWidth) + (x * 2 + 1) ) * texelSize;
+
+            // Sum all pixels
+            for ( sample = 0; sample < 4; sample++ )
+            {
+                r += src[ srcIndex[sample] + 0];
+                g += src[ srcIndex[sample] + 1];
+                b += src[ srcIndex[sample] + 2];
+            }
+
+            // Average results
+            r /= 4.0;
+            g /= 4.0;
+            b /= 4.0;
+
+            // Store resulting pixels
+            (*dst)[ (y * ( *dstWidth ) + x) * texelSize + 0] = (uint8_t) r;
+            (*dst)[ (y * ( *dstWidth ) + x) * texelSize + 1] = (uint8_t) g;
+            (*dst)[ (y * ( *dstWidth ) + x) * texelSize + 2] = (uint8_t) b;
+        }
+    }
+
+    return 1;
+}
+

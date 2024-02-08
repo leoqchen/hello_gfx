@@ -25,3 +25,5 @@ float RadianFromDegree( float degree );
 
 uint8_t *GenerateCheckboard_RGBA( int width, int height, int checkSize );
 uint8_t *GenerateCheckboard_RGB( int width, int height, int checkSize );
+
+int GenerateNextLevelMipmap_RGB( const uint8_t *src, uint8_t **dst, int srcWidth, int srcHeight, int *dstWidth, int *dstHeight );

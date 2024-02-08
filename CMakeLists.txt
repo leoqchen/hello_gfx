@@ -27,6 +27,8 @@ set(IS_Gl -DIS_Gl=1)
 set(IS_GlEs -DIS_GlEs=1)
 set(IS_ColorAttachRenderbuffer -DIS_ColorAttachRenderbuffer=1)
 set(IS_ColorAttachTexture -DIS_ColorAttachTexture=1)
+set(IS_Glu -DIS_Glu=1)
+set(IS_Cpu -DIS_Cpu=1)
 
 #-----------------------------------------------------------------------------------------
 #  libraries
@@ -95,7 +97,6 @@ target_compile_options(
 link_libraries(
   glfw
   dl
-  utils
 )
 
 
@@ -146,6 +147,11 @@ set(targets
 
   "glUniform_gl        \; src/gl/glUniform.cpp"
   "glUniform_gles      \; src/gl/glUniform.cpp"
+
+  "glGenerateMipmap_byGlu_glLegacy \; src/gl/glGenerateMipmap.cpp \; ${IS_Glu}"
+  "glGenerateMipmap_byCpu_gl       \; src/gl/glGenerateMipmap.cpp \; ${IS_Cpu}"
+  "glGenerateMipmap_byGl_gl        \; src/gl/glGenerateMipmap.cpp"
+  "glGenerateMipmap_byGl_gles      \; src/gl/glGenerateMipmap.cpp"
 
   "fbo_ColorAttachRenderbuffer_gl   \; src/gl/fbo.cpp \; ${IS_ColorAttachRenderbuffer}"
   "fbo_ColorAttachTexture_gl        \; src/gl/fbo.cpp \; ${IS_ColorAttachTexture}"
@@ -201,13 +207,13 @@ foreach(target ${targets})
 
   if(${targetName} MATCHES "_gl$")
     list(APPEND targetCompileOptions ${IS_Gl})
-    list(APPEND targetLinkLibraries glad_gl glutils_gl glfwutils_gl)
+    list(APPEND targetLinkLibraries utils glad_gl glutils_gl glfwutils_gl)
   elseif(${targetName} MATCHES "_glLegacy$")
     list(APPEND targetCompileOptions ${IS_GlLegacy})
-    list(APPEND targetLinkLibraries glad_gl glutils_gl glfwutils_gl)
+    list(APPEND targetLinkLibraries utils glad_gl glutils_gl glfwutils_gl -lGLU)
   elseif(${targetName} MATCHES "_gles$")
     list(APPEND targetCompileOptions ${IS_GlEs})
-    list(APPEND targetLinkLibraries glad_gles2 glutils_gles2 glfwutils_gles2)
+    list(APPEND targetLinkLibraries utils glad_gles2 glutils_gles2 glfwutils_gles2)
   endif()
 
   #message("target=${target}")
