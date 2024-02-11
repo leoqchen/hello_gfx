@@ -231,3 +231,15 @@ GLuint CreateTexture_FillWithCheckboard( GLsizei width, GLsizei height )
 
     return obj;
 }
+
+void MatrixPrint( GLenum pname, const char *file, int line )
+{
+    GLfloat matrix[16];
+    glGetFloatv (pname, matrix);
+
+    printf("%s: %s:%d\n", __func__, file, line);
+    for( int i=0; i < 16; i+=4 ){
+        printf("%f %f %f %f\n", matrix[i+0], matrix[i+1], matrix[i+2], matrix[i+3]);
+    }
+    printf("\n");
+}

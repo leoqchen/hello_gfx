@@ -32,3 +32,7 @@ GLuint CreateProgramFromShader( GLuint vertShader, GLuint fragShader );
 GLuint CreateProgramFromSource( const char *vertShaderSource, const char *fragShaderSource );
 
 GLuint CreateTexture_FillWithCheckboard( GLsizei width, GLsizei height );
+
+#if IS_GlLegacy
+void MatrixPrint( GLenum pname, const char *file, int line );
+#endif

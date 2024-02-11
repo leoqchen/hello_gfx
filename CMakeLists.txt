@@ -1,3 +1,6 @@
+#-----------------------------------------------------------------------------------------
+#  CMake settings
+#-----------------------------------------------------------------------------------------
 cmake_minimum_required(VERSION 3.4...3.20 FATAL_ERROR)
 project(hello_gfx)
 
@@ -6,6 +9,9 @@ find_package(GLFW3 3.3 REQUIRED)
 message(STATUS "Found GLFW3 in ${GLFW3_INCLUDE_DIR}")
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
+
+message("PROJECT_SOURCE_DIR = ${PROJECT_SOURCE_DIR}")
+message("PROJECT_BINARY_DIR = ${PROJECT_BINARY_DIR}")
 
 
 #-----------------------------------------------------------------------------------------
@@ -16,12 +22,6 @@ set(STD -std=gnu++2a)
 set(CMAKE_CXX_FLAGS ${STD}) #only for c++
 add_compile_options(${O} -g -ggdb3 -fPIC -pthread -Wall )#-Werror
 
-include_directories(
-  "${CMAKE_SOURCE_DIR}/ext"
-  "${CMAKE_SOURCE_DIR}/ext/glad/include"
-  "${CMAKE_SOURCE_DIR}/src/utils"
-)
-
 set(IS_GlLegacy -DIS_GlLegacy=1)
 set(IS_Gl -DIS_Gl=1)
 set(IS_GlEs -DIS_GlEs=1)
@@ -29,6 +29,17 @@ set(IS_ColorAttachRenderbuffer -DIS_ColorAttachRenderbuffer=1)
 set(IS_ColorAttachTexture -DIS_ColorAttachTexture=1)
 set(IS_Glu -DIS_Glu=1)
 set(IS_Cpu -DIS_Cpu=1)
+
+configure_file(src/utils/project_config.h.in project_config.h)
+
+include_directories(
+  "${CMAKE_BINARY_DIR}"
+  "${CMAKE_SOURCE_DIR}/ext"
+  "${CMAKE_SOURCE_DIR}/ext/glad/include"
+  "${CMAKE_SOURCE_DIR}/src/utils"
+)
+include_directories(${CMAKE_BINARY_DIR}/configuration)
+
 
 #-----------------------------------------------------------------------------------------
 #  libraries
@@ -61,12 +72,14 @@ add_library(
   glutils_gl
   STATIC
   src/utils/glutils.cpp
+  src/utils/SGI_rgb.cpp
 )
 
 add_library(
   glutils_gles2
   STATIC
   src/utils/glutils.cpp
+  src/utils/SGI_rgb.cpp
 )
 target_compile_options(
   glutils_gles2

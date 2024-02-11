@@ -1,6 +1,6 @@
 #pragma once
 #include <stdint.h>
-
+#include "project_config.h"
 
 #define API_Invalid   (-1)
 #define API_GLLegacy  0

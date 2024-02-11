@@ -1,0 +1,6 @@
+/*
+ * for CMake configure_file() to generate a project configuration header
+ */
+#pragma once
+
+#define PROJECT_SOURCE_DIR "${CMAKE_SOURCE_DIR}/"
