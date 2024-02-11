@@ -6,14 +6,11 @@
 #include <glad/gles2.h>
 #else
 #include <glad/gl.h>
+#include <GL/glu.h>
 #endif
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
-
-#if IS_Glu
-#include <GL/glu.h>
-#endif
 
 #include <stdio.h>
 #include <ctype.h>
@@ -230,9 +227,7 @@ int main( int argc, const char* argv[] )
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
     glDeleteTextures( 1, &textureId );
-#if !IS_GlLegacy
     glDeleteProgram(program);
-#endif
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
