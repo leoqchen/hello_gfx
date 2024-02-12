@@ -1,0 +1,160 @@
+/*
+ * 行为测试：
+ * 用多个Vertex Buffer来传输 顶点数据、颜色数据
+ *
+ */
+
+#if IS_GlEs
+#include <glad/gles2.h>
+#else
+#include <glad/gl.h>
+#endif
+
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
+
+#include <stdio.h>
+#include <ctype.h>
+#include "linmath.h"
+#include "glutils.h"
+#include "glfwutils.h"
+#include "myutils.h"
+
+
+// settings
+const unsigned int WinWidth = 800;
+const unsigned int WinHeight = 600;
+
+//typedef struct Vertex{
+//    vec2 pos;
+//    vec3 col;
+//} Vertex;
+
+
+const char *vertexShaderSource =
+#if IS_GlEs
+    "#version 320 es\n"
+#else
+    "#version 400\n"
+#endif
+    "layout (location = 0) in vec2 vPos;\n"
+    "layout (location = 1) in vec3 vCol;\n"
+    "out vec3 Color;\n"
+    "void main()\n"
+    "{\n"
+    "   gl_Position = vec4(vPos.x, vPos.y, 0.0, 1.0);\n"
+    "   Color = vCol;\n"
+    "}\n\0";
+
+const char *fragmentShaderSource =
+#if IS_GlEs
+    "#version 320 es\n"
+    "precision mediump float;\n"
+#else
+    "#version 400\n"
+#endif
+    "in vec3 Color;\n"
+    "layout (location = 0) out vec4 FragColor;\n"
+    "void main()\n"
+    "{\n"
+    "   FragColor = vec4( Color.r, Color.g, Color.b, 1.0f );\n"
+    "}\n\0";
+
+int main( int argc, const char* argv[] )
+{
+#if IS_GlEs
+    api_t api = {.api = API_GLES, .major = 3, .minor = 2};
+#elif IS_GlLegacy
+    api_t api = {.api = API_GLLegacy, .major = 3, .minor = 0};
+#else
+    api_t api = {.api = API_GL, .major = 3, .minor = 3};
+#endif
+    if( argc >= 2 && isdigit(argv[1][0]) )
+        api.major = argv[1][0] - '0';
+    if( argc >= 3 && isdigit(argv[2][0]) )
+        api.minor = argv[2][0] - '0';
+    printf("command line: major = %d, minor = %d\n", api.major, api.minor);
+
+    // glfw: initialize and configure
+    // ------------------------------
+    GLFWwindow* window = glfwInit_CreateWindow( api, WinWidth, WinHeight );
+
+    // build and compile our shader program
+    // ------------------------------------
+    const GLuint program = CreateProgramFromSource( vertexShaderSource, fragmentShaderSource );
+
+    // set up vertex data (and buffer(s)) and configure vertex attributes
+    // ------------------------------------------------------------------
+//    static const Vertex vertices[3] = {
+//        { { -1, -1 }, { 1, 0, 0 } },
+//        { {  1, -1 }, { 0, 1, 0 } },
+//        { {  0,  1 }, { 0, 0, 1 } }
+//    };
+    static const vec2 vPos[3] = {
+        { -1, -1 },
+        {  1, -1 },
+        {   0,  1 },
+    };
+    static const vec3 vCol[3] = {
+        { 1, 0, 0 },
+        { 0, 1, 0 },
+        { 0, 0, 1 },
+    };
+//    glVertexPointer(2, GL_FLOAT, sizeof(Vertex), &vertices[0].pos);
+//    glColorPointer(3, GL_FLOAT, sizeof(Vertex), &vertices[0].col);
+//    glEnableClientState(GL_VERTEX_ARRAY);
+//    glEnableClientState(GL_COLOR_ARRAY);
+    const GLint vpos_location = glGetAttribLocation(program, "vPos");
+    const GLint vcol_location = glGetAttribLocation(program, "vCol");
+    printf("Attrib location: vPos=%d\n", vpos_location);
+    printf("Attrib location: vCol=%d\n", vcol_location);
+
+    GLuint vertex_array;
+    glGenVertexArrays(1, &vertex_array);
+    glBindVertexArray(vertex_array);
+
+    GLuint vertex_buffer[2];
+    glGenBuffers( 2, vertex_buffer );
+
+    glBindBuffer( GL_ARRAY_BUFFER, vertex_buffer[0] );
+    glBufferData( GL_ARRAY_BUFFER, sizeof(vPos), vPos, GL_STATIC_DRAW );
+    glVertexAttribPointer(vpos_location, 2, GL_FLOAT, GL_FALSE,
+                          sizeof(vec2), 0);
+    glEnableVertexAttribArray(vpos_location);
+
+    glBindBuffer( GL_ARRAY_BUFFER, vertex_buffer[1] );
+    glBufferData( GL_ARRAY_BUFFER, sizeof(vCol), vCol, GL_STATIC_DRAW );
+    glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE,
+                          sizeof(vec3), 0);
+    glEnableVertexAttribArray(vcol_location);
+
+    // render loop
+    // -----------
+    glClearColor(0.4, 0.4, 0.4, 0.0);
+    while (!glfwWindowShouldClose(window))
+    {
+        // render
+        // ------
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glUseProgram(program);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        // -------------------------------------------------------------------------------
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+
+    // optional: de-allocate all resources once they've outlived their purpose:
+    // ------------------------------------------------------------------------
+    glDeleteVertexArrays( 1, &vertex_array );
+    glDeleteBuffers( 2, vertex_buffer );
+    glDeleteProgram(program);
+
+    // glfw: terminate, clearing all previously allocated GLFW resources.
+    // ------------------------------------------------------------------
+    glfwDestroyWindow(window);
+    glfwTerminate();
+    return 0;
+}

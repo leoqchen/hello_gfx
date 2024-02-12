@@ -158,9 +158,6 @@ set(targets
   "glOrtho_gl        \; src/gl/glOrtho.cpp"
   "glOrtho_gles      \; src/gl/glOrtho.cpp"
 
-  "glUniform_gl        \; src/gl/glUniform.cpp"
-  "glUniform_gles      \; src/gl/glUniform.cpp"
-
   "glGenerateMipmap_byGlu_glLegacy \; src/gl/glGenerateMipmap.cpp \; ${IS_Glu}"
   "glGenerateMipmap_byCpu_gl       \; src/gl/glGenerateMipmap.cpp \; ${IS_Cpu}"
   "glGenerateMipmap_byGl_gl        \; src/gl/glGenerateMipmap.cpp"
@@ -170,6 +167,14 @@ set(targets
   "fbo_ColorAttachTexture_gl        \; src/gl/fbo.cpp \; ${IS_ColorAttachTexture}"
   "fbo_ColorAttachRenderbuffer_gles \; src/gl/fbo.cpp \; ${IS_ColorAttachRenderbuffer}"
   "fbo_ColorAttachTexture_gles      \; src/gl/fbo.cpp \; ${IS_ColorAttachTexture}"
+
+  # 行为测试
+  #----------------------------------------------------
+  "glUniform_gl        \; src/gl/glUniform.cpp"
+  "glUniform_gles      \; src/gl/glUniform.cpp"
+
+  "multiVBO_gl        \; src/gl/multiVBO.cpp"
+  "multiVBO_gles      \; src/gl/multiVBO.cpp"
 
   # perf test
   #----------------------------------------------------
