@@ -27,7 +27,6 @@ set(IS_Gl -DIS_Gl=1)
 set(IS_GlEs -DIS_GlEs=1)
 set(IS_ColorAttachRenderbuffer -DIS_ColorAttachRenderbuffer=1)
 set(IS_ColorAttachTexture -DIS_ColorAttachTexture=1)
-set(IS_Glu -DIS_Glu=1)
 set(IS_Cpu -DIS_Cpu=1)
 
 configure_file(src/utils/project_config.h.in project_config.h)
@@ -158,7 +157,7 @@ set(targets
   "glOrtho_gl        \; src/gl/glOrtho.cpp"
   "glOrtho_gles      \; src/gl/glOrtho.cpp"
 
-  "glGenerateMipmap_byGlu_glLegacy \; src/gl/glGenerateMipmap.cpp \; ${IS_Glu}"
+  "glGenerateMipmap_byGlu_glLegacy \; src/gl/glGenerateMipmap.cpp"
   "glGenerateMipmap_byCpu_gl       \; src/gl/glGenerateMipmap.cpp \; ${IS_Cpu}"
   "glGenerateMipmap_byGl_gl        \; src/gl/glGenerateMipmap.cpp"
   "glGenerateMipmap_byGl_gles      \; src/gl/glGenerateMipmap.cpp"

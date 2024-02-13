@@ -116,7 +116,7 @@ GLuint CreateMipMappedTexture2D()
         height = newHeight;
     }
     free ( newImage );
-#elif IS_Glu
+#elif IS_GlLegacy
     gluBuild2DMipmaps(GL_TEXTURE_2D, 4, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
 #else
     glGenerateMipmap( GL_TEXTURE_2D );
