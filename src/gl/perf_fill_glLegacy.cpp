@@ -107,7 +107,7 @@ const char *fragmentShaderSource2 =
     "}\n\0";
 
 
-static void PerfInit(void)
+static void PerfInit()
 {
     // build and compile our shader program
     // ------------------------------------

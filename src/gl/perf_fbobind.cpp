@@ -66,7 +66,7 @@ const char *fragmentShaderSource =
     "   outColor = texture( s_texture, v_texCoord );\n"
     "}\n\0";
 
-static void PerfInit(void)
+static void PerfInit()
 {
     // build and compile our shader program
     // ------------------------------------
