@@ -15,25 +15,18 @@
 
 
 // settings
-const int WinWidth = 200;
-const int WinHeight = 200;
+const int WinWidth = 1000;
+const int WinHeight = 1000;
 
 static GLuint VAO;
 static GLuint VBO;
 static GLuint program;
+static const GLboolean DrawPoint = GL_TRUE;
+static GLenum ReadFormat, ReadType;
+static GLint ReadWidth, ReadHeight;
+static GLvoid *ReadBuffer;
 
-struct vertex
-{
-    GLfloat x, y;
-};
-
-static const struct vertex vertices[4] = {
-    { -1.0, -1.0 },
-    {  1.0, -1.0 },
-    {  1.0,  1.0 },
-    { -1.0,  1.0 }
-};
-
+static const GLfloat vertices[2] = { 0.0, 0.0 };
 
 const char *vertexShaderSource =
 #if IS_GlEs
@@ -74,9 +67,9 @@ static void PerfInit(void)
 #if IS_GlLegacy
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER,sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glVertexPointer(2, GL_FLOAT, sizeof(struct vertex), (void *)0);
+    glVertexPointer(2, GL_FLOAT, sizeof(vertices), (void *) 0);
     glEnableClientState(GL_VERTEX_ARRAY);
 #else
     glGenVertexArrays(1, &VAO);
@@ -88,69 +81,93 @@ static void PerfInit(void)
 
     const GLint vPos_location = glGetAttribLocation(program, "vPos");
     printf("Attrib location: vPos=%d\n", vPos_location);
-    glVertexAttribPointer(vPos_location, 2, GL_FLOAT, GL_FALSE,
-                          sizeof(struct vertex), (void*) 0);
+    glVertexAttribPointer(vPos_location, 2, GL_FLOAT, GL_FALSE, sizeof(vertices), (void*) 0);
     glEnableVertexAttribArray(vPos_location);
 #endif
 
     // misc GL state
     // ------------------------------------------------------------------
-    //glAlphaFunc(GL_ALWAYS, 0.0);
-    glDepthFunc(GL_LESS);
+    glPixelStorei(GL_PACK_ALIGNMENT, 1);
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_STENCIL_TEST);
 }
 
-static void DrawNoStateChange(unsigned count)
+static void ReadPixels(unsigned count)
 {
     unsigned i;
     for (i = 0; i < count; i++) {
-        glDrawArrays(GL_POINTS, 0, 4);
+        /* read from random pos */
+        GLint x, y;
+
+        x = WinWidth - ReadWidth;
+        y = WinHeight - ReadHeight;
+        if (x > 0)
+            x = rand() % x;
+        if (y > 0)
+            y = rand() % y;
+
+        if (DrawPoint)
+            glDrawArrays(GL_POINTS, 0, 1);
+
+        glReadPixels(x, y, ReadWidth, ReadHeight,
+                     ReadFormat, ReadType, ReadBuffer);
     }
     glFinish();
 }
 
+static const GLsizei Sizes[] = {
+    10,
+    100,
+    500,
+    1000,
+    0
+};
 
-static void DrawNopStateChange(unsigned count)
-{
-    unsigned i;
-    for (i = 0; i < count; i++) {
-        //glDisable(GL_ALPHA_TEST);
-        glDisable(GL_DEPTH_TEST);
-        glDrawArrays(GL_POINTS, 0, 4);
-    }
-    glFinish();
-}
+static const struct {
+    GLenum format;
+    GLenum type;
+    const char *name;
+    GLuint pixel_size;
+} DstFormats[] = {
+    { GL_RGBA, GL_UNSIGNED_BYTE,           "RGBA/ubyte", 4 },
+    //{ GL_BGRA, GL_UNSIGNED_BYTE,           "BGRA/ubyte", 4 },          // OpenGL ES not support
+    //{ GL_RGB, GL_UNSIGNED_SHORT_5_6_5,     "RGB/565", 2 },             // OpenGL ES not support
+    //{ GL_LUMINANCE, GL_UNSIGNED_BYTE,      "L/ubyte", 1 },             // OpenGL ES not support
+    //{ GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, "Z/uint", 4 },              // OpenGL ES not support
+    //{ GL_DEPTH_STENCIL_EXT, GL_UNSIGNED_INT_24_8_EXT, "Z+S/uint", 4 }, // OpenGL ES not support
+    { 0, 0, NULL, 0 }
+};
 
-
-static void DrawStateChange(unsigned count)
-{
-    unsigned i;
-    for (i = 0; i < count; i++) {
-        if (i & 1){
-            //glEnable(GL_TEXTURE_GEN_S);
-            glEnable(GL_DEPTH_TEST);
-        }else{
-            //glDisable(GL_TEXTURE_GEN_S);
-            glDisable(GL_DEPTH_TEST);
-        }
-        glDrawArrays(GL_POINTS, 0, 4);
-    }
-    glFinish();
-}
 
 static void PerfDraw()
 {
-    double rate0, rate1, rate2, overhead;
+    /* loop over formats */
+    for (int fmt = 0; DstFormats[fmt].format; fmt++)
+    {
+        ReadFormat = DstFormats[fmt].format;
+        ReadType = DstFormats[fmt].type;
 
-    rate0 = PerfMeasureRate(DrawNoStateChange);
-    printf("   Draw only: %s draws/second\n", PerfHumanFloat(rate0));
+        /* loop over sizes */
+        for (int sz = 0; Sizes[sz]; sz++)
+        {
+            int imgSize;
 
-    rate1 = PerfMeasureRate(DrawNopStateChange);
-    overhead = 1000.0 * (1.0 / rate1 - 1.0 / rate0);
-    printf("   Draw w/ nop state change: %s draws/sec (overhead: %f ms/draw)\n", PerfHumanFloat(rate1), overhead);
+            ReadWidth = ReadHeight = Sizes[sz];
+            imgSize = ReadWidth * ReadHeight * DstFormats[fmt].pixel_size;
+            ReadBuffer = malloc(imgSize);
 
-    rate2 = PerfMeasureRate(DrawStateChange);
-    overhead = 1000.0 * (1.0 / rate2 - 1.0 / rate0);
-    printf("   Draw w/ state change: %s draws/sec (overhead: %f ms/draw)\n", PerfHumanFloat(rate2), overhead);
+            double rate = PerfMeasureRate(ReadPixels);
+            double mbPerSec = rate * imgSize / (1024.0 * 1024.0);
+
+            printf("glReadPixels(%d x %d, %s): %.1f images/sec, %.1f Mpixels/sec\n",
+                   ReadWidth, ReadHeight,
+                   DstFormats[fmt].name, rate, mbPerSec);
+
+            free(ReadBuffer);
+        }
+    }
 
     exit(0);
 }
