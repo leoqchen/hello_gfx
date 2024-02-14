@@ -14,6 +14,9 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
+
 #include <stdio.h>
 #include <ctype.h>
 #include "linmath.h"
@@ -139,6 +142,27 @@ int main( int argc, const char* argv[] )
         glUseProgram(program);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 #endif
+
+        // dump to disk
+        // ------------
+        static int i = 0;
+        if( i == 0 ){
+            i = 1;
+
+            glFinish();
+            GLubyte* pixels = (GLubyte*)malloc( WinWidth * WinHeight * 4 );
+            glReadPixels(0, 0, WinWidth, WinHeight, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+
+            // Write image Y-flipped because OpenGL
+            stbi_flip_vertically_on_write( 1 );
+            stbi_write_png("/tmp/glVertexPointer.png", WinWidth, WinHeight, 4, pixels, WinWidth*4);
+            printf("dump to /tmp/glVertexPointer.png\n");
+
+            stbi_write_jpg("/tmp/glVertexPointer.jpg", WinWidth, WinHeight, 4, pixels, 95);
+            printf("dump to /tmp/glVertexPointer.jpg\n");
+
+            free( pixels );
+        }
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
