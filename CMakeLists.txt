@@ -204,6 +204,10 @@ set(targets
   "perf_readpixels_glLegacy  \; src/gl/perf_readpixels.cpp"
   "perf_readpixels_gl        \; src/gl/perf_readpixels.cpp"
   "perf_readpixels_gles      \; src/gl/perf_readpixels.cpp"
+
+  "perf_swapbuffers_glLegacy  \; src/gl/perf_swapbuffers.cpp"
+  "perf_swapbuffers_gl        \; src/gl/perf_swapbuffers.cpp"
+  "perf_swapbuffers_gles      \; src/gl/perf_swapbuffers.cpp"
 )
 
 foreach(target ${targets})
