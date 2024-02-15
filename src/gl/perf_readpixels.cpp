@@ -136,11 +136,14 @@ static const struct {
     GLuint pixel_size;
 } DstFormats[] = {
     { GL_RGBA, GL_UNSIGNED_BYTE,           "RGBA/ubyte", 4 },
-    //{ GL_BGRA, GL_UNSIGNED_BYTE,           "BGRA/ubyte", 4 },          // OpenGL ES not support
-    //{ GL_RGB, GL_UNSIGNED_SHORT_5_6_5,     "RGB/565", 2 },             // OpenGL ES not support
-    //{ GL_LUMINANCE, GL_UNSIGNED_BYTE,      "L/ubyte", 1 },             // OpenGL ES not support
-    //{ GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, "Z/uint", 4 },              // OpenGL ES not support
-    //{ GL_DEPTH_STENCIL_EXT, GL_UNSIGNED_INT_24_8_EXT, "Z+S/uint", 4 }, // OpenGL ES not support
+#if !IS_GlEs
+    // OpenGL ES not support
+    { GL_BGRA, GL_UNSIGNED_BYTE,           "BGRA/ubyte", 4 },
+    { GL_RGB, GL_UNSIGNED_SHORT_5_6_5,     "RGB/565", 2 },
+    { GL_LUMINANCE, GL_UNSIGNED_BYTE,      "L/ubyte", 1 },
+    { GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, "Z/uint", 4 },
+    { GL_DEPTH_STENCIL_EXT, GL_UNSIGNED_INT_24_8_EXT, "Z+S/uint", 4 },
+#endif
     { 0, 0, NULL, 0 }
 };
 
