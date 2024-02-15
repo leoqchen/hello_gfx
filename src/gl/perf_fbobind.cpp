@@ -1,3 +1,9 @@
+/**
+ * Measure rate of binding/switching between FBO targets.
+ * Create two framebuffer objects for rendering to two textures.
+ * Ping pong between texturing from one and drawing into the other.
+ */
+
 #if IS_GlEs
 #include <glad/gles2.h>
 #else

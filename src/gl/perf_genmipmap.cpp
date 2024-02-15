@@ -1,3 +1,6 @@
+/**
+ * Measure glGenerateMipmap() speed.
+ */
 #if IS_GlEs
 #include <glad/gles2.h>
 #else

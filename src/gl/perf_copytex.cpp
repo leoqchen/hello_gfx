@@ -1,3 +1,10 @@
+/**
+ * Measure glCopyTex[Sub]Image() rate.
+ * Create a large, off-screen framebuffer object for rendering and
+ * copying the texture data from it since we can't make really large
+ * on-screen windows.
+ */
+
 #if IS_GlEs
 #include <glad/gles2.h>
 #else
