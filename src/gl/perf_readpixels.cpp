@@ -17,6 +17,7 @@
 // settings
 const int WinWidth = 1000;
 const int WinHeight = 1000;
+GLFWwindow* window;
 
 static GLuint VAO;
 static GLuint VBO;
@@ -50,7 +51,7 @@ const char *fragmentShaderSource =
     "layout (location = 0) out vec4 outColor;\n"
     "void main()\n"
     "{\n"
-    "   outColor = vec4( 0.0f, 0.0f, 0.0f, 1.0f );\n"
+    "   outColor = vec4( 1.0f, 1.0f, 1.0f, 1.0f );\n"
     "}\n\0";
 
 static void PerfInit()
@@ -166,6 +167,7 @@ static void PerfDraw()
                    DstFormats[fmt].name, rate, mbPerSec);
 
             free(ReadBuffer);
+            glfwSwapBuffers(window);
         }
     }
 
@@ -189,7 +191,7 @@ int main( int argc, const char* argv[] )
 
     // glfw: initialize and configure
     // ------------------------------
-    GLFWwindow* window = glfwInit_CreateWindow( api, WinWidth, WinHeight );
+    window = glfwInit_CreateWindow( api, WinWidth, WinHeight );
 
     // init
     // -----------

@@ -17,6 +17,7 @@
 // settings
 const int WinWidth = 200;
 const int WinHeight = 200;
+GLFWwindow* window;
 
 static GLuint VAO;
 static GLuint VBO;
@@ -28,10 +29,10 @@ struct vertex
 };
 
 static const struct vertex vertices[4] = {
-    { -1.0, -1.0 },
-    {  1.0, -1.0 },
-    {  1.0,  1.0 },
-    { -1.0,  1.0 }
+    { -0.5, -0.5 },
+    {  0.5, -0.5 },
+    {  0.5,  0.5 },
+    { -0.5,  0.5 }
 };
 
 
@@ -57,7 +58,7 @@ const char *fragmentShaderSource =
     "layout (location = 0) out vec4 outColor;\n"
     "void main()\n"
     "{\n"
-    "   outColor = vec4( 0.0f, 0.0f, 0.0f, 1.0f );\n"
+    "   outColor = vec4( 1.0f, 1.0f, 1.0f, 1.0f );\n"
     "}\n\0";
 
 static void PerfInit()
@@ -143,14 +144,17 @@ static void PerfDraw()
 
     rate0 = PerfMeasureRate(DrawNoStateChange);
     printf("   Draw only: %s draws/second\n", PerfHumanFloat(rate0));
+    glfwSwapBuffers(window);
 
     rate1 = PerfMeasureRate(DrawNopStateChange);
     overhead = 1000.0 * (1.0 / rate1 - 1.0 / rate0);
     printf("   Draw w/ nop state change: %s draws/sec (overhead: %f ms/draw)\n", PerfHumanFloat(rate1), overhead);
+    glfwSwapBuffers(window);
 
     rate2 = PerfMeasureRate(DrawStateChange);
     overhead = 1000.0 * (1.0 / rate2 - 1.0 / rate0);
     printf("   Draw w/ state change: %s draws/sec (overhead: %f ms/draw)\n", PerfHumanFloat(rate2), overhead);
+    glfwSwapBuffers(window);
 
     exit(0);
 }
@@ -172,7 +176,7 @@ int main( int argc, const char* argv[] )
 
     // glfw: initialize and configure
     // ------------------------------
-    GLFWwindow* window = glfwInit_CreateWindow( api, WinWidth, WinHeight );
+    window = glfwInit_CreateWindow( api, WinWidth, WinHeight );
 
     // init
     // -----------

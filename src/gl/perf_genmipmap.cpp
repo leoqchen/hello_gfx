@@ -18,6 +18,7 @@
 // settings
 const int WinWidth = 200;
 const int WinHeight = 200;
+GLFWwindow* window;
 
 static GLboolean DrawPoint = GL_TRUE;
 static GLuint vertex_array;
@@ -174,6 +175,7 @@ static void PerfDraw()
 
             printf("   glGenerateMipmap(levels %d..%d): %.2f gens/sec\n",
                         BaseLevel + 1, MaxLevel, rate);
+            glfwSwapBuffers(window);
         }
     }
 
@@ -197,7 +199,7 @@ int main( int argc, const char* argv[] )
 
     // glfw: initialize and configure
     // ------------------------------
-    GLFWwindow* window = glfwInit_CreateWindow( api, WinWidth, WinHeight );
+    window = glfwInit_CreateWindow( api, WinWidth, WinHeight );
 
     // init
     // -----------
