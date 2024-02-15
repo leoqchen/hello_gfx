@@ -124,11 +124,9 @@ double PerfMeasureRate(PerfRateFunc f)
     return rate;
 }
 
-/* Note static buffer, can only use once per printf.
- */
 const char* PerfHumanFloat( double d )
 {
-    static char buf[80];
+    char buf[128];
 
     if (d > 1000000000.0)
         snprintf(buf, sizeof(buf), "%.1f billion", d / 1000000000.0);
@@ -139,7 +137,7 @@ const char* PerfHumanFloat( double d )
     else
         snprintf(buf, sizeof(buf), "%.1f", d);
 
-    return buf;
+    return strdup( buf );
 }
 
 float DegreeFromRadian( float radian )
