@@ -208,6 +208,10 @@ set(targets
   "perf_swapbuffers_glLegacy  \; src/gl/perf_swapbuffers.cpp"
   "perf_swapbuffers_gl        \; src/gl/perf_swapbuffers.cpp"
   "perf_swapbuffers_gles      \; src/gl/perf_swapbuffers.cpp"
+
+  "perf_teximage_glLegacy  \; src/gl/perf_teximage.cpp"
+  "perf_teximage_gl        \; src/gl/perf_teximage.cpp"
+  "perf_teximage_gles      \; src/gl/perf_teximage.cpp"
 )
 
 foreach(target ${targets})
