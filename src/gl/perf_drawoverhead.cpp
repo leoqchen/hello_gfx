@@ -159,6 +159,7 @@ static void PerfDraw()
     printf("   Draw w/ state change: %s draws/sec (overhead: %f ms/draw)\n", PerfHumanFloat(rate2), overhead);
     glfwSwapBuffers(window);
 
+    glErrorCheck();
     exit(0);
 }
 

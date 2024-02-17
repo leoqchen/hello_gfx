@@ -180,6 +180,7 @@ int main( int argc, const char* argv[] )
         glfwPollEvents();
         frame++;
     }
+    glErrorCheck();
 
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------

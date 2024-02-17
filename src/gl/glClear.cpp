@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include "glfwutils.h"
+#include "glutils.h"
 #include "myutils.h"
 
 
@@ -62,6 +63,7 @@ int main( int argc, const char* argv[] )
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
+    glErrorCheck();
 
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------

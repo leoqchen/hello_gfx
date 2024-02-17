@@ -221,6 +221,7 @@ static void PerfDraw()
     printf("   Shader2 fill: %s pixels/second\n",
                 PerfHumanFloat(rate));
 
+    glErrorCheck();
     exit(0);
 }
 

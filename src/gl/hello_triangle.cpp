@@ -136,6 +136,7 @@ int main( int argc, const char* argv[] )
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
+    glErrorCheck();
 
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------

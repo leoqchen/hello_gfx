@@ -359,6 +359,7 @@ static void PerfDraw()
         printf("\n");
     }
 
+    glErrorCheck();
     exit(0);
 }
 

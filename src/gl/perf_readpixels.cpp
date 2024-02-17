@@ -177,6 +177,7 @@ static void PerfDraw()
         }
     }
 
+    glErrorCheck();
     exit(0);
 }
 

@@ -182,6 +182,7 @@ void PerfDraw()
     double rate = PerfMeasureRate(FBOBind);
     printf("  FBO Binding: %1.f binds/sec\n", rate);
 
+    glErrorCheck();
     exit(0);
 }
 

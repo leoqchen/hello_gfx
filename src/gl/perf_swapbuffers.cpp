@@ -221,6 +221,7 @@ int main( int argc, const char* argv[] )
             glfwSwapBuffers(window);
             glfwPollEvents();
         }
+        glErrorCheck();
         exit( 0 );
     }
 
