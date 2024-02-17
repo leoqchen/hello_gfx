@@ -23,7 +23,8 @@
 
 
 // settings
-int WinWidth = 200, WinHeight = 200;
+static int WinWidth = 200;
+static int WinHeight = 200;
 
 static GLuint VAO, VBO, FBO, RBO, Tex, FBTex;
 static GLuint program;

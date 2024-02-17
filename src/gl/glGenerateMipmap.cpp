@@ -19,8 +19,8 @@
 #include "myutils.h"
 
 // settings
-const unsigned int WinWidth = 320*2;
-const unsigned int WinHeight = 240*2;
+static const int WinWidth = 320*2;
+static const int WinHeight = 240*2;
 
 
 const char *vertexShaderSource =

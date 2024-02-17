@@ -19,9 +19,9 @@
 
 
 // settings
-const int WinWidth = 200;
-const int WinHeight = 200;
-GLFWwindow* window;
+static const int WinWidth = 200;
+static const int WinHeight = 200;
+static GLFWwindow* window;
 
 static GLboolean DrawPoint = GL_TRUE;
 static GLuint vertex_array;

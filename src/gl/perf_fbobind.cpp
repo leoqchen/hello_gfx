@@ -22,7 +22,8 @@
 
 
 // settings
-int WinWidth = 200, WinHeight = 200;
+static int WinWidth = 200;
+static int WinHeight = 200;
 
 static GLuint VAO, VBO;
 static GLuint FBO[2], Tex[2];

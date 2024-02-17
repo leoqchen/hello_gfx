@@ -19,9 +19,9 @@
 
 
 // settings
-const int WinWidth = 1000;
-const int WinHeight = 1000;
-GLFWwindow* window;
+static const int WinWidth = 1000;
+static const int WinHeight = 1000;
+static GLFWwindow* window;
 
 static GLuint VAO;
 static GLuint VBO;

@@ -18,9 +18,9 @@
 #include "myutils.h"
 
 // settings
-const int WinWidth = 100;
-const int WinHeight = 100;
-GLFWwindow* window;
+static const int WinWidth = 100;
+static const int WinHeight = 100;
+static GLFWwindow* window;
 
 static GLuint VAO;
 static GLuint VBO;

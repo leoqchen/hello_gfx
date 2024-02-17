@@ -21,8 +21,8 @@
 
 
 // settings
-const unsigned int WinWidth = 800;
-const unsigned int WinHeight = 800;
+static const int WinWidth = 800;
+static const int WinHeight = 800;
 
 typedef struct Vertex{
     vec3 pos;

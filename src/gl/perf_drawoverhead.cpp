@@ -1,3 +1,6 @@
+/**
+ * Measure drawing overhead
+ */
 #if IS_GlEs
 #include <glad/gles2.h>
 #else
@@ -15,9 +18,9 @@
 
 
 // settings
-const int WinWidth = 200;
-const int WinHeight = 200;
-GLFWwindow* window;
+static const int WinWidth = 200;
+static const int WinHeight = 200;
+static GLFWwindow* window;
 
 static GLuint VAO;
 static GLuint VBO;
