@@ -212,6 +212,10 @@ set(targets
   "perf_teximage_glLegacy  \; src/gl/perf_teximage.cpp"
   "perf_teximage_gl        \; src/gl/perf_teximage.cpp"
   "perf_teximage_gles      \; src/gl/perf_teximage.cpp"
+
+  "perf_vbo_glLegacy  \; src/gl/perf_vbo.cpp"
+  "perf_vbo_gl        \; src/gl/perf_vbo.cpp"
+  "perf_vbo_gles      \; src/gl/perf_vbo.cpp"
 )
 
 foreach(target ${targets})
