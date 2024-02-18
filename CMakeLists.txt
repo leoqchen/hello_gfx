@@ -216,6 +216,10 @@ set(targets
   "perf_vbo_glLegacy  \; src/gl/perf_vbo.cpp"
   "perf_vbo_gl        \; src/gl/perf_vbo.cpp"
   "perf_vbo_gles      \; src/gl/perf_vbo.cpp"
+
+  "perf_vertexrate_glLegacy  \; src/gl/perf_vertexrate.cpp"
+  "perf_vertexrate_gl        \; src/gl/perf_vertexrate.cpp"
+  "perf_vertexrate_gles      \; src/gl/perf_vertexrate.cpp"
 )
 
 foreach(target ${targets})
