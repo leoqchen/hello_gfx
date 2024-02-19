@@ -11,6 +11,9 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
+
 #include <assert.h>
 #include <stdio.h>
 #include <ctype.h>
@@ -78,14 +81,14 @@ static const Vertex vertices[4] = {
 
 #if IS_GlLegacy
 const char *vertexShaderSource =
-    "attribute vec4 VertCoord;\n"
-    "attribute vec4 TexCoord0;\n"
-    "attribute vec4 TexCoord1;\n"
+    "attribute vec2 VertCoord;\n"
+    "attribute vec2 TexCoord0;\n"
+    "attribute vec2 TexCoord1;\n"
     "void main()\n"
     "{\n"
-    "    gl_Position = gl_ModelViewProjectionMatrix * VertCoord;\n"
-    "    gl_TexCoord[0] = TexCoord0;\n"
-    "    gl_TexCoord[1] = TexCoord1;\n"
+    "    gl_Position = gl_ModelViewProjectionMatrix * vec4( VertCoord, 0.0, 1.0 );\n"
+    "    gl_TexCoord[0] = vec4( TexCoord0, 0.0, 0.0 );\n"
+    "    gl_TexCoord[1] = vec4( TexCoord1, 0.0, 0.0 );\n"
     "}\n";
 
 const char *fragmentShaderSource1 =
@@ -126,7 +129,7 @@ const char *vertexShaderSource =
     "out vec2 v_TexCoord1;\n"
     "void main()\n"
     "{\n"
-    "    gl_Position = MVP * vec4( VertCoord, 0.0, 1.0 );\n"
+    "    gl_Position = MVP * vec4( VertCoord.x, VertCoord.y, 0.0, 1.0 );\n"
     "    v_TexCoord0 = TexCoord0;\n"
     "    v_TexCoord1 = TexCoord1;\n"
     "}\n";
@@ -177,20 +180,24 @@ const char *fragmentShaderSource2 =
 static void DrawPolygonArray( GLint VertCoord_attr, GLint TexCoord0_attr, GLint TexCoord1_attr)
 {
 #if IS_GlLegacy
-    //TODO: 只传输一次
-    glVertexAttribPointer(VertCoord_attr, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), &vertices[0].VertCoords);
-    glEnableVertexAttribArray(VertCoord_attr);
+    static int init = 0;
+    if( init == 0 ) {
+        init = 1;
 
-    glVertexAttribPointer(TexCoord0_attr, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), &vertices[0].Tex0Coords);
-    glEnableVertexAttribArray(TexCoord0_attr);
+        glVertexAttribPointer(VertCoord_attr, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), &vertices[0].VertCoords);
+        glEnableVertexAttribArray(VertCoord_attr);
 
-    glVertexAttribPointer(TexCoord1_attr, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), &vertices[0].Tex1Coords);
-    glEnableVertexAttribArray(TexCoord1_attr);
+        glVertexAttribPointer(TexCoord0_attr, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), &vertices[0].Tex0Coords);
+        glEnableVertexAttribArray(TexCoord0_attr);
+
+        glVertexAttribPointer(TexCoord1_attr, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), &vertices[0].Tex1Coords);
+        glEnableVertexAttribArray(TexCoord1_attr);
+    }
 #else
-    //TODO: 只传输一次
     static int init = 0;
     if( init == 0 ){
         init = 1;
+
         glGenVertexArrays(1, &VAO);
         glBindVertexArray(VAO);
 
@@ -207,11 +214,8 @@ static void DrawPolygonArray( GLint VertCoord_attr, GLint TexCoord0_attr, GLint 
         glVertexAttribPointer(TexCoord1_attr, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, Tex1Coords));
         glEnableVertexAttribArray(TexCoord1_attr);
     }
-
-
 #endif
 
-    glErrorCheck();//XXX
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 }
 
@@ -221,7 +225,6 @@ static void Draw(unsigned count)
 
     for (int i = 0; i < count; i++) {
         Yrot = 0.05 * i;
-        glErrorCheck();//XXX
 
 #if IS_GlLegacy
         glPushMatrix(); /* modelview matrix */
@@ -232,15 +235,14 @@ static void Draw(unsigned count)
 #else
         mat4x4 m;
         mat4x4_dup( m, M );
-        mat4x4_translate( m, 0.0, 0.0, -EyeDist );
-        mat4x4_rotate( m, m, Zrot, 0, 0, 1 );
-        mat4x4_rotate( m, m, Yrot, 0, 1, 0 );
-        mat4x4_rotate( m, m, Xrot, 1, 0, 0 );
+        mat4x4_translate_in_place( m, 0.0, 0.0, -EyeDist );
+        mat4x4_rotate( m, m, 0, 0, 1, Zrot );
+        mat4x4_rotate( m, m, 0, 1, 0, Yrot );
+        mat4x4_rotate( m, m, 1, 0, 0, Xrot );
 
         mat4x4 mvp;
         mat4x4_mul( mvp, P, m );
 #endif
-        glErrorCheck();//XXX
 
         glUseProgram(program1);
         glActiveTexture(GL_TEXTURE0 + 0);
@@ -253,7 +255,6 @@ static void Draw(unsigned count)
         glUniformMatrix4fv( prog1_MVP_uLoc, 1, GL_FALSE, (const GLfloat*)&mvp );
 #endif
         DrawPolygonArray(prog1_VertCoord_aLoc, prog1_TexCoord0_aLoc, prog1_TexCoord1_aLoc);
-        glErrorCheck();//XXX
 
         glUseProgram(program2);
         glActiveTexture(GL_TEXTURE0 + 0);
@@ -266,13 +267,11 @@ static void Draw(unsigned count)
         glUniformMatrix4fv( prog2_MVP_uLoc, 1, GL_FALSE, (const GLfloat*)&mvp );
 #endif
         DrawPolygonArray(prog2_VertCoord_aLoc, prog2_TexCoord0_aLoc, prog2_TexCoord1_aLoc);
-        glErrorCheck();//XXX
 
 #if IS_GlLegacy
         glPopMatrix();
 #endif
     }
-    glErrorCheck();//XXX
 
     glfwSwapBuffers( window );
 }
@@ -303,22 +302,30 @@ static void InitTextures()
         GLubyte *image = NULL;
 
         image = SGI_LoadRGBImage(TexFiles[i], &imgWidth, &imgHeight, &imgFormat);
-        printf("%s: width = %d, height = %d, format = %s\n", TexFiles[i], imgWidth, imgHeight, glFormatName(imgFormat));//XXX
+        printf("%s: width = %d, height = %d, format = %s\n", TexFiles[i], imgWidth, imgHeight, glFormatName(imgFormat));
         if (!image) {
             printf("Couldn't read %s\n", TexFiles[i]);
             exit(0);
         }
 
+        if( 0 ){
+            // dump image
+            stbi_flip_vertically_on_write(1);
+            int components = (imgFormat == GL_RGB) ? 3 : 4;
+            char filename[128];
+            sprintf(filename, "/tmp/%d.png", i);
+            stbi_write_png(filename, imgWidth, imgHeight, components, image, imgWidth * components);
+            printf("dump to %s\n", filename);
+        }
+
         glActiveTexture(GL_TEXTURE0 + i);
         glBindTexture(GL_TEXTURE_2D, texObj[i]);
-        glErrorCheck();//XXX
 #if IS_GlLegacy
         gluBuild2DMipmaps(GL_TEXTURE_2D, 4, imgWidth, imgHeight, imgFormat, GL_UNSIGNED_BYTE, image);
 #else
         glTexImage2D( GL_TEXTURE_2D, 0, imgFormat, imgWidth, imgHeight, 0, imgFormat, GL_UNSIGNED_BYTE, image );
         glGenerateMipmap( GL_TEXTURE_2D );
 #endif
-        glErrorCheck();//XXX
         free(image);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -326,7 +333,6 @@ static void InitTextures()
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
 
-        glErrorCheck();//XXX
     }
 }
 
@@ -352,7 +358,6 @@ static void InitPrograms()
         prog1_VertCoord_aLoc = glGetAttribLocation(program1, "VertCoord");
         prog1_TexCoord0_aLoc = glGetAttribLocation(program1, "TexCoord0");
         prog1_TexCoord1_aLoc = glGetAttribLocation(program1, "TexCoord1");
-        glErrorCheck();//XXX
 
         printf("prog1_VertCoord_aLoc = %d\n", prog1_VertCoord_aLoc);
         printf("prog1_TexCoord0_aLoc = %d\n", prog1_TexCoord0_aLoc);
@@ -381,7 +386,6 @@ static void InitPrograms()
         prog2_VertCoord_aLoc = glGetAttribLocation(program2, "VertCoord");
         prog2_TexCoord0_aLoc = glGetAttribLocation(program2, "TexCoord0");
         prog2_TexCoord1_aLoc = glGetAttribLocation(program2, "TexCoord1");
-        glErrorCheck();//XXX
 
         printf("prog2_VertCoord_aLoc = %d\n", prog2_VertCoord_aLoc);
         printf("prog2_TexCoord0_aLoc = %d\n", prog2_TexCoord0_aLoc);
@@ -398,9 +402,7 @@ static void InitPrograms()
 static void PerfInit()
 {
     InitTextures();
-    glErrorCheck();//XXX
     InitPrograms();
-    glErrorCheck();//XXX
 
     glEnable(GL_DEPTH_TEST);
     glClearColor(.6, .6, .9, 0);
@@ -408,7 +410,6 @@ static void PerfInit()
     glColor3f(1.0, 1.0, 1.0);
 #endif
 
-    glErrorCheck();//XXX
 }
 
 static void Reshape()
@@ -468,6 +469,7 @@ int main( int argc, const char* argv[] )
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
+    glErrorCheck();
 
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
