@@ -197,9 +197,9 @@ set(targets
   "perf_genmipmap_gl        \; src/gl/perf_genmipmap.cpp"
   "perf_genmipmap_gles      \; src/gl/perf_genmipmap.cpp"
 
-#  "perf_glslstatechange_glLegacy  \; src/gl/perf_glslstatechange.cpp"
-#  "perf_glslstatechange_gl        \; src/gl/perf_glslstatechange.cpp"
-#  "perf_glslstatechange_gles      \; src/gl/perf_glslstatechange.cpp"
+  "perf_glslstatechange_glLegacy  \; src/gl/perf_glslstatechange.cpp"
+  "perf_glslstatechange_gl        \; src/gl/perf_glslstatechange.cpp"
+  "perf_glslstatechange_gles      \; src/gl/perf_glslstatechange.cpp"
 
   "perf_readpixels_glLegacy  \; src/gl/perf_readpixels.cpp"
   "perf_readpixels_gl        \; src/gl/perf_readpixels.cpp"
