@@ -175,7 +175,13 @@ set(targets
   "multiVBO_gl        \; src/gl/multiVBO.cpp"
   "multiVBO_gles      \; src/gl/multiVBO.cpp"
 
-  # perf test
+  # Bug复现测试
+  #----------------------------------------------------
+  "gl_PointSize_glLegacy  \; src/gl/gl_PointSize.cpp"
+  "gl_PointSize_gl        \; src/gl/gl_PointSize.cpp"
+  "gl_PointSize_gles      \; src/gl/gl_PointSize.cpp"
+
+  # perf test 性能测试
   #----------------------------------------------------
   "perf_copytex_glLegacy  \; src/gl/perf_copytex.cpp"
   "perf_copytex_gl        \; src/gl/perf_copytex.cpp"
