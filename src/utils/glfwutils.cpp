@@ -77,7 +77,7 @@ GLFWwindow* glfwInit_CreateWindow( api_t api, int width, int height )
     printf("%s: GL_VERSON = %s\n", __func__, glversion);
     glfwSetWindowTitle( window, glversion );
 
-#if !IS_GlEs
+#if IS_GlLegacy
     GLint profileBit;
     glGetIntegerv( GL_CONTEXT_PROFILE_MASK, &profileBit );
     printf("%s: GL_CONTEXT_PROFILE_MASK = %s\n", __func__, glContextProfileBitName(profileBit));

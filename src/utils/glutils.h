@@ -23,7 +23,7 @@ const char* glslVersion( api_t api );
     {\
       GLenum error;\
       if( (error = glGetError()) != GL_NO_ERROR ){\
-        printf("glGetError: %s, %s:%s:%d\n", glErrorName(error), __FILE__, __func__, __LINE__);\
+        printf("glGetError: %s, %s:%s:%d\n", glErrorName(error), __func__, __FILE__, __LINE__);\
         exit(EXIT_FAILURE);\
       }\
     }
