@@ -47,6 +47,9 @@ const char *vertexShaderSource =
     "void main()\n"
     "{\n"
     "   gl_Position = vec4( vPos.x, vPos.y, 0.0f, 1.0f );\n"
+#if IS_GlEs
+    "   gl_PointSize = 1.0;\n" // make IMG gpu happy
+#endif
     "}\n\0";
 
 const char *fragmentShaderSource =
