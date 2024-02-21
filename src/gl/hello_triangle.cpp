@@ -69,7 +69,11 @@ int main( int argc, const char* argv[] )
     glGetIntegerv(GL_MINOR_VERSION, &minor_version);
     printf("GL_MAJOR_VERSION = %d\n", major_version);
     printf("GL_MINOR_VERSION = %d\n", minor_version);
-    printf("GL_EXTENSIONS = %s\n", glGetString(GL_EXTENSIONS));
+
+#if IS_GlLegacy
+    printf("GL_EXTENSIONS = %s\n", glGetString(GL_EXTENSIONS)); // GL_EXTENSIONS is removed from core OpenGL 3.1 aand above
+#endif
+
     int num_extensions = 0;
     glGetIntegerv(GL_NUM_EXTENSIONS, &num_extensions);
     printf("GL_NUM_EXTENSIONS = %d\n", num_extensions);
