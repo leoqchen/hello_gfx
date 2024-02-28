@@ -31,11 +31,10 @@ struct vertex
     GLfloat x, y;
 };
 
-static const struct vertex vertices[4] = {
+static const struct vertex vertices[] = {
     { -0.5, -0.5 },
     {  0.5, -0.5 },
-    {  0.5,  0.5 },
-    { -0.5,  0.5 }
+    {  0.0,  0.5 },
 };
 
 
@@ -110,7 +109,7 @@ static void DrawNoStateChange(unsigned count)
 {
     unsigned i;
     for (i = 0; i < count; i++) {
-        glDrawArrays(GL_POINTS, 0, 4);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
     }
     glFinish();
 }
@@ -122,7 +121,7 @@ static void DrawNopStateChange(unsigned count)
     for (i = 0; i < count; i++) {
         //glDisable(GL_ALPHA_TEST);
         glDisable(GL_DEPTH_TEST);
-        glDrawArrays(GL_POINTS, 0, 4);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
     }
     glFinish();
 }
@@ -139,7 +138,7 @@ static void DrawStateChange(unsigned count)
             //glDisable(GL_TEXTURE_GEN_S);
             glDisable(GL_DEPTH_TEST);
         }
-        glDrawArrays(GL_POINTS, 0, 4);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
     }
     glFinish();
 }
