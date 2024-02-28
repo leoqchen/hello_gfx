@@ -33,7 +33,7 @@ static GLint samplerLoc;
 const GLsizei MinSize = 16, MaxSize = 4096;
 static GLsizei TexSize;
 
-static const GLboolean DrawPoint = GL_TRUE;
+static GLboolean DrawPoint = GL_TRUE;
 static const GLboolean TexSubImage4 = GL_FALSE;
 
 struct vertex
@@ -61,6 +61,9 @@ const char *vertexShaderSource =
     "{\n"
     "   gl_Position = vec4( vPos.x, vPos.y, 0.0f, 1.0f );\n"
     "   v_texCoord = vTexCoord;\n"
+    #if IS_GlEs
+    "   gl_PointSize = 1.0;\n" // make IMG gpu happy
+    #endif
     "}\n\0";
 
 const char *fragmentShaderSource =
@@ -266,13 +269,14 @@ void PerfDraw()
                 mbPerSec = 0.0;
             }
 
-            printf("  glCopyTex%sImage(%d x %d): %.1f copies/sec, %.1f Mpixels/sec\n",
-                        (sub ? "Sub" : ""), TexSize, TexSize, rate, mbPerSec);
+            printf("  glCopyTex%sImage(%d x %d)%s: %.1f copies/sec, %.1f Mpixels/sec\n",
+                   (sub ? "Sub" : ""), TexSize, TexSize,
+                   (DrawPoint) ? " + Draw" : "",
+                   rate, mbPerSec);
         }
     }
 
     glErrorCheck();
-    exit(0);
 }
 
 
@@ -305,7 +309,16 @@ int main( int argc, const char* argv[] )
     {
         // render
         // ------
+        DrawPoint = GL_FALSE;
+        printf("Draw = %d\n", DrawPoint);
         PerfDraw();
+        printf("\n");
+
+        DrawPoint = GL_TRUE;
+        printf("Draw = %d\n", DrawPoint);
+        PerfDraw();
+        printf("\n");
+        exit(0);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
