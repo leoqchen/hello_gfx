@@ -170,7 +170,8 @@ static void PerfDraw()
                 TexWidth, TexHeight, NumLevels);
 
     /* loop over base levels 0, 2, 4 */
-    for (BaseLevel = 0; BaseLevel <= 4; BaseLevel += 2) {
+//    for (BaseLevel = 0; BaseLevel <= 4; BaseLevel += 2) {
+    for (BaseLevel = 0; BaseLevel <= 2; BaseLevel += 2) {
 
         /* loop over max level */
         for (MaxLevel = NumLevels; MaxLevel > BaseLevel; MaxLevel--) {
