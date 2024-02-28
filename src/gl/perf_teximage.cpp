@@ -30,7 +30,7 @@ static GLubyte *TexImage = NULL;
 static GLsizei TexSize;
 static GLenum TexIntFormat, TexSrcFormat, TexSrcType;
 
-static const GLboolean DrawPoint = GL_TRUE;
+static GLboolean DrawPoint = GL_TRUE;
 static const GLboolean TexSubImage4 = GL_FALSE;
 
 struct vertex
@@ -256,14 +256,14 @@ static const struct {
     GLboolean full_test;
 } SrcFormats[] = {
     { GL_RGBA, GL_UNSIGNED_BYTE,       GL_RGBA, "RGBA/ubyte", 4,   GL_TRUE },
-    { GL_RGB, GL_UNSIGNED_BYTE,        GL_RGB, "RGB/ubyte", 3,     GL_FALSE },
-    { GL_RGB, GL_UNSIGNED_SHORT_5_6_5, GL_RGB, "RGB/565", 2,       GL_FALSE },
-#if !IS_GlEs
-    { GL_BGRA, GL_UNSIGNED_BYTE,       GL_RGBA, "BGRA/ubyte", 4,   GL_FALSE },
-#endif
-#if !IS_Gl
-    { GL_LUMINANCE, GL_UNSIGNED_BYTE,  GL_LUMINANCE, "L/ubyte", 1, GL_FALSE },
-#endif
+//    { GL_RGB, GL_UNSIGNED_BYTE,        GL_RGB, "RGB/ubyte", 3,     GL_FALSE },
+//    { GL_RGB, GL_UNSIGNED_SHORT_5_6_5, GL_RGB, "RGB/565", 2,       GL_FALSE },
+//#if !IS_GlEs
+//    { GL_BGRA, GL_UNSIGNED_BYTE,       GL_RGBA, "BGRA/ubyte", 4,   GL_FALSE },
+//#endif
+//#if !IS_Gl
+//    { GL_LUMINANCE, GL_UNSIGNED_BYTE,  GL_LUMINANCE, "L/ubyte", 1, GL_FALSE },
+//#endif
     { 0, 0, 0, NULL, 0, 0 }
 };
 
@@ -352,10 +352,11 @@ static void PerfDraw()
                     mbPerSec = 0;
                 }
 
-                printf("  %s(%s %d x %d): "
+                printf("  %s(%s %d x %d)%s: "
                        "%.1f images/sec, %.1f MB/sec\n",
-                       mode_name[mode],
-                       SrcFormats[fmt].name, TexSize, TexSize, rate, mbPerSec);
+                       mode_name[mode], SrcFormats[fmt].name, TexSize, TexSize,
+                       (DrawPoint) ? " + Draw" : "",
+                       rate, mbPerSec);
                 glfwSwapBuffers(window);
             }
         }
@@ -363,7 +364,6 @@ static void PerfDraw()
     }
 
     glErrorCheck();
-    exit(0);
 }
 
 int main( int argc, const char* argv[] )
@@ -395,7 +395,16 @@ int main( int argc, const char* argv[] )
     {
         // render
         // ------
+        DrawPoint = GL_FALSE;
+        printf("Draw = %d\n", DrawPoint);
         PerfDraw();
+        printf("\n");
+
+        DrawPoint = GL_TRUE;
+        printf("Draw = %d\n", DrawPoint);
+        PerfDraw();
+        printf("\n");
+        exit(0);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
