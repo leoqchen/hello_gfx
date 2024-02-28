@@ -263,15 +263,16 @@ static void PerfDraw()
     }
     printf("\n");
 
-    for (sz = 0; Sizes[sz] < VBOSize; sz++) {
-        SubSize = Sizes[sz];
-        rate = PerfMeasureRate(BatchUploadSubVBO);
-        mbPerSec = rate * SubSize / (1024.0 * 1024.0);
-        printf("  glBufferSubData(size = %d, VBOSize = %d), batched: %.1f MB/sec\n",
-                    SubSize, VBOSize, mbPerSec);
-        glfwSwapBuffers(window);
-    }
-    printf("\n");
+    //TODO:FIXME: IMG gpu hang
+//    for (sz = 0; Sizes[sz] < VBOSize; sz++) {
+//        SubSize = Sizes[sz];
+//        rate = PerfMeasureRate(BatchUploadSubVBO);
+//        mbPerSec = rate * SubSize / (1024.0 * 1024.0);
+//        printf("  glBufferSubData(size = %d, VBOSize = %d), batched: %.1f MB/sec\n",
+//                    SubSize, VBOSize, mbPerSec);
+//        glfwSwapBuffers(window);
+//    }
+//    printf("\n");
 
     /* Create/Draw/Destroy
      */
