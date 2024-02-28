@@ -47,6 +47,15 @@ api_t parse_api( const char* str )
 }
 #endif
 
+const char* apiName( api_t api )
+{
+    char name[32];
+    sprintf( name, "%s %d.%d",
+             (api.api == API_GLLegacy) ? "glLegacy" : (api.api == API_GL) ? "gl" : (api.api == API_GLES) ? "gles" : "vulkan",
+             api.major, api.minor);
+    return strdup( name );
+}
+
 uint64_t PerfGetMillisecond()
 {
     struct timespec now;

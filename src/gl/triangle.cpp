@@ -78,7 +78,7 @@ int main( int argc, const char* argv[] )
         api.major = argv[1][0] - '0';
     if( argc >= 3 && isdigit(argv[2][0]) )
         api.minor = argv[2][0] - '0';
-    printf("command line: major = %d, minor = %d\n", api.major, api.minor);
+    printf("%s: %s\n", argv[0], apiName(api));
 
     // glfw: initialize and configure
     // ------------------------------

@@ -14,6 +14,8 @@ typedef struct{
     int8_t minor;
 }api_t;
 
+const char* apiName( api_t api );
+
 uint64_t PerfGetMillisecond();
 double PerfGetSecond();
 typedef void (*PerfRateFunc)(unsigned count);
