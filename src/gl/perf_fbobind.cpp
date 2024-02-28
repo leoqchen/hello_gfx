@@ -28,7 +28,7 @@ static int WinHeight = 200;
 static GLuint VAO, VBO;
 static GLuint FBO[2], Tex[2];
 static const GLsizei TexSize = 512;
-static const GLboolean DrawPoint = GL_TRUE;
+static GLboolean DrawPoint = GL_TRUE;
 static GLuint program;
 static GLint samplerLoc;
 
@@ -56,6 +56,9 @@ const char *vertexShaderSource =
     "{\n"
     "   gl_Position = vec4( vPos.x, vPos.y, 0.0f, 1.0f );\n"
     "   v_texCoord = vTexCoord;\n"
+    #if IS_GlEs
+    "   gl_PointSize = 1.0;\n" // make IMG gpu happy
+    #endif
     "}\n\0";
 
 const char *fragmentShaderSource =
@@ -183,7 +186,6 @@ void PerfDraw()
     printf("  FBO Binding: %1.f binds/sec\n", rate);
 
     glErrorCheck();
-    exit(0);
 }
 
 
@@ -216,7 +218,16 @@ int main( int argc, const char* argv[] )
     {
         // render
         // ------
+        DrawPoint = GL_FALSE;
+        printf("Draw = %d\n", DrawPoint);
         PerfDraw();
+        printf("\n");
+
+        DrawPoint = GL_TRUE;
+        printf("Draw = %d\n", DrawPoint);
+        PerfDraw();
+        printf("\n");
+        exit(0);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
