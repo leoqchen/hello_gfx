@@ -179,14 +179,15 @@ static void PerfDraw()
 
             rate = PerfMeasureRate(GenMipmap);
 
-            printf("   glGenerateMipmap(levels %d..%d): %.2f gens/sec\n",
-                        BaseLevel + 1, MaxLevel, rate);
+            printf("   glGenerateMipmap(levels %d..%d)%s: %.2f gens/sec\n",
+                   BaseLevel + 1, MaxLevel,
+                   (DrawPoint) ? " + Draw" : "",
+                   rate);
             glfwSwapBuffers(window);
         }
     }
 
     glErrorCheck();
-    exit(0);
 }
 
 int main( int argc, const char* argv[] )
@@ -218,7 +219,16 @@ int main( int argc, const char* argv[] )
     {
         // render
         // ------
+        DrawPoint = GL_FALSE;
+        printf("Draw = %d\n", DrawPoint);
         PerfDraw();
+        printf("\n");
+
+        DrawPoint = GL_TRUE;
+        printf("Draw = %d\n", DrawPoint);
+        PerfDraw();
+        printf("\n");
+        exit(0);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
