@@ -68,17 +68,7 @@ const char *fragmentShaderSource =
 
 int main( int argc, const char* argv[] )
 {
-#if IS_GlEs
-    api_t api = {.api = API_GLES, .major = 3, .minor = 2};
-#elif IS_GlLegacy
-    api_t api = {.api = API_GLLegacy, .major = 3, .minor = 0};
-#else
-    api_t api = {.api = API_GL, .major = 3, .minor = 3};
-#endif
-    if( argc >= 2 && isdigit(argv[1][0]) )
-        api.major = argv[1][0] - '0';
-    if( argc >= 3 && isdigit(argv[2][0]) )
-        api.minor = argv[2][0] - '0';
+    api_t api = apiInitial( API_Current, argc, argv );
     printf("%s: %s\n", argv[0], apiName(api));
 
     // glfw: initialize and configure

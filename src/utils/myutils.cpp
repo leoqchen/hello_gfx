@@ -1,19 +1,109 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
+#include <ctype.h>
 #include <time.h>
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
 #include <math.h>
 
 #include "myutils.h"
 
-#if 0
-api_t parse_api( const char* str )
+
+static int isnumber( const char* str )
+{
+    int len = strlen( str );
+    for( int i=0; i < len; i++ ){
+        if( isdigit(str[i]) == 0 )
+            return 0; // is not a number
+    }
+
+    return 1; // is a number
+}
+
+int argsContain( const char* argName, int argc, const char* argv[] )
+{
+    for( int i=0; i < argc; i++ ){
+        if( (strcmp( argName, argv[i] ) == 0) && ((i+1) < argc) ){
+            //if found
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+const char* stringFromArgs( const char* argName, int argc, const char* argv[] )
+{
+    for( int i=0; i < argc; i++ ){
+        if( (strcmp( argName, argv[i] ) == 0) && ((i+1) < argc) ){
+            //if found
+            return argv[i+1];
+        }
+    }
+
+    return NULL;
+}
+
+int integerFromArgs( const char* argName, int argc, const char* argv[], int *isExist )
+{
+    for( int i=0; i < argc; i++ ){
+        if( (strcmp( argName, argv[i] ) == 0) && ((i+1) < argc) && isnumber(argv[i+1]) ){
+            //if found
+            if( isExist != NULL )
+                *isExist = 1;
+            return atoi( argv[i+1] );
+        }
+    }
+
+    if( isExist != NULL )
+        *isExist = 0;
+    return -1;
+}
+
+api_t apiDefault( int api_current )
 {
     api_t api;
-    api.api = -1;
+
+    switch( api_current ){
+        case API_GLLegacy:
+            api.api = API_GLLegacy;
+            api.major = 3;
+            api.minor = 0;
+            break;
+
+        case API_GL:
+            api.api = API_GL;
+            api.major = 3;
+            api.minor = 3;
+            break;
+
+        case API_GLES:
+            api.api = API_GLES;
+            api.major = 3;
+            api.minor = 2;
+            break;
+
+        case API_VULKAN:
+            api.api = API_VULKAN;
+            api.major = 1;
+            api.minor = 3;
+            break;
+
+        default:
+            api.api = API_Invalid;
+            api.major = 0;
+            api.minor = 0;
+            break;
+    }
+
+    return api;
+}
+
+api_t apiFromString( const char* str )
+{
+    api_t api;
+    api.api = API_Invalid;
     api.major = 0;
     api.minor = 0;
 
@@ -22,15 +112,18 @@ api_t parse_api( const char* str )
         && strncmp(str, "gl", 2) == 0
         && isdigit(str[2]) && isdigit(str[3]) )
     {
-        api.api = 0;
+        api.api = API_GL;
         api.major = str[2] - '0';
         api.minor = str[3] - '0';
+
+        if( api.major == 3 && api.minor == 0 )
+            api.api = API_GLLegacy;
     }
     else if( len == 6
              && strncmp(str, "gles", 4) == 0
              && isdigit(str[4]) && isdigit(str[5]) )
     {
-        api.api = 1;
+        api.api = API_GLES;
         api.major = str[4] - '0';
         api.minor = str[5] - '0';
     }
@@ -38,14 +131,33 @@ api_t parse_api( const char* str )
              && strncmp(str, "vulkan", 6) == 0
              && isdigit(str[6]) && isdigit(str[7]) )
     {
-        api.api = 3;
-        api.major = str[4] - '0';
-        api.minor = str[5] - '0';
+        api.api = API_VULKAN;
+        api.major = str[6] - '0';
+        api.minor = str[7] - '0';
     }
 
     return api;
 }
-#endif
+
+
+api_t apiInitial( int api_current, int argc, const char* argv[] )
+{
+    // default value
+    api_t api = apiDefault( api_current );
+
+    // may change by command line
+    const char* apiValue = stringFromArgs( "--api", argc, argv );
+    if( apiValue != NULL ){
+        api = apiFromString( apiValue );
+
+        if( api.api != api_current ){
+            printf("%s: \"--api %s\" is invalid for \"%s\"\n", __func__, apiValue, apiName(api_current));
+            exit( 1 );
+        }
+    }
+
+    return api;
+}
 
 const char* apiName( api_t api )
 {
@@ -54,6 +166,18 @@ const char* apiName( api_t api )
              (api.api == API_GLLegacy) ? "glLegacy" : (api.api == API_GL) ? "gl" : (api.api == API_GLES) ? "gles" : "vulkan",
              api.major, api.minor);
     return strdup( name );
+}
+
+const char* apiName( int api )
+{
+    switch( api ){
+        case API_GLLegacy: return "glLegacy";
+        case API_GL: return "gl";
+        case API_GLES: return "gles";
+        case API_VULKAN: return "vulkan";
+        default:
+            return "";
+    }
 }
 
 uint64_t PerfGetMillisecond()
