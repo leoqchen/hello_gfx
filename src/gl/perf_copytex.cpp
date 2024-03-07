@@ -30,7 +30,8 @@ static GLuint VAO, VBO, FBO, RBO, Tex, FBTex;
 static GLuint program;
 static GLint samplerLoc;
 
-const GLsizei MinSize = 16, MaxSize = 4096;
+static const GLsizei MinSize = 16;
+static const GLsizei MaxSize = 4096;
 static GLsizei TexSize;
 
 static GLboolean DrawPoint = GL_TRUE;
@@ -236,18 +237,19 @@ CopyTexSubImage(unsigned count)
     glFinish();
 }
 
-void PerfDraw()
+void PerfDraw( int MinSize_, int MaxSize_ )
 {
     double rate, mbPerSec;
     GLint sub, maxTexSize;
 
     glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTexSize);
+    printf("GL_MAX_TEXTURE_SIZE = %d\n", maxTexSize);
 
     /* loop over whole/sub tex copy */
     for (sub = 0; sub < 2; sub++) {
 
         /* loop over texture sizes */
-        for (TexSize = MinSize; TexSize <= MaxSize; TexSize *= 4) {
+        for (TexSize = MinSize_; TexSize <= MaxSize_; TexSize *= 4) {
 
             if (TexSize <= maxTexSize) {
                 GLint bytesPerImage = 4 * TexSize * TexSize;
@@ -285,6 +287,9 @@ int main( int argc, const char* argv[] )
     api_t api = apiInitial( API_Current, argc, argv );
     printf("%s: %s\n", argv[0], apiName(api));
 
+    int __testcase = integerFromArgs( "--testcase", argc, argv, NULL );
+    int __draw = integerFromArgs("--draw", argc, argv, NULL );
+
     // glfw: initialize and configure
     // ------------------------------
     GLFWwindow* window = glfwInit_CreateWindow( api, WinWidth, WinHeight );
@@ -297,16 +302,25 @@ int main( int argc, const char* argv[] )
     // -----------
     while (!glfwWindowShouldClose(window))
     {
+        if( __testcase != -1 && __draw != -1 ){
+            DrawPoint = __draw;
+
+            printf("Draw = %d\n", DrawPoint);
+            PerfDraw( __testcase, __testcase );
+            printf("\n");
+            exit(0);
+        }
+
         // render
         // ------
         DrawPoint = GL_FALSE;
         printf("Draw = %d\n", DrawPoint);
-        PerfDraw();
+        PerfDraw( MinSize, MaxSize );
         printf("\n");
 
         DrawPoint = GL_TRUE;
         printf("Draw = %d\n", DrawPoint);
-        PerfDraw();
+        PerfDraw( MinSize, MaxSize );
         printf("\n");
         exit(0);
 

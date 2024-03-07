@@ -290,10 +290,85 @@ static void PerfDraw()
     exit(0);
 }
 
+static void PerfDraw2( int mode, int Sizes_ )
+{
+    double rate, mbPerSec;
+    int i, sz;
+
+    /* Load VBOData buffer with duplicated Vertex0.
+     */
+    VBOData = (GLubyte*) calloc(DATA_SIZE, 1);
+
+    for (i = 0; i < DATA_SIZE / sizeof(Vertex0); i++) {
+        memcpy(VBOData + i * sizeof(Vertex0),
+               Vertex0,
+               sizeof(Vertex0));
+    }
+
+    /* glBufferData()
+     */
+    if( mode == 0 ){
+        SubSize = VBOSize = Sizes_;
+        rate = PerfMeasureRate(UploadVBO);
+        mbPerSec = rate * VBOSize / (1024.0 * 1024.0);
+        printf("  glBufferData(size = %d): %.1f MB/sec\n",
+               VBOSize, mbPerSec);
+        glfwSwapBuffers(window);
+        printf("\n");
+    }
+
+    /* glBufferSubData()
+     */
+    if( mode == 1 ){
+        SubSize = VBOSize = Sizes_;
+        glBufferData(GL_ARRAY_BUFFER, VBOSize, VBOData, GL_STREAM_DRAW);
+        rate = PerfMeasureRate(UploadSubVBO);
+        mbPerSec = rate * VBOSize / (1024.0 * 1024.0);
+        printf("  glBufferSubData(size = %d): %.1f MB/sec\n",
+               VBOSize, mbPerSec);
+        glfwSwapBuffers(window);
+        printf("\n");
+    }
+
+    /* Batch upload
+     */
+    if( mode == 2 ){
+        VBOSize = 1024 * 1024;
+        glBufferData(GL_ARRAY_BUFFER, VBOSize, VBOData, GL_STREAM_DRAW);
+
+        SubSize = Sizes_;
+        rate = PerfMeasureRate(UploadSubVBO);
+        mbPerSec = rate * SubSize / (1024.0 * 1024.0);
+        printf("  glBufferSubData(size = %d, VBOSize = %d): %.1f MB/sec\n",
+               SubSize, VBOSize, mbPerSec);
+        glfwSwapBuffers(window);
+        printf("\n");
+    }
+
+
+    /* Create/Draw/Destroy
+     */
+    if( mode == 3 ){
+        SubSize = VBOSize = Sizes_;
+        rate = PerfMeasureRate(CreateDrawDestroyVBO);
+        mbPerSec = rate * VBOSize / (1024.0 * 1024.0);
+        printf("  VBO Create/Draw/Destroy(size = %d): %.1f draws/sec, %.1f MB/sec\n",
+               VBOSize, rate, mbPerSec);
+        glfwSwapBuffers(window);
+        printf("\n");
+    }
+
+    glErrorCheck();
+    exit(0);
+}
+
 int main( int argc, const char* argv[] )
 {
     api_t api = apiInitial( API_Current, argc, argv );
     printf("%s: %s\n", argv[0], apiName(api));
+
+    int __mode = integerFromArgs("--mode", argc, argv, NULL );
+    int __testcase = integerFromArgs( "--testcase", argc, argv, NULL );
 
     // glfw: initialize and configure
     // ------------------------------
@@ -307,6 +382,11 @@ int main( int argc, const char* argv[] )
     // -----------
     while (!glfwWindowShouldClose(window))
     {
+        if(  __mode != -1 && __testcase != -1 ){
+            PerfDraw2( __mode, __testcase );
+            exit(0);
+        }
+
         // render
         // ------
         PerfDraw();

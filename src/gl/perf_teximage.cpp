@@ -276,6 +276,7 @@ static void PerfDraw()
     GLint fmt, mode;
 
     glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxSize);
+    printf("GL_MAX_TEXTURE_SIZE = %d\n", maxSize);
 
     /* loop over source data formats */
     for (fmt = 0; SrcFormats[fmt].format; fmt++) {
@@ -366,10 +367,111 @@ static void PerfDraw()
     glErrorCheck();
 }
 
+static void PerfDraw2( GLint mode_, GLuint TexSize_ )
+{
+    GLint maxSize;
+    double rate;
+    GLint fmt, mode;
+
+    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxSize);
+    printf("GL_MAX_TEXTURE_SIZE = %d\n", maxSize);
+
+    {
+        GLint fmt = 0;
+        TexIntFormat = SrcFormats[fmt].internal_format;
+        TexSrcFormat = SrcFormats[fmt].format;
+        TexSrcType = SrcFormats[fmt].type;
+
+        /* loop over glTexImage, glTexSubImage */
+        mode = mode_;
+        {
+            GLuint minsz, maxsz;
+
+            if (SrcFormats[fmt].full_test) {
+                minsz = 16;
+                maxsz = 4096;
+            }
+            else {
+                minsz = maxsz = 256;
+                if (mode == MODE_CREATE_TEXIMAGE)
+                    return;
+            }
+
+            TexSize = TexSize_;
+            {
+                double mbPerSec;
+
+                if (TexSize <= maxSize) {
+                    GLint bytesPerImage;
+
+                    bytesPerImage = TexSize * TexSize * SrcFormats[fmt].texel_size;
+                    TexImage = (GLubyte*) malloc(bytesPerImage);
+                    memset( TexImage, 0xff, bytesPerImage );
+
+                    switch (mode) {
+                        case MODE_TEXIMAGE:
+                            rate = PerfMeasureRate(UploadTexImage2D);
+                            break;
+
+                        case MODE_CREATE_TEXIMAGE:
+                            rate = PerfMeasureRate(CreateUploadTexImage2D);
+                            break;
+
+                        case MODE_TEXSUBIMAGE:
+                            /* create initial, empty texture */
+                            glTexImage2D(GL_TEXTURE_2D, 0, TexIntFormat,
+                                         TexSize, TexSize, 0,
+                                         TexSrcFormat, TexSrcType, NULL);
+                            rate = PerfMeasureRate(UploadTexSubImage2D);
+                            break;
+
+                        case MODE_GETTEXIMAGE:
+#if IS_GlEs
+                            return;
+#else
+                            glTexImage2D(GL_TEXTURE_2D, 0, TexIntFormat,
+                                         TexSize, TexSize, 0,
+                                         TexSrcFormat, TexSrcType, TexImage);
+                            rate = PerfMeasureRate(GetTexImage2D);
+                            break;
+#endif
+
+                        default:
+                            exit(1);
+                    }
+
+                    mbPerSec = rate * bytesPerImage / (1024.0 * 1024.0);
+                    free(TexImage);
+
+                    glErrorCheck();
+                }
+                else {
+                    rate = 0;
+                    mbPerSec = 0;
+                }
+
+                printf("  %s(%s %d x %d)%s: "
+                       "%.1f images/sec, %.1f MB/sec\n",
+                       mode_name[mode], SrcFormats[fmt].name, TexSize, TexSize,
+                       (DrawPoint) ? " + Draw" : "",
+                       rate, mbPerSec);
+                glfwSwapBuffers(window);
+            }
+        }
+        printf("\n");
+    }
+
+    glErrorCheck();
+}
+
 int main( int argc, const char* argv[] )
 {
     api_t api = apiInitial( API_Current, argc, argv );
     printf("%s: %s\n", argv[0], apiName(api));
+
+    int __mode = integerFromArgs("--mode", argc, argv, NULL );
+    int __testcase = integerFromArgs( "--testcase", argc, argv, NULL );
+    int __draw = integerFromArgs("--draw", argc, argv, NULL );
 
     // glfw: initialize and configure
     // ------------------------------
@@ -383,6 +485,15 @@ int main( int argc, const char* argv[] )
     // -----------
     while (!glfwWindowShouldClose(window))
     {
+        if( __mode != -1 && __testcase != -1 && __draw != -1 ){
+            DrawPoint = __draw;
+
+            printf("Draw = %d\n", DrawPoint);
+            PerfDraw2( __mode, __testcase );
+            printf("\n");
+            exit(0);
+        }
+
         // render
         // ------
         DrawPoint = GL_FALSE;

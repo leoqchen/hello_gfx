@@ -194,6 +194,8 @@ int main( int argc, const char* argv[] )
     api_t api = apiInitial( API_Current, argc, argv );
     printf("%s: %s\n", argv[0], apiName(api));
 
+    int __draw = integerFromArgs("--draw", argc, argv, NULL );
+
     // glfw: initialize and configure
     // ------------------------------
     GLFWwindow* window = glfwInit_CreateWindow( api, WinWidth, WinHeight );
@@ -206,6 +208,15 @@ int main( int argc, const char* argv[] )
     // -----------
     while (!glfwWindowShouldClose(window))
     {
+        if(  __draw != -1 ){
+            DrawPoint = __draw;
+
+            printf("Draw = %d\n", DrawPoint);
+            PerfDraw();
+            printf("\n");
+            exit(0);
+        }
+
         // render
         // ------
         DrawPoint = GL_FALSE;

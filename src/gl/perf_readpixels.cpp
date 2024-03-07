@@ -139,14 +139,14 @@ static const struct {
     GLuint pixel_size;
 } DstFormats[] = {
     { GL_RGBA, GL_UNSIGNED_BYTE,           "RGBA/ubyte", 4 },
-#if !IS_GlEs
-    // OpenGL ES not support
-    { GL_BGRA, GL_UNSIGNED_BYTE,           "BGRA/ubyte", 4 },
-    { GL_RGB, GL_UNSIGNED_SHORT_5_6_5,     "RGB/565", 2 },
-    { GL_LUMINANCE, GL_UNSIGNED_BYTE,      "L/ubyte", 1 },
-    { GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, "Z/uint", 4 },
-    { GL_DEPTH_STENCIL_EXT, GL_UNSIGNED_INT_24_8_EXT, "Z+S/uint", 4 },
-#endif
+//#if !IS_GlEs
+//    // OpenGL ES not support
+//    { GL_BGRA, GL_UNSIGNED_BYTE,           "BGRA/ubyte", 4 },
+//    { GL_RGB, GL_UNSIGNED_SHORT_5_6_5,     "RGB/565", 2 },
+//    { GL_LUMINANCE, GL_UNSIGNED_BYTE,      "L/ubyte", 1 },
+//    { GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, "Z/uint", 4 },
+//    { GL_DEPTH_STENCIL_EXT, GL_UNSIGNED_INT_24_8_EXT, "Z+S/uint", 4 },
+//#endif
     { 0, 0, NULL, 0 }
 };
 
@@ -184,10 +184,42 @@ static void PerfDraw()
     exit(0);
 }
 
+static void PerfDraw2( int Sizes_)
+{
+    {
+        int fmt = 0;
+        ReadFormat = DstFormats[fmt].format;
+        ReadType = DstFormats[fmt].type;
+
+        {
+            int imgSize;
+
+            ReadWidth = ReadHeight = Sizes_;
+            imgSize = ReadWidth * ReadHeight * DstFormats[fmt].pixel_size;
+            ReadBuffer = malloc(imgSize);
+
+            double rate = PerfMeasureRate(ReadPixels);
+            double mbPerSec = rate * imgSize / (1024.0 * 1024.0);
+
+            printf("glReadPixels(%d x %d, %s): %.1f images/sec, %.1f Mpixels/sec\n",
+                   ReadWidth, ReadHeight,
+                   DstFormats[fmt].name, rate, mbPerSec);
+
+            free(ReadBuffer);
+            glfwSwapBuffers(window);
+        }
+    }
+
+    glErrorCheck();
+    exit(0);
+}
+
 int main( int argc, const char* argv[] )
 {
     api_t api = apiInitial( API_Current, argc, argv );
     printf("%s: %s\n", argv[0], apiName(api));
+
+    int __testcase = integerFromArgs( "--testcase", argc, argv, NULL );
 
     // glfw: initialize and configure
     // ------------------------------
@@ -201,6 +233,11 @@ int main( int argc, const char* argv[] )
     // -----------
     while (!glfwWindowShouldClose(window))
     {
+        if( __testcase != -1 ){
+            PerfDraw2( __testcase );
+            exit(0);
+        }
+
         // render
         // ------
         PerfDraw();

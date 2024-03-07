@@ -325,7 +325,7 @@ static void DrawRangeElementsBO(unsigned count)
     glfwSwapBuffers(window);
 }
 
-static void PerfDraw()
+static void PerfDraw( int mode )
 {
     double rate;
     printf("Vertex rate (%d x Vertex%df)\n", NumVerts, VERT_SIZE);
@@ -338,43 +338,55 @@ static void PerfDraw()
 #endif
 
 #if IS_GlLegacy || IS_GlEs
-    // OpenGL Core profile 不支持让VBO工作在client模式
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    rate = PerfMeasureRate(DrawArraysMem);
-    rate *= NumVerts;
-    printf("  glDrawArrays: %s verts/sec\n", PerfHumanFloat(rate));
+    if( mode == -1 || mode == 0 ) {
+        // OpenGL Core profile 不支持让VBO工作在client模式
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        rate = PerfMeasureRate(DrawArraysMem);
+        rate *= NumVerts;
+        printf("  glDrawArrays: %s verts/sec\n", PerfHumanFloat(rate));
+    }
 #endif
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    rate = PerfMeasureRate(DrawArraysVBO);
-    rate *= NumVerts;
-    printf("  VBO glDrawArrays: %s verts/sec\n", PerfHumanFloat(rate));
+    if( mode == -1 || mode == 1 ) {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        rate = PerfMeasureRate(DrawArraysVBO);
+        rate *= NumVerts;
+        printf("  VBO glDrawArrays: %s verts/sec\n", PerfHumanFloat(rate));
+    }
 
 #if IS_GlLegacy || IS_GlEs
-    // OpenGL Core profile 不支持让VBO工作在client模式
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    rate = PerfMeasureRate(DrawElementsMem);
-    rate *= NumVerts;
-    printf("  glDrawElements: %s verts/sec\n", PerfHumanFloat(rate));
+    if( mode == -1 || mode == 2 ) {
+        // OpenGL Core profile 不支持让VBO工作在client模式
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        rate = PerfMeasureRate(DrawElementsMem);
+        rate *= NumVerts;
+        printf("  glDrawElements: %s verts/sec\n", PerfHumanFloat(rate));
+    }
 #endif
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    rate = PerfMeasureRate(DrawElementsBO);
-    rate *= NumVerts;
-    printf("  VBO glDrawElements: %s verts/sec\n", PerfHumanFloat(rate));
+    if( mode == -1 || mode == 3 ) {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        rate = PerfMeasureRate(DrawElementsBO);
+        rate *= NumVerts;
+        printf("  VBO glDrawElements: %s verts/sec\n", PerfHumanFloat(rate));
+    }
 
 #if IS_GlLegacy || IS_GlEs
-    // OpenGL Core profile 不支持让VBO工作在client模式
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    rate = PerfMeasureRate(DrawRangeElementsMem);
-    rate *= NumVerts;
-    printf("  glDrawRangeElements: %s verts/sec\n", PerfHumanFloat(rate));
+    if( mode == -1 || mode == 4 ) {
+        // OpenGL Core profile 不支持让VBO工作在client模式
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        rate = PerfMeasureRate(DrawRangeElementsMem);
+        rate *= NumVerts;
+        printf("  glDrawRangeElements: %s verts/sec\n", PerfHumanFloat(rate));
+    }
 #endif
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    rate = PerfMeasureRate(DrawRangeElementsBO);
-    rate *= NumVerts;
-    printf("  VBO glDrawRangeElements: %s verts/sec\n", PerfHumanFloat(rate));
+    if( mode == -1 || mode == 5 ) {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        rate = PerfMeasureRate(DrawRangeElementsBO);
+        rate *= NumVerts;
+        printf("  VBO glDrawRangeElements: %s verts/sec\n", PerfHumanFloat(rate));
+    }
 
     glErrorCheck();
     exit(0);
@@ -384,6 +396,8 @@ int main( int argc, const char* argv[] )
 {
     api_t api = apiInitial( API_Current, argc, argv );
     printf("%s: %s\n", argv[0], apiName(api));
+
+    int __mode = integerFromArgs("--mode", argc, argv, NULL );
 
     // glfw: initialize and configure
     // ------------------------------
@@ -399,7 +413,7 @@ int main( int argc, const char* argv[] )
     {
         // render
         // ------
-        PerfDraw();
+        PerfDraw( __mode );
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------

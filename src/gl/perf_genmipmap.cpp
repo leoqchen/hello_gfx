@@ -191,10 +191,49 @@ static void PerfDraw()
     glErrorCheck();
 }
 
+static void PerfDraw2( int BaseLevel_, int MaxLevel_ )
+{
+    const GLint NumLevels = 12;
+    const GLint TexWidth = 2048, TexHeight = 2048;
+    GLubyte *img;
+    double rate;
+
+    /* Make 2K x 2K texture */
+    img = (GLubyte *) malloc(TexWidth * TexHeight * 4);
+    memset(img, 128, TexWidth * TexHeight * 4);
+    glTexImage2D(GL_TEXTURE_2D, 0,
+                 GL_RGBA, TexWidth, TexHeight, 0,
+                 GL_RGBA, GL_UNSIGNED_BYTE, img);
+    free(img);
+
+    printf("Texture level[0] size: %d x %d, %d levels\n",
+           TexWidth, TexHeight, NumLevels);
+
+    {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, BaseLevel_);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, MaxLevel_);
+
+        rate = PerfMeasureRate(GenMipmap);
+
+        printf("   glGenerateMipmap(levels %d..%d)%s: %.2f gens/sec\n",
+               BaseLevel_ + 1, MaxLevel_,
+               (DrawPoint) ? " + Draw" : "",
+               rate);
+        glfwSwapBuffers(window);
+    }
+
+
+    glErrorCheck();
+}
+
 int main( int argc, const char* argv[] )
 {
     api_t api = apiInitial( API_Current, argc, argv );
     printf("%s: %s\n", argv[0], apiName(api));
+
+    int __baselevel = integerFromArgs( "--baselevel", argc, argv, NULL );
+    int __maxlevel = integerFromArgs( "--maxlevel", argc, argv, NULL );
+    int __draw = integerFromArgs("--draw", argc, argv, NULL );
 
     // glfw: initialize and configure
     // ------------------------------
@@ -208,6 +247,15 @@ int main( int argc, const char* argv[] )
     // -----------
     while (!glfwWindowShouldClose(window))
     {
+        if( __baselevel != -1 && __maxlevel != -1 && __draw != -1 ){
+            DrawPoint = __draw;
+
+            printf("Draw = %d\n", DrawPoint);
+            PerfDraw2( __baselevel, __maxlevel );
+            printf("\n");
+            exit(0);
+        }
+
         // render
         // ------
         DrawPoint = GL_FALSE;

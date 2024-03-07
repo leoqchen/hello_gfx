@@ -143,23 +143,29 @@ static void DrawStateChange(unsigned count)
     glFinish();
 }
 
-static void PerfDraw()
+static void PerfDraw(int mode)
 {
     double rate0, rate1, rate2, overhead;
 
-    rate0 = PerfMeasureRate(DrawNoStateChange);
-    printf("   Draw only: %s draws/second\n", PerfHumanFloat(rate0));
-    glfwSwapBuffers(window);
+    if( mode == -1 || mode == 0 ) {
+        rate0 = PerfMeasureRate(DrawNoStateChange);
+        printf("   Draw only: %s draws/second\n", PerfHumanFloat(rate0));
+        glfwSwapBuffers(window);
+    }
 
-    rate1 = PerfMeasureRate(DrawNopStateChange);
-    overhead = 1000.0 * (1.0 / rate1 - 1.0 / rate0);
-    printf("   Draw w/ nop state change: %s draws/sec (overhead: %f ms/draw)\n", PerfHumanFloat(rate1), overhead);
-    glfwSwapBuffers(window);
+    if( mode == -1 || mode == 1 ) {
+        rate1 = PerfMeasureRate(DrawNopStateChange);
+        overhead = 1000.0 * (1.0 / rate1 - 1.0 / rate0);
+        printf("   Draw w/ nop state change: %s draws/sec (overhead: %f ms/draw)\n", PerfHumanFloat(rate1), overhead);
+        glfwSwapBuffers(window);
+    }
 
-    rate2 = PerfMeasureRate(DrawStateChange);
-    overhead = 1000.0 * (1.0 / rate2 - 1.0 / rate0);
-    printf("   Draw w/ state change: %s draws/sec (overhead: %f ms/draw)\n", PerfHumanFloat(rate2), overhead);
-    glfwSwapBuffers(window);
+    if( mode == -1 || mode == 2 ) {
+        rate2 = PerfMeasureRate(DrawStateChange);
+        overhead = 1000.0 * (1.0 / rate2 - 1.0 / rate0);
+        printf("   Draw w/ state change: %s draws/sec (overhead: %f ms/draw)\n", PerfHumanFloat(rate2), overhead);
+        glfwSwapBuffers(window);
+    }
 
     glErrorCheck();
     exit(0);
@@ -169,6 +175,8 @@ int main( int argc, const char* argv[] )
 {
     api_t api = apiInitial( API_Current, argc, argv );
     printf("%s: %s\n", argv[0], apiName(api));
+
+    int __mode = integerFromArgs("--mode", argc, argv, NULL );
 
     // glfw: initialize and configure
     // ------------------------------
@@ -184,7 +192,7 @@ int main( int argc, const char* argv[] )
     {
         // render
         // ------
-        PerfDraw();
+        PerfDraw( __mode );
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
