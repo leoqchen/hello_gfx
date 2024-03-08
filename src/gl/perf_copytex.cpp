@@ -237,7 +237,7 @@ CopyTexSubImage(unsigned count)
     glFinish();
 }
 
-void PerfDraw( int MinSize_, int MaxSize_ )
+void PerfDraw()
 {
     double rate, mbPerSec;
     GLint sub, maxTexSize;
@@ -249,7 +249,50 @@ void PerfDraw( int MinSize_, int MaxSize_ )
     for (sub = 0; sub < 2; sub++) {
 
         /* loop over texture sizes */
-        for (TexSize = MinSize_; TexSize <= MaxSize_; TexSize *= 4) {
+        for (TexSize = MinSize; TexSize <= MaxSize; TexSize *= 4) {
+
+            if (TexSize <= maxTexSize) {
+                GLint bytesPerImage = 4 * TexSize * TexSize;
+
+                if (sub == 0)
+                    rate = PerfMeasureRate(CopyTexImage);
+                else {
+                    /* setup empty dest texture */
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
+                                 TexSize, TexSize, 0,
+                                 GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+                    rate = PerfMeasureRate(CopyTexSubImage);
+                }
+
+                mbPerSec = rate * bytesPerImage / (1024.0 * 1024.0);
+            }
+            else {
+                rate = 0.0;
+                mbPerSec = 0.0;
+            }
+
+            printf("  glCopyTex%sImage(%d x %d)%s: %.1f copies/sec, %.1f Mpixels/sec\n",
+                   (sub ? "Sub" : ""), TexSize, TexSize,
+                   (DrawPoint) ? " + Draw" : "",
+                   rate, mbPerSec);
+        }
+    }
+
+    glErrorCheck();
+}
+
+void PerfDraw2( int sub, int TexSize_ )
+{
+    double rate, mbPerSec;
+    GLint maxTexSize;
+
+    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTexSize);
+    printf("GL_MAX_TEXTURE_SIZE = %d\n", maxTexSize);
+
+    {
+        TexSize = TexSize_;
+
+        {
 
             if (TexSize <= maxTexSize) {
                 GLint bytesPerImage = 4 * TexSize * TexSize;
@@ -288,6 +331,7 @@ int main( int argc, const char* argv[] )
     printf("%s: %s\n", argv[0], apiName(api));
 
     int __testcase = integerFromArgs( "--testcase", argc, argv, NULL );
+    int __mode = integerFromArgs( "--mode", argc, argv, NULL );
     int __draw = integerFromArgs("--draw", argc, argv, NULL );
 
     // glfw: initialize and configure
@@ -302,11 +346,11 @@ int main( int argc, const char* argv[] )
     // -----------
     while (!glfwWindowShouldClose(window))
     {
-        if( __testcase != -1 && __draw != -1 ){
+        if( __mode != -1 && __testcase != -1 && __draw != -1 ){
             DrawPoint = __draw;
 
             printf("Draw = %d\n", DrawPoint);
-            PerfDraw( __testcase, __testcase );
+            PerfDraw2( __mode, __testcase );//TODO
             printf("\n");
             exit(0);
         }
@@ -315,12 +359,12 @@ int main( int argc, const char* argv[] )
         // ------
         DrawPoint = GL_FALSE;
         printf("Draw = %d\n", DrawPoint);
-        PerfDraw( MinSize, MaxSize );
+        PerfDraw();
         printf("\n");
 
         DrawPoint = GL_TRUE;
         printf("Draw = %d\n", DrawPoint);
-        PerfDraw( MinSize, MaxSize );
+        PerfDraw();
         printf("\n");
         exit(0);
 
