@@ -177,9 +177,9 @@ set(targets
 
   # Bug复现测试
   #----------------------------------------------------
-  "gl_PointSize_glLegacy  \; src/gl/bug_img/gl_PointSize.cpp"
-  "gl_PointSize_gl        \; src/gl/bug_img/gl_PointSize.cpp"
-  "gl_PointSize_gles      \; src/gl/bug_img/gl_PointSize.cpp"
+  "bug_gl_PointSize_glLegacy  \; src/gl/bug_img/bug_gl_PointSize.cpp"
+  "bug_gl_PointSize_gl        \; src/gl/bug_img/bug_gl_PointSize.cpp"
+  "bug_gl_PointSize_gles      \; src/gl/bug_img/bug_gl_PointSize.cpp"
 
   # perf test 性能测试
   #----------------------------------------------------
