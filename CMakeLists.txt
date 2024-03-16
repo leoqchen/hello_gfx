@@ -5,6 +5,9 @@ cmake_minimum_required(VERSION 3.4...3.20 FATAL_ERROR)
 project(hello_gfx)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/ext/cmake/modules/")
+find_package(OpenGL REQUIRED)
+find_package(OpenGLES 3.2 REQUIRED)
+find_package(EGL REQUIRED)
 find_package(GLFW3 3.3 REQUIRED)
 message(STATUS "Found GLFW3 in ${GLFW3_INCLUDE_DIR}")
 
