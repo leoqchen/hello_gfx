@@ -120,9 +120,14 @@ add_library(
 
 # EGL utils
 add_library(
-  eglutils
+  eglutils_gles2
   STATIC
   src/utils/eglutils.cpp
+)
+target_compile_options(
+  eglutils_gles2
+  PUBLIC
+  ${IS_GlEs}
 )
 
 
@@ -302,7 +307,7 @@ target_compile_options(
 )
 target_link_libraries(
   eglHelloTriangle_gles
-  -Wl,--start-group utils glfwutils_gles2 x11utils eglutils -Wl,--end-group
+  -Wl,--start-group utils glfwutils_gles2 glad_gles2 x11utils eglutils_gles2 -Wl,--end-group
   -lX11
   -lEGL
   -lGLESv2

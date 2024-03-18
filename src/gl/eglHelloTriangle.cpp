@@ -1,7 +1,12 @@
+//#if IS_GlEs
+//#include <GLES3/gl32.h>
+//#else
+//#include <GL/gl.h>
+//#endif
 #if IS_GlEs
-#include <GLES3/gl32.h>
+#include <glad/gles2.h>
 #else
-#include <GL/gl.h>
+#include <glad/gl.h>
 #endif
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -44,6 +49,24 @@ const char* glErrorName( GLenum error )
             return "GL_STACK_UNDERFLOW";
         case GL_STACK_OVERFLOW:
             return "GL_STACK_OVERFLOW";
+        default:
+            return "";
+    }
+}
+
+const char* glContextFlagName( GLint flag )
+{
+    switch( flag ){
+#if !IS_GlEs
+        case GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT:
+            return "GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT";
+        case GL_CONTEXT_FLAG_NO_ERROR_BIT:
+            return "GL_CONTEXT_FLAG_NO_ERROR_BIT";
+#endif
+        case GL_CONTEXT_FLAG_DEBUG_BIT:
+            return "GL_CONTEXT_FLAG_DEBUG_BIT";
+        case GL_CONTEXT_FLAG_ROBUST_ACCESS_BIT:
+            return "GL_CONTEXT_FLAG_ROBUST_ACCESS_BIT";
         default:
             return "";
     }

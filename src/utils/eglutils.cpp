@@ -3,6 +3,12 @@
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 
+#if IS_GlEs
+#include <glad/gles2.h>
+#else
+#include <glad/gl.h>
+#endif
+
 #include "eglutils.h"
 
 static EGLNativeDisplayType eglNativeDisplay = NULL;
@@ -77,6 +83,9 @@ int egl_CreateContext( void* nativeDisplayPtr, void* nativeWindowPtr )
         printf("%s: eglMakeCurrent() fail\n", __func__);
         return 0;
     }
+
+    int version = gladLoadGLES2(eglGetProcAddress);
+    printf("%s: glad version: %d.%d\n", __func__, GLAD_VERSION_MAJOR(version), GLAD_VERSION_MINOR(version));
 
     return 1;
 }
