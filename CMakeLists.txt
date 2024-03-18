@@ -307,7 +307,7 @@ target_compile_options(
 )
 target_link_libraries(
   eglHelloTriangle_gles
-  -Wl,--start-group utils glfwutils_gles2 glad_gles2 x11utils eglutils_gles2 -Wl,--end-group
+  -Wl,--start-group utils glfwutils_gles2 glad_gles2 glutils_gles2 x11utils eglutils_gles2 -Wl,--end-group
   -lX11
   -lEGL
   -lGLESv2
