@@ -122,7 +122,7 @@ int main( int argc, const char* argv[] )
 
     // render loop
     // -----------
-//    while(!glfwWindowShouldClose(window)) //TODO
+//    while(!glfwWindowShouldClose(window))
     while( !xWindowShouldClose() )
     {
         // render
@@ -175,7 +175,9 @@ int main( int argc, const char* argv[] )
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
-//    glfwDestroyWindow(window); //TODO: egl destroy?
+//    glfwDestroyWindow(window);
 //    glfwTerminate();
+    egl_Terminate();
+    xWindowDestroy();
     return 0;
 }

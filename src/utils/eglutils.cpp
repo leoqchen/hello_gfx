@@ -94,3 +94,10 @@ void egl_SwapBuffers()
 {
     eglSwapBuffers( eglDisplay, eglSurface );
 }
+
+void egl_Terminate()
+{
+    eglDestroyContext(eglDisplay, eglContext);
+    eglDestroySurface(eglDisplay, eglSurface);
+    eglTerminate(eglDisplay);
+}

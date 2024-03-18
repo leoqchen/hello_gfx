@@ -12,6 +12,7 @@
 
 // X11 related local variables
 static Display *x_display = NULL;
+static Window x_win = NULL;
 static Atom s_wmDeleteMessage;
 
 
@@ -42,32 +43,32 @@ int xWindowCreate( void** nativeDisplayPtr, void** nativeWindowPtr, const char *
     root = DefaultRootWindow(x_display);
 
     swa.event_mask  =  ExposureMask | PointerMotionMask | KeyPressMask;
-    win = XCreateWindow(
+    x_win = XCreateWindow(
                x_display, root,
                0, 0, width, height, 0,
                CopyFromParent, InputOutput,
                CopyFromParent, CWEventMask,
                &swa );
     s_wmDeleteMessage = XInternAtom(x_display, "WM_DELETE_WINDOW", False);
-    XSetWMProtocols(x_display, win, &s_wmDeleteMessage, 1);
+    XSetWMProtocols(x_display, x_win, &s_wmDeleteMessage, 1);
 
     xattr.override_redirect = False;
-    XChangeWindowAttributes ( x_display, win, CWOverrideRedirect, &xattr );
+    XChangeWindowAttributes ( x_display, x_win, CWOverrideRedirect, &xattr );
 
     hints.input = True;
     hints.flags = InputHint;
-    XSetWMHints(x_display, win, &hints);
+    XSetWMHints(x_display, x_win, &hints);
 
     // make the window visible on the screen
-    XMapWindow (x_display, win);
-    XStoreName (x_display, win, title);
+    XMapWindow (x_display, x_win);
+    XStoreName (x_display, x_win, title);
 
     // get identifiers for the provided atom name strings
     wm_state = XInternAtom (x_display, "_NET_WM_STATE", False);
 
     memset ( &xev, 0, sizeof(xev) );
     xev.type                 = ClientMessage;
-    xev.xclient.window       = win;
+    xev.xclient.window       = x_win;
     xev.xclient.message_type = wm_state;
     xev.xclient.format       = 32;
     xev.xclient.data.l[0]    = 1;
@@ -79,7 +80,7 @@ int xWindowCreate( void** nativeDisplayPtr, void** nativeWindowPtr, const char *
        SubstructureNotifyMask,
        &xev );
 
-    *nativeWindowPtr = (void*)win;
+    *nativeWindowPtr = (void*)x_win;
     *nativeDisplayPtr = (void*)x_display;
     return 1;
 }
@@ -119,4 +120,13 @@ int xWindowShouldClose()
         }
     }
     return userinterrupt;
+}
+
+void xWindowDestroy()
+{
+    if( x_display && x_win )
+        XDestroyWindow( x_display, x_win );
+
+    if( x_display )
+        XCloseDisplay( x_display );
 }
