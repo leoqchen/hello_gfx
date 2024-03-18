@@ -7,6 +7,7 @@ project(hello_gfx)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/ext/cmake/modules/")
 find_package(OpenGL REQUIRED)
 find_package(OpenGLES 3.2 REQUIRED)
+find_package(X11 REQUIRED)
 find_package(EGL REQUIRED)
 find_package(GLFW3 3.3 REQUIRED)
 message(STATUS "Found GLFW3 in ${GLFW3_INCLUDE_DIR}")
@@ -106,6 +107,22 @@ target_compile_options(
   glfwutils_gles2
   PUBLIC
   ${IS_GlEs}
+)
+
+
+# x11 utils
+add_library(
+  x11utils
+  STATIC
+  src/utils/x11utils.cpp
+)
+
+
+# EGL utils
+add_library(
+  eglutils
+  STATIC
+  src/utils/eglutils.cpp
 )
 
 
@@ -273,3 +290,21 @@ foreach(target ${targets})
   target_compile_options(${targetName} PUBLIC ${targetCompileOptions})
   target_link_libraries(${targetName} -Wl,--start-group ${targetLinkLibraries} -Wl,--end-group)
 endforeach(target)
+
+add_executable(
+  eglHelloTriangle_gles
+  src/gl/eglHelloTriangle.cpp
+)
+target_compile_options(
+  eglHelloTriangle_gles
+  PUBLIC
+  ${IS_GlEs}
+)
+target_link_libraries(
+  eglHelloTriangle_gles
+  -Wl,--start-group utils glfwutils_gles2 x11utils eglutils -Wl,--end-group
+  -lX11
+  -lEGL
+  -lGLESv2
+  glfw
+)
