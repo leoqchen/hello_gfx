@@ -73,6 +73,8 @@ GLFWwindow* glfwInit_CreateWindow( api_t api, int width, int height )
     // some queries
     // ---------------------------------------
     printf("%s: glad version: %d.%d\n", __func__, GLAD_VERSION_MAJOR(version), GLAD_VERSION_MINOR(version));
+    printf("%s: GL_VENDER = %s\n", __func__, glGetString(GL_VENDOR));
+    printf("%s: GL_RENDERER = %s\n", __func__, glGetString(GL_RENDERER));
     const char* glversion = (const char*)glGetString(GL_VERSION);
     printf("%s: GL_VERSON = %s\n", __func__, glversion);
     glfwSetWindowTitle( window, glversion );
