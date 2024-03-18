@@ -256,13 +256,7 @@ int main( int argc, const char* argv[] )
         glUseProgram(program);
         glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
         glDrawArrays(GL_TRIANGLES, 0, 3);
-        // glBindVertexArray(0); // no need to unbind it every time 
- 
-        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-        // -------------------------------------------------------------------------------
-//        glfwSwapBuffers(window);
-//        glfwPollEvents();
-        egl_SwapBuffers();
+        // glBindVertexArray(0); // no need to unbind it every time
 
         // dump to disk
         // ------------
@@ -278,9 +272,18 @@ int main( int argc, const char* argv[] )
             stbi_flip_vertically_on_write( 1 );
             stbi_write_png("/tmp/1.png", WinWidth, WinHeight, 4, pixels, WinWidth*4);
             printf("dump to /tmp/1.png\n");
+            stbi_write_jpg("/tmp/1.jpg", WinWidth, WinHeight, 4, pixels, 95);
+            printf("dump to /tmp/1.jpg\n");
 
             free( pixels );
         }
+
+        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        // -------------------------------------------------------------------------------
+//        glfwSwapBuffers(window);
+//        glfwPollEvents();
+        egl_SwapBuffers();
+
     }
     glErrorCheck();
 
