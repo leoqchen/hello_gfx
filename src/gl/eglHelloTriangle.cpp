@@ -56,7 +56,7 @@ int main( int argc, const char* argv[] )
     void* nativeDisplayPtr;
     void* nativeWindowPtr;
     xWindowCreate( &nativeDisplayPtr, &nativeWindowPtr, "", WinWidth, WinHeight );
-    egl_CreateContext( nativeDisplayPtr, nativeWindowPtr );
+    egl_CreateContext( nativeDisplayPtr, nativeWindowPtr ); //TODO: support GL
     printf("%s: GL_VENDER = %s\n", __func__, glGetString(GL_VENDOR));
     printf("%s: GL_RENDERER = %s\n", __func__, glGetString(GL_RENDERER));
     printf("%s: GL_VERSION = %s\n", __func__, glGetString(GL_VERSION));
@@ -123,7 +123,7 @@ int main( int argc, const char* argv[] )
     // render loop
     // -----------
 //    while(!glfwWindowShouldClose(window)) //TODO
-    while( 1 )
+    while( !xWindowShouldClose() )
     {
         // render
         // ------
@@ -162,6 +162,8 @@ int main( int argc, const char* argv[] )
 //        glfwPollEvents();
         egl_SwapBuffers();
 
+        //static int frame = 0;
+        //printf("frame = %d\n", frame++);
     }
     glErrorCheck();
 
@@ -173,7 +175,7 @@ int main( int argc, const char* argv[] )
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
-//    glfwDestroyWindow(window);
+//    glfwDestroyWindow(window); //TODO: egl destroy?
 //    glfwTerminate();
     return 0;
 }

@@ -15,10 +15,7 @@ static Display *x_display = NULL;
 static Atom s_wmDeleteMessage;
 
 
-///
-//  WinCreate()
-//      This function initialized the native X11 display and window
-//
+// This function initialized the native X11 display and window
 int xWindowCreate( void** nativeDisplayPtr, void** nativeWindowPtr, const char *title, int width, int height )
 {
     Window root;
@@ -87,3 +84,39 @@ int xWindowCreate( void** nativeDisplayPtr, void** nativeWindowPtr, const char *
     return 1;
 }
 
+// Reads from X11 event loop and interrupt program if there is a keypress, or window close action.
+int xWindowShouldClose()
+{
+    if( x_display == NULL )
+        return 0;
+
+    // Pump all messages from X server. Keypresses are directed to keyfunc (if defined)
+    int userinterrupt = 0;
+    while( XPending( x_display ))
+    {
+        XEvent xev;
+        XNextEvent( x_display, &xev );
+
+        if( xev.type == KeyPress )
+        {
+            KeySym key;
+            char text;
+            if( XLookupString( &xev.xkey, &text, 1, &key, 0 ) == 1 )
+            {
+                //if (esContext->keyFunc != NULL)
+                //    esContext->keyFunc(esContext, text, 0, 0);
+            }
+        }
+
+        if( xev.type == ClientMessage ){
+            if( xev.xclient.data.l[0] == s_wmDeleteMessage ){
+                userinterrupt = 1;
+            }
+        }
+
+        if( xev.type == DestroyNotify ) {
+            userinterrupt = 1;
+        }
+    }
+    return userinterrupt;
+}
