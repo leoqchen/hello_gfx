@@ -14,9 +14,9 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
-#include "glutils.h"
-#include "glfwutils.h"
-#include "myutils.h"
+#include "glUtils.h"
+#include "glfwUtils.h"
+#include "myUtils.h"
 
 
 // settings

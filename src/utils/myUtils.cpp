@@ -4,7 +4,7 @@
 #include <string.h>
 #include <math.h>
 
-#include "myutils.h"
+#include "myUtils.h"
 
 
 static int isnumber( const char* str )

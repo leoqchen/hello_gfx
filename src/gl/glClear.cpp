@@ -9,9 +9,9 @@
 
 #include <stdio.h>
 #include <ctype.h>
-#include "glfwutils.h"
-#include "glutils.h"
-#include "myutils.h"
+#include "glfwUtils.h"
+#include "glUtils.h"
+#include "myUtils.h"
 
 
 // settings

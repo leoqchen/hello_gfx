@@ -9,7 +9,7 @@
 #include <glad/gl.h>
 #endif
 
-#include "eglutils.h"
+#include "eglUtils.h"
 
 static EGLNativeDisplayType eglNativeDisplay = NULL;
 static EGLNativeWindowType  eglNativeWindow = NULL;

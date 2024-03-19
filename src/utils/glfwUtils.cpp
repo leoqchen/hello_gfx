@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include "glfwutils.h"
-#include "glutils.h"
+#include "glfwUtils.h"
+#include "glUtils.h"
 
 static void error_callback(int error, const char* description)
 {

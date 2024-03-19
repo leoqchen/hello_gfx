@@ -8,7 +8,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "myutils.h"
+#include "myUtils.h"
 
 
 const char* glErrorName( GLenum error );

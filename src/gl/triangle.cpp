@@ -17,9 +17,9 @@
 #include <stdio.h>
 #include <ctype.h>
 #include "linmath.h"
-#include "glutils.h"
-#include "glfwutils.h"
-#include "myutils.h"
+#include "glUtils.h"
+#include "glfwUtils.h"
+#include "myUtils.h"
 
 typedef struct Vertex
 {

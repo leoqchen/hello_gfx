@@ -48,11 +48,11 @@ include_directories(${CMAKE_BINARY_DIR}/configuration)
 #  libraries
 #-----------------------------------------------------------------------------------------
 
-# myutils
+# myUtils
 add_library(
-  myutils
+  myUtils
   STATIC
-  src/utils/myutils.cpp
+  src/utils/myUtils.cpp
 )
 
 
@@ -72,20 +72,20 @@ add_library(
 
 # gl utils
 add_library(
-  glutils_gl
+  glUtils_gl
   STATIC
-  src/utils/glutils.cpp
+  src/utils/glUtils.cpp
   src/utils/SGI_rgb.cpp
 )
 
 add_library(
-  glutils_gles2
+  glUtils_gles2
   STATIC
-  src/utils/glutils.cpp
+  src/utils/glUtils.cpp
   src/utils/SGI_rgb.cpp
 )
 target_compile_options(
-  glutils_gles2
+  glUtils_gles2
   PUBLIC
   ${IS_GlEs}
 )
@@ -93,18 +93,18 @@ target_compile_options(
 
 # glfw utils
 add_library(
-  glfwutils_gl
+  glfwUtils_gl
   STATIC
-  src/utils/glfwutils.cpp
+  src/utils/glfwUtils.cpp
 )
 
 add_library(
-  glfwutils_gles2
+  glfwUtils_gles2
   STATIC
-  src/utils/glfwutils.cpp
+  src/utils/glfwUtils.cpp
 )
 target_compile_options(
-  glfwutils_gles2
+  glfwUtils_gles2
   PUBLIC
   ${IS_GlEs}
 )
@@ -112,20 +112,20 @@ target_compile_options(
 
 # x11 utils
 add_library(
-  x11utils
+  x11Utils
   STATIC
-  src/utils/x11utils.cpp
+  src/utils/x11Utils.cpp
 )
 
 
 # EGL utils
 add_library(
-  eglutils_gles2
+  eglUtils_gles2
   STATIC
-  src/utils/eglutils.cpp
+  src/utils/eglUtils.cpp
 )
 target_compile_options(
-  eglutils_gles2
+  eglUtils_gles2
   PUBLIC
   ${IS_GlEs}
 )
@@ -279,13 +279,13 @@ foreach(target ${targets})
 
   if(${targetName} MATCHES "_gl$")
     list(APPEND targetCompileOptions ${IS_Gl})
-    list(APPEND targetLinkLibraries myutils glad_gl glutils_gl glfwutils_gl)
+    list(APPEND targetLinkLibraries myUtils glad_gl glUtils_gl glfwUtils_gl)
   elseif(${targetName} MATCHES "_glLegacy$")
     list(APPEND targetCompileOptions ${IS_GlLegacy})
-    list(APPEND targetLinkLibraries myutils glad_gl glutils_gl glfwutils_gl -lGLU)
+    list(APPEND targetLinkLibraries myUtils glad_gl glUtils_gl glfwUtils_gl -lGLU)
   elseif(${targetName} MATCHES "_gles$")
     list(APPEND targetCompileOptions ${IS_GlEs})
-    list(APPEND targetLinkLibraries myutils glad_gles2 glutils_gles2 glfwutils_gles2)
+    list(APPEND targetLinkLibraries myUtils glad_gles2 glUtils_gles2 glfwUtils_gles2)
   endif()
 
   #message("target=${target}")
@@ -307,7 +307,7 @@ target_compile_options(
 )
 target_link_libraries(
   eglHelloTriangle_gles
-  -Wl,--start-group myutils glfwutils_gles2 glad_gles2 glutils_gles2 x11utils eglutils_gles2 -Wl,--end-group
+  -Wl,--start-group myUtils glfwUtils_gles2 glad_gles2 glUtils_gles2 x11Utils eglUtils_gles2 -Wl,--end-group
   -lX11
   -lEGL
   -lGLESv2

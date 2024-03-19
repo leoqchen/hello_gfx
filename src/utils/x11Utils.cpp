@@ -8,7 +8,7 @@
 #include  <X11/Xatom.h>
 #include  <X11/Xutil.h>
 
-#include "x11utils.h"
+#include "x11Utils.h"
 
 // X11 related local variables
 static Display *x_display = NULL;

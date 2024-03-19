@@ -1,4 +1,4 @@
-#include "glutils.h"
+#include "glUtils.h"
 
 const char* glErrorName( GLenum error )
 {

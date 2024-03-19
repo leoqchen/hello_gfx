@@ -9,10 +9,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "glutils.h"
-#include "myutils.h"
-#include "x11utils.h"
-#include "eglutils.h"
+#include "glUtils.h"
+#include "myUtils.h"
+#include "x11Utils.h"
+#include "eglUtils.h"
 
 
 // settings

@@ -12,6 +12,6 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
-#include "myutils.h"
+#include "myUtils.h"
 
 GLFWwindow* glfwInit_CreateWindow( api_t api, int width, int height );
