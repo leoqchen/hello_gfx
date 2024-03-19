@@ -1,8 +1,12 @@
+#if IS_GlEs
+#include <glad/gles2.h>
+#else
+#include <glad/gl.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
 #include "glfwUtils.h"
-#include "glUtils.h"
 
 static void error_callback(int error, const char* description)
 {
@@ -61,36 +65,31 @@ GLFWwindow* glfw_CreateWindow(api_t api, int width, int height )
     // glad: load all OpenGL function pointers
     // ---------------------------------------
     glfwMakeContextCurrent(window);
+    glfwSwapInterval(1);
 #if IS_GlEs
-    assert( api.api == API_GLES );
     int version = gladLoadGLES2(glfwGetProcAddress);
 #else
-    assert( api.api == API_GLLegacy || api.api == API_GL );
     int version = gladLoadGL(glfwGetProcAddress);
 #endif
-    glfwSwapInterval(1);
+    printf("%s: glad load version: %d.%d\n", __func__, GLAD_VERSION_MAJOR(version), GLAD_VERSION_MINOR(version));
 
     // some queries
     // ---------------------------------------
-    printf("%s: glad version: %d.%d\n", __func__, GLAD_VERSION_MAJOR(version), GLAD_VERSION_MINOR(version));
     printf("%s: GL_VENDER = %s\n", __func__, glGetString(GL_VENDOR));
     printf("%s: GL_RENDERER = %s\n", __func__, glGetString(GL_RENDERER));
-    const char* glversion = (const char*)glGetString(GL_VERSION);
-    printf("%s: GL_VERSON = %s\n", __func__, glversion);
-    glfwSetWindowTitle( window, glversion );
+    printf("%s: GL_VERSION = %s\n", __func__, glGetString(GL_VERSION));
+    printf("%s: GL_SHADING_LANGUAGE_VERSION = %s\n", __func__, glGetString(GL_SHADING_LANGUAGE_VERSION));
 
+    GLint contextFlag;
+    glGetIntegerv( GL_CONTEXT_FLAGS, &contextFlag );
+    printf("%s: GL_CONTEXT_FLAGS = 0x%x\n", __func__, contextFlag);
 #if IS_GlLegacy
     GLint profileBit;
     glGetIntegerv( GL_CONTEXT_PROFILE_MASK, &profileBit );
     printf("%s: GL_CONTEXT_PROFILE_MASK = %s\n", __func__, glContextProfileBitName(profileBit));
 #endif
 
-    GLint contextFlag;
-    glGetIntegerv( GL_CONTEXT_FLAGS, &contextFlag );
-    printf("%s: GL_CONTEXT_FLAGS = 0x%x\n", __func__, contextFlag);
-
-    printf("%s: GL_SHADING_LANGUAGE_VERSION = %s\n", __func__, glGetString(GL_SHADING_LANGUAGE_VERSION));
-
     printf("\n");
+    glfwSetWindowTitle( window, (const char*)glGetString(GL_VERSION) );
     return window;
 }

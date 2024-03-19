@@ -53,14 +53,7 @@ int main( int argc, const char* argv[] )
     // glfw: initialize and configure
     // ------------------------------
 //    GLFWwindow* window = glfw_CreateWindow( api, WinWidth, WinHeight );
-    void* nativeDisplayPtr;
-    void* nativeWindowPtr;
-    xWindowCreate( &nativeDisplayPtr, &nativeWindowPtr, "", WinWidth, WinHeight );
-    egl_CreateContext( nativeDisplayPtr, nativeWindowPtr ); //TODO: support GL
-    printf("%s: GL_VENDER = %s\n", __func__, glGetString(GL_VENDOR));
-    printf("%s: GL_RENDERER = %s\n", __func__, glGetString(GL_RENDERER));
-    printf("%s: GL_VERSION = %s\n", __func__, glGetString(GL_VERSION));
-    printf("%s: GL_SHADING_LANGUAGE_VERSION = %s\n", __func__, glGetString(GL_SHADING_LANGUAGE_VERSION));
+    eglx_CreateWindow( api, WinWidth, WinHeight );
 
     // some query
     int major_version = 0;
@@ -123,7 +116,7 @@ int main( int argc, const char* argv[] )
     // render loop
     // -----------
 //    while(!glfwWindowShouldClose(window))
-    while( !xWindowShouldClose() )
+    while( !eglx_ShouldClose() )
     {
         // render
         // ------
@@ -160,7 +153,8 @@ int main( int argc, const char* argv[] )
         // -------------------------------------------------------------------------------
 //        glfwSwapBuffers(window);
 //        glfwPollEvents();
-        egl_SwapBuffers();
+        eglx_SwapBuffers();
+        eglx_PoolEvents();
 
         //static int frame = 0;
         //printf("frame = %d\n", frame++);
@@ -177,7 +171,6 @@ int main( int argc, const char* argv[] )
     // ------------------------------------------------------------------
 //    glfwDestroyWindow(window);
 //    glfwTerminate();
-    egl_Terminate();
-    xWindowDestroy();
+    eglx_Terminate();
     return 0;
 }

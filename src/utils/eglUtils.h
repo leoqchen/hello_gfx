@@ -1,5 +1,18 @@
+/*
+ * glad + EGL + X11 glue codes
+ */
 #pragma once
 
-int egl_CreateContext( void* nativeDisplayPtr, void* nativeWindowPtr );
+#include "myUtils.h"
+
+// EGL
+int egl_CreateContext( api_t api, void* nativeDisplayPtr, void* nativeWindowPtr );
 void egl_SwapBuffers();
 void egl_Terminate();
+
+// EGL + X11
+void eglx_CreateWindow(api_t api, int width, int height );
+void eglx_Terminate();
+void eglx_SwapBuffers();
+int eglx_ShouldClose();
+void eglx_PoolEvents();

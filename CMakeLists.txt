@@ -55,6 +55,12 @@ add_library(
   src/utils/myUtils.cpp
 )
 
+# x11 utils
+add_library(
+  x11Utils
+  STATIC
+  src/utils/x11Utils.cpp
+)
 
 # glad
 add_library(
@@ -62,13 +68,11 @@ add_library(
   STATIC
   ext/glad/src/gl.c
 )
-
 add_library(
   glad_gles2
   STATIC
   ext/glad/src/gles2.c
 )
-
 
 # gl utils
 add_library(
@@ -77,7 +81,6 @@ add_library(
   src/utils/glUtils.cpp
   src/utils/SGI_rgb.cpp
 )
-
 add_library(
   glUtils_gles2
   STATIC
@@ -90,14 +93,12 @@ target_compile_options(
   ${IS_GlEs}
 )
 
-
 # glfw utils
 add_library(
   glfwUtils_gl
   STATIC
   src/utils/glfwUtils.cpp
 )
-
 add_library(
   glfwUtils_gles2
   STATIC
@@ -108,15 +109,6 @@ target_compile_options(
   PUBLIC
   ${IS_GlEs}
 )
-
-
-# x11 utils
-add_library(
-  x11Utils
-  STATIC
-  src/utils/x11Utils.cpp
-)
-
 
 # EGL utils
 add_library(

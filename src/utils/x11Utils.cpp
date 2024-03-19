@@ -14,7 +14,7 @@
 static Display *x_display = NULL;
 static Window x_win = NULL;
 static Atom s_wmDeleteMessage;
-
+static xWindowResizeFunc resizeCallback = NULL;
 
 // This function initialized the native X11 display and window
 int xWindowCreate( void** nativeDisplayPtr, void** nativeWindowPtr, const char *title, int width, int height )
@@ -42,7 +42,7 @@ int xWindowCreate( void** nativeDisplayPtr, void** nativeWindowPtr, const char *
 
     root = DefaultRootWindow(x_display);
 
-    swa.event_mask  =  ExposureMask | PointerMotionMask | KeyPressMask;
+    swa.event_mask  =  ExposureMask | PointerMotionMask | KeyPressMask | StructureNotifyMask;
     x_win = XCreateWindow(
                x_display, root,
                0, 0, width, height, 0,
@@ -85,8 +85,13 @@ int xWindowCreate( void** nativeDisplayPtr, void** nativeWindowPtr, const char *
     return 1;
 }
 
+void xWindowSetTitle( const char *name )
+{
+    XStoreName( x_display, x_win, name );
+}
+
 // Reads from X11 event loop and interrupt program if there is a keypress, or window close action.
-int xWindowShouldClose()
+int xWindowPoolEvents()
 {
     if( x_display == NULL )
         return 0;
@@ -100,23 +105,30 @@ int xWindowShouldClose()
 
         if( xev.type == KeyPress )
         {
-            KeySym key;
-            char text;
-            if( XLookupString( &xev.xkey, &text, 1, &key, 0 ) == 1 )
-            {
+            //KeySym key;
+            //char text;
+            //if( XLookupString( &xev.xkey, &text, 1, &key, 0 ) == 1 )
+            //{
                 //if (esContext->keyFunc != NULL)
                 //    esContext->keyFunc(esContext, text, 0, 0);
-            }
-        }
+            //}
 
-        if( xev.type == ClientMessage ){
+            //printf("keycode = %u\n", xev.xkey.keycode);
+            if( xev.xkey.keycode == 9 ) //Escape
+                userinterrupt = 1;
+        }
+        else if( xev.type == ClientMessage ){
             if( xev.xclient.data.l[0] == s_wmDeleteMessage ){
                 userinterrupt = 1;
             }
         }
-
-        if( xev.type == DestroyNotify ) {
+        else if( xev.type == DestroyNotify ) {
             userinterrupt = 1;
+        }
+        else if( xev.type == ConfigureNotify ){
+            XConfigureEvent xce = xev.xconfigure;
+            if( resizeCallback != NULL )
+                resizeCallback( xce.width, xce.height );
         }
     }
     return userinterrupt;
@@ -129,4 +141,9 @@ void xWindowDestroy()
 
     if( x_display )
         XCloseDisplay( x_display );
+}
+
+void xWindowSetWindowResizeCallback( xWindowResizeFunc func )
+{
+    resizeCallback = func;
 }
