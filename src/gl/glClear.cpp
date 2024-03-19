@@ -1,15 +1,7 @@
-#if IS_GlEs
-#include <glad/gles2.h>
-#else
-#include <glad/gl.h>
-#endif
-
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-
 #include <stdio.h>
 #include <ctype.h>
-#include "glfwUtils.h"
+#include "glad.h"
+#include "eglUtils.h"
 #include "glUtils.h"
 #include "myUtils.h"
 
@@ -24,15 +16,15 @@ int main( int argc, const char* argv[] )
     api_t api = apiInitial( API_Current, argc, argv );
     printf("%s: %s\n", argv[0], apiName(api));
 
-    // glfw: initialize and configure
+    // initialize and configure
     // ------------------------------
-    GLFWwindow* window = glfw_CreateWindow(api, WinWidth, WinHeight);
+    eglx_CreateWindow( api, WinWidth, WinHeight );
 
     // render loop
     // -----------
     int i = 0;
     int frame = 0;
-    while (!glfwWindowShouldClose(window))
+    while (!eglx_ShouldClose())
     {
         // render
         // ------
@@ -48,19 +40,18 @@ int main( int argc, const char* argv[] )
         glClearColor(red, green, blue, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        // swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+        eglx_SwapBuffers();
+        eglx_PollEvents();
     }
     glErrorCheck();
 
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
 
-    // glfw: terminate, clearing all previously allocated GLFW resources.
+    // terminate, clearing all previously allocated resources.
     // ------------------------------------------------------------------
-    glfwDestroyWindow(window);
-    glfwTerminate();
+    eglx_Terminate();
     return 0;
 }

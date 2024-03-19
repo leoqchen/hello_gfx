@@ -1,27 +1,19 @@
 /**
  * Measure glGenerateMipmap() speed.
  */
-#if IS_GlEs
-#include <glad/gles2.h>
-#else
-#include <glad/gl.h>
-#endif
-
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-
 #include <stdio.h>
-#include <ctype.h>
 #include <string.h>
+#include <stddef.h>
+#include "glad.h"
 #include "glUtils.h"
-#include "glfwUtils.h"
+#include "eglUtils.h"
 #include "myUtils.h"
 
 
 // settings
 static const int WinWidth = 200;
 static const int WinHeight = 200;
-static GLFWwindow* window;
+
 
 static GLboolean DrawPoint = GL_TRUE;
 static GLuint vertex_array;
@@ -178,13 +170,13 @@ static void PerfDraw()
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, BaseLevel);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, MaxLevel);
 
-            rate = PerfMeasureRate(GenMipmap, glfwPollEvents );
+            rate = PerfMeasureRate(GenMipmap, eglx_PollEvents );
 
             printf("   glGenerateMipmap(levels %d..%d)%s: %.2f gens/sec\n",
                    BaseLevel + 1, MaxLevel,
                    (DrawPoint) ? " + Draw" : "",
                    rate);
-            glfwSwapBuffers(window);
+            eglx_SwapBuffers();
         }
     }
 
@@ -220,13 +212,13 @@ static void PerfDraw2( int BaseLevel_, int MaxLevel_ )
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, BaseLevel_);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, MaxLevel_);
 
-        rate = PerfMeasureRate(GenMipmap, glfwPollEvents );
+        rate = PerfMeasureRate(GenMipmap, eglx_PollEvents );
 
         printf("   glGenerateMipmap(levels %d..%d)%s: %.2f gens/sec\n",
                BaseLevel_ + 1, MaxLevel_,
                (DrawPoint) ? " + Draw" : "",
                rate);
-        glfwSwapBuffers(window);
+        eglx_SwapBuffers();
     }
 
     glErrorCheck();
@@ -241,9 +233,9 @@ int main( int argc, const char* argv[] )
     int __maxlevel = integerFromArgs( "--maxlevel", argc, argv, NULL );
     int __draw = integerFromArgs("--draw", argc, argv, NULL );
 
-    // glfw: initialize and configure
+    // initialize and configure
     // ------------------------------
-    window = glfw_CreateWindow(api, WinWidth, WinHeight);
+    eglx_CreateWindow( api, WinWidth, WinHeight );
 
     // init
     // -----------
@@ -251,7 +243,7 @@ int main( int argc, const char* argv[] )
 
     // render loop
     // -----------
-    while (!glfwWindowShouldClose(window))
+    while (!eglx_ShouldClose())
     {
         if( __baselevel != -1 && __maxlevel != -1 && __draw != -1 ){
             DrawPoint = __draw;
@@ -275,18 +267,18 @@ int main( int argc, const char* argv[] )
         printf("\n");
         exit(0);
 
-        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        // swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+        eglx_SwapBuffers();
+        eglx_PollEvents();
     }
 
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
 
 
-    // glfw: terminate, clearing all previously allocated GLFW resources.
+    // terminate, clearing all previously allocated resources.
     // ------------------------------------------------------------------
-    glfwTerminate();
+    eglx_Terminate();
     return 0;
 }

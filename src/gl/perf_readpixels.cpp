@@ -1,26 +1,17 @@
 /**
  * Measure glReadPixels speed.
  */
-#if IS_GlEs
-#include <glad/gles2.h>
-#else
-#include <glad/gl.h>
-#endif
-
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-
 #include <stdio.h>
-#include <ctype.h>
+#include "glad.h"
 #include "glUtils.h"
-#include "glfwUtils.h"
+#include "eglUtils.h"
 #include "myUtils.h"
 
 
 // settings
 static const int WinWidth = 1000;
 static const int WinHeight = 1000;
-static GLFWwindow* window;
+
 
 static GLuint VAO;
 static GLuint VBO;
@@ -168,7 +159,7 @@ static void PerfDraw()
             imgSize = ReadWidth * ReadHeight * DstFormats[fmt].pixel_size;
             ReadBuffer = malloc(imgSize);
 
-            double rate = PerfMeasureRate(ReadPixels, glfwPollEvents );
+            double rate = PerfMeasureRate(ReadPixels, eglx_PollEvents );
             double mbPerSec = rate * imgSize / (1024.0 * 1024.0);
 
             printf("glReadPixels(%d x %d, %s): %.1f images/sec, %.1f Mpixels/sec\n",
@@ -176,7 +167,7 @@ static void PerfDraw()
                    DstFormats[fmt].name, rate, mbPerSec);
 
             free(ReadBuffer);
-            glfwSwapBuffers(window);
+            eglx_SwapBuffers();
         }
     }
 
@@ -198,7 +189,7 @@ static void PerfDraw2( int Sizes_)
             imgSize = ReadWidth * ReadHeight * DstFormats[fmt].pixel_size;
             ReadBuffer = malloc(imgSize);
 
-            double rate = PerfMeasureRate(ReadPixels, glfwPollEvents );
+            double rate = PerfMeasureRate(ReadPixels, eglx_PollEvents );
             double mbPerSec = rate * imgSize / (1024.0 * 1024.0);
 
             printf("glReadPixels(%d x %d, %s): %.1f images/sec, %.1f Mpixels/sec\n",
@@ -206,7 +197,7 @@ static void PerfDraw2( int Sizes_)
                    DstFormats[fmt].name, rate, mbPerSec);
 
             free(ReadBuffer);
-            glfwSwapBuffers(window);
+            eglx_SwapBuffers();
         }
     }
 
@@ -221,9 +212,9 @@ int main( int argc, const char* argv[] )
 
     int __testcase = integerFromArgs( "--testcase", argc, argv, NULL );
 
-    // glfw: initialize and configure
+    // initialize and configure
     // ------------------------------
-    window = glfw_CreateWindow(api, WinWidth, WinHeight);
+    eglx_CreateWindow( api, WinWidth, WinHeight );
 
     // init
     // -----------
@@ -231,7 +222,7 @@ int main( int argc, const char* argv[] )
 
     // render loop
     // -----------
-    while (!glfwWindowShouldClose(window))
+    while (!eglx_ShouldClose())
     {
         if( __testcase != -1 ){
             PerfDraw2( __testcase );
@@ -242,18 +233,18 @@ int main( int argc, const char* argv[] )
         // ------
         PerfDraw();
 
-        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        // swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+        eglx_SwapBuffers();
+        eglx_PollEvents();
     }
 
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
 
 
-    // glfw: terminate, clearing all previously allocated GLFW resources.
+    // terminate, clearing all previously allocated resources.
     // ------------------------------------------------------------------
-    glfwTerminate();
+    eglx_Terminate();
     return 0;
 }

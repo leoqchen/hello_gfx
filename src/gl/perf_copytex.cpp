@@ -4,21 +4,11 @@
  * copying the texture data from it since we can't make really large
  * on-screen windows.
  */
-
-#if IS_GlEs
-#include <glad/gles2.h>
-#else
-#include <glad/gl.h>
-#endif
-
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-
 #include <stdio.h>
-#include <ctype.h>
-#include <string.h>
+#include <stddef.h>
+#include "glad.h"
 #include "glUtils.h"
-#include "glfwUtils.h"
+#include "eglUtils.h"
 #include "myUtils.h"
 
 
@@ -255,13 +245,13 @@ void PerfDraw()
                 GLint bytesPerImage = 4 * TexSize * TexSize;
 
                 if (sub == 0)
-                    rate = PerfMeasureRate(CopyTexImage, glfwPollEvents );
+                    rate = PerfMeasureRate(CopyTexImage, eglx_PollEvents );
                 else {
                     /* setup empty dest texture */
                     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
                                  TexSize, TexSize, 0,
                                  GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-                    rate = PerfMeasureRate(CopyTexSubImage, glfwPollEvents );
+                    rate = PerfMeasureRate(CopyTexSubImage, eglx_PollEvents );
                 }
 
                 mbPerSec = rate * bytesPerImage / (1024.0 * 1024.0);
@@ -298,13 +288,13 @@ void PerfDraw2( int sub, int TexSize_ )
                 GLint bytesPerImage = 4 * TexSize * TexSize;
 
                 if (sub == 0)
-                    rate = PerfMeasureRate(CopyTexImage, glfwPollEvents );
+                    rate = PerfMeasureRate(CopyTexImage, eglx_PollEvents );
                 else {
                     /* setup empty dest texture */
                     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
                                  TexSize, TexSize, 0,
                                  GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-                    rate = PerfMeasureRate(CopyTexSubImage, glfwPollEvents );
+                    rate = PerfMeasureRate(CopyTexSubImage, eglx_PollEvents );
                 }
 
                 mbPerSec = rate * bytesPerImage / (1024.0 * 1024.0);
@@ -334,9 +324,9 @@ int main( int argc, const char* argv[] )
     int __mode = integerFromArgs( "--mode", argc, argv, NULL );
     int __draw = integerFromArgs("--draw", argc, argv, NULL );
 
-    // glfw: initialize and configure
+    // initialize and configure
     // ------------------------------
-    GLFWwindow* window = glfw_CreateWindow(api, WinWidth, WinHeight);
+    eglx_CreateWindow( api, WinWidth, WinHeight );
 
     // init
     // -----------
@@ -344,7 +334,7 @@ int main( int argc, const char* argv[] )
 
     // render loop
     // -----------
-    while (!glfwWindowShouldClose(window))
+    while (!eglx_ShouldClose())
     {
         if( __mode != -1 && __testcase != -1 && __draw != -1 ){
             DrawPoint = __draw;
@@ -368,17 +358,17 @@ int main( int argc, const char* argv[] )
         printf("\n");
         exit(0);
 
-        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        // swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+        eglx_SwapBuffers();
+        eglx_PollEvents();
     }
 
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
 
-    // glfw: terminate, clearing all previously allocated GLFW resources.
+    // terminate, clearing all previously allocated resources.
     // ------------------------------------------------------------------
-    glfwTerminate();
+    eglx_Terminate();
     return 0;
 }

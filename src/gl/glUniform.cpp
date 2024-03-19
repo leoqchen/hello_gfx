@@ -2,21 +2,11 @@
  * 行为测试：
  * 测试glUniform设置是否能被记录在program里，无需glDraw触发
  */
-
-#if IS_GlEs
-#include <glad/gles2.h>
-#else
-#include <glad/gl.h>
-#endif
-
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-
 #include <stdio.h>
-#include <ctype.h>
 #include "linmath.h"
+#include "glad.h"
 #include "glUtils.h"
-#include "glfwUtils.h"
+#include "eglUtils.h"
 #include "myUtils.h"
 
 
@@ -67,9 +57,9 @@ int main( int argc, const char* argv[] )
 
     static const float Z = 30.0f;
 
-    // glfw: initialize and configure
+    // initialize and configure
     // ------------------------------
-    GLFWwindow* window = glfw_CreateWindow(api, WinWidth, WinHeight);
+    eglx_CreateWindow( api, WinWidth, WinHeight );
 
     // build and compile our shader program
     // ------------------------------------
@@ -121,7 +111,7 @@ int main( int argc, const char* argv[] )
     // -----------
     int frame = 0;
     glClearColor(0.0, 0.0, 0.0, 0.0);
-    while (!glfwWindowShouldClose(window))
+    while (!eglx_ShouldClose())
     {
         // render
         // ------
@@ -138,10 +128,10 @@ int main( int argc, const char* argv[] )
         }
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
-        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        // swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+        eglx_SwapBuffers();
+        eglx_PollEvents();
         frame++;
     }
     glErrorCheck();
@@ -153,9 +143,8 @@ int main( int argc, const char* argv[] )
     glDeleteProgram(program1);
     glDeleteProgram(program2);
 
-    // glfw: terminate, clearing all previously allocated GLFW resources.
+    // terminate, clearing all previously allocated resources.
     // ------------------------------------------------------------------
-    glfwDestroyWindow(window);
-    glfwTerminate();
+    eglx_Terminate();
     return 0;
 }

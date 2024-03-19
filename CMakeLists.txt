@@ -112,6 +112,11 @@ target_compile_options(
 
 # EGL utils
 add_library(
+  eglUtils_gl
+  STATIC
+  src/utils/eglUtils.cpp
+)
+add_library(
   eglUtils_gles2
   STATIC
   src/utils/eglUtils.cpp
@@ -124,7 +129,6 @@ target_compile_options(
 
 
 link_libraries(
-  glfw
   dl
 )
 
@@ -155,10 +159,10 @@ set(targets
   "hello_triangle_gl   \; src/gl/hello_triangle.cpp"
   "hello_triangle_gles \; src/gl/hello_triangle.cpp"
 
-  "triangle_glLegacy \; src/gl/triangle.cpp"
-  "triangle_gl       \; src/gl/triangle.cpp"
-  "triangle_gles     \; src/gl/triangle.cpp"
-
+#  "triangle_glLegacy \; src/gl/triangle.cpp"
+#  "triangle_gl       \; src/gl/triangle.cpp"
+#  "triangle_gles     \; src/gl/triangle.cpp"
+#
   "glClear_gl   \; src/gl/glClear.cpp"
   "glClear_gles \; src/gl/glClear.cpp"
 
@@ -220,17 +224,17 @@ set(targets
   "perf_genmipmap_gl        \; src/gl/perf_genmipmap.cpp"
   "perf_genmipmap_gles      \; src/gl/perf_genmipmap.cpp"
 
-  "perf_glslstatechange_glLegacy  \; src/gl/perf_glslstatechange.cpp"
-  "perf_glslstatechange_gl        \; src/gl/perf_glslstatechange.cpp"
-  "perf_glslstatechange_gles      \; src/gl/perf_glslstatechange.cpp"
+#  "perf_glslstatechange_glLegacy  \; src/gl/perf_glslstatechange.cpp"
+#  "perf_glslstatechange_gl        \; src/gl/perf_glslstatechange.cpp"
+#  "perf_glslstatechange_gles      \; src/gl/perf_glslstatechange.cpp"
 
   "perf_readpixels_glLegacy  \; src/gl/perf_readpixels.cpp"
   "perf_readpixels_gl        \; src/gl/perf_readpixels.cpp"
   "perf_readpixels_gles      \; src/gl/perf_readpixels.cpp"
 
-  "perf_swapbuffers_glLegacy  \; src/gl/perf_swapbuffers.cpp"
-  "perf_swapbuffers_gl        \; src/gl/perf_swapbuffers.cpp"
-  "perf_swapbuffers_gles      \; src/gl/perf_swapbuffers.cpp"
+#  "perf_swapbuffers_glLegacy  \; src/gl/perf_swapbuffers.cpp"
+#  "perf_swapbuffers_gl        \; src/gl/perf_swapbuffers.cpp"
+#  "perf_swapbuffers_gles      \; src/gl/perf_swapbuffers.cpp"
 
   "perf_teximage_glLegacy  \; src/gl/perf_teximage.cpp"
   "perf_teximage_gl        \; src/gl/perf_teximage.cpp"
@@ -271,13 +275,13 @@ foreach(target ${targets})
 
   if(${targetName} MATCHES "_gl$")
     list(APPEND targetCompileOptions ${IS_Gl})
-    list(APPEND targetLinkLibraries myUtils glad_gl glUtils_gl glfwUtils_gl)
+    list(APPEND targetLinkLibraries myUtils x11Utils glad_gl glUtils_gl glfwUtils_gl eglUtils_gl -lglfw -lX11 -lEGL)
   elseif(${targetName} MATCHES "_glLegacy$")
     list(APPEND targetCompileOptions ${IS_GlLegacy})
-    list(APPEND targetLinkLibraries myUtils glad_gl glUtils_gl glfwUtils_gl -lGLU)
+    list(APPEND targetLinkLibraries myUtils x11Utils glad_gl glUtils_gl glfwUtils_gl eglUtils_gl -lglfw -lX11 -lEGL -lGLU)
   elseif(${targetName} MATCHES "_gles$")
     list(APPEND targetCompileOptions ${IS_GlEs})
-    list(APPEND targetLinkLibraries myUtils glad_gles2 glUtils_gles2 glfwUtils_gles2)
+    list(APPEND targetLinkLibraries myUtils x11Utils glad_gles2 glUtils_gles2 glfwUtils_gles2 eglUtils_gles2 -lglfw -lX11 -lEGL)
   endif()
 
   #message("target=${target}")
@@ -302,6 +306,5 @@ target_link_libraries(
   -Wl,--start-group myUtils glfwUtils_gles2 glad_gles2 glUtils_gles2 x11Utils eglUtils_gles2 -Wl,--end-group
   -lX11
   -lEGL
-  -lGLESv2
   glfw
 )

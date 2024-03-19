@@ -1,8 +1,4 @@
-#if IS_GlEs
-#include <glad/gles2.h>
-#else
-#include <glad/gl.h>
-#endif
+#include "glad.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,7 +17,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
-// glfw: whenever the window size changed (by OS or user resize) this callback function executes
+// whenever the window size changed (by OS or user resize) this callback function executes
 // ---------------------------------------------------------------------------------------------
 static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -30,7 +26,7 @@ static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 GLFWwindow* glfw_CreateWindow(api_t api, int width, int height )
 {
-    // glfw: initialize and configure
+    // initialize and configure
     // ------------------------------
     glfwSetErrorCallback(error_callback);
     if (!glfwInit())

@@ -3,12 +3,7 @@
  * Read an SGI .rgb image file and generate a mipmap texture set.
  * Much of this code was borrowed from SGI's tk OpenGL toolkit.
  */
-
-#if IS_GlEs
-#include <glad/gles2.h>
-#else
-#include <glad/gl.h>
-#endif
+#include "glad.h"
 
 
 //GLboolean SGI_LoadRGBMipmaps( const char *imageFile, GLint intFormat );

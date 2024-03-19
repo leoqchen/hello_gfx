@@ -15,4 +15,4 @@ void eglx_CreateWindow(api_t api, int width, int height );
 void eglx_Terminate();
 void eglx_SwapBuffers();
 int eglx_ShouldClose();
-void eglx_PoolEvents();
+void eglx_PollEvents();

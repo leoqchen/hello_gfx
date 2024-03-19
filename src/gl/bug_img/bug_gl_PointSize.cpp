@@ -1,26 +1,17 @@
 /**
  * Bug复现：IMG需要在vertex shader里显式地设置gl_PointSize，才能让glDraw( GL_POINTS )正确的显示绘制结果
  */
-#if IS_GlEs
-#include <glad/gles2.h>
-#else
-#include <glad/gl.h>
-#endif
-
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-
 #include <stdio.h>
-#include <ctype.h>
+#include "glad.h"
 #include "glUtils.h"
-#include "glfwUtils.h"
+#include "eglUtils.h"
 #include "myUtils.h"
 
 
 // settings
 static const int WinWidth = 200;
 static const int WinHeight = 200;
-static GLFWwindow* window;
+
 
 static GLuint VAO;
 static GLuint VBO;
@@ -107,9 +98,9 @@ int main( int argc, const char* argv[] )
     api_t api = apiInitial( API_Current, argc, argv );
     printf("%s: %s\n", argv[0], apiName(api));
 
-    // glfw: initialize and configure
+    // initialize and configure
     // ------------------------------
-    window = glfw_CreateWindow(api, WinWidth, WinHeight);
+    eglx_CreateWindow( api, WinWidth, WinHeight );
 
     // init
     // -----------
@@ -117,24 +108,24 @@ int main( int argc, const char* argv[] )
 
     // render loop
     // -----------
-    while (!glfwWindowShouldClose(window))
+    while (!eglx_ShouldClose())
     {
         // render
         // ------
         glDrawArrays(GL_POINTS, 0, 4);
 
-        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        // swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+        eglx_SwapBuffers();
+        eglx_PollEvents();
     }
 
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
 
 
-    // glfw: terminate, clearing all previously allocated GLFW resources.
+    // terminate, clearing all previously allocated resources.
     // ------------------------------------------------------------------
-    glfwTerminate();
+    eglx_Terminate();
     return 0;
 }

@@ -3,21 +3,11 @@
  * 用多个Vertex Buffer来传输 顶点数据、颜色数据
  *
  */
-
-#if IS_GlEs
-#include <glad/gles2.h>
-#else
-#include <glad/gl.h>
-#endif
-
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-
 #include <stdio.h>
-#include <ctype.h>
 #include "linmath.h"
+#include "glad.h"
 #include "glUtils.h"
-#include "glfwUtils.h"
+#include "eglUtils.h"
 #include "myUtils.h"
 
 
@@ -65,9 +55,9 @@ int main( int argc, const char* argv[] )
     api_t api = apiInitial( API_Current, argc, argv );
     printf("%s: %s\n", argv[0], apiName(api));
 
-    // glfw: initialize and configure
+    // initialize and configure
     // ------------------------------
-    GLFWwindow* window = glfw_CreateWindow(api, WinWidth, WinHeight);
+    eglx_CreateWindow( api, WinWidth, WinHeight );
 
     // build and compile our shader program
     // ------------------------------------
@@ -121,7 +111,7 @@ int main( int argc, const char* argv[] )
     // render loop
     // -----------
     glClearColor(0.4, 0.4, 0.4, 0.0);
-    while (!glfwWindowShouldClose(window))
+    while (!eglx_ShouldClose())
     {
         // render
         // ------
@@ -130,10 +120,10 @@ int main( int argc, const char* argv[] )
         glUseProgram(program);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
-        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        // swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+        eglx_SwapBuffers();
+        eglx_PollEvents();
     }
     glErrorCheck();
 
@@ -143,9 +133,8 @@ int main( int argc, const char* argv[] )
     glDeleteBuffers( 2, vertex_buffer );
     glDeleteProgram(program);
 
-    // glfw: terminate, clearing all previously allocated GLFW resources.
+    // terminate, clearing all previously allocated resources.
     // ------------------------------------------------------------------
-    glfwDestroyWindow(window);
-    glfwTerminate();
+    eglx_Terminate();
     return 0;
 }

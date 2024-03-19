@@ -1,26 +1,18 @@
 /**
  * Measure glTex[Sub]Image2D() and glGetTexImage() rate
  */
-#if IS_GlEs
-#include <glad/gles2.h>
-#else
-#include <glad/gl.h>
-#endif
-
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-
 #include <stdio.h>
-#include <ctype.h>
 #include <string.h>
+#include <stddef.h>
+#include "glad.h"
 #include "glUtils.h"
-#include "glfwUtils.h"
+#include "eglUtils.h"
 #include "myUtils.h"
 
 // settings
 static const int WinWidth = 100;
 static const int WinHeight = 100;
-static GLFWwindow* window;
+
 
 static GLuint VAO;
 static GLuint VBO;
@@ -313,11 +305,11 @@ static void PerfDraw()
 
                     switch (mode) {
                         case MODE_TEXIMAGE:
-                            rate = PerfMeasureRate(UploadTexImage2D, glfwPollEvents );
+                            rate = PerfMeasureRate(UploadTexImage2D, eglx_PollEvents );
                             break;
 
                         case MODE_CREATE_TEXIMAGE:
-                            rate = PerfMeasureRate(CreateUploadTexImage2D, glfwPollEvents );
+                            rate = PerfMeasureRate(CreateUploadTexImage2D, eglx_PollEvents );
                             break;
 
                         case MODE_TEXSUBIMAGE:
@@ -325,7 +317,7 @@ static void PerfDraw()
                             glTexImage2D(GL_TEXTURE_2D, 0, TexIntFormat,
                                          TexSize, TexSize, 0,
                                          TexSrcFormat, TexSrcType, NULL);
-                            rate = PerfMeasureRate(UploadTexSubImage2D, glfwPollEvents );
+                            rate = PerfMeasureRate(UploadTexSubImage2D, eglx_PollEvents );
                             break;
 
                         case MODE_GETTEXIMAGE:
@@ -335,7 +327,7 @@ static void PerfDraw()
                             glTexImage2D(GL_TEXTURE_2D, 0, TexIntFormat,
                                          TexSize, TexSize, 0,
                                          TexSrcFormat, TexSrcType, TexImage);
-                            rate = PerfMeasureRate(GetTexImage2D, glfwPollEvents );
+                            rate = PerfMeasureRate(GetTexImage2D, eglx_PollEvents );
                             break;
 #endif
 
@@ -358,7 +350,7 @@ static void PerfDraw()
                        mode_name[mode], SrcFormats[fmt].name, TexSize, TexSize,
                        (DrawPoint) ? " + Draw" : "",
                        rate, mbPerSec);
-                glfwSwapBuffers(window);
+                eglx_SwapBuffers();
             }
         }
         printf("\n");
@@ -410,11 +402,11 @@ static void PerfDraw2( GLint mode_, GLuint TexSize_ )
 
                     switch (mode) {
                         case MODE_TEXIMAGE:
-                            rate = PerfMeasureRate(UploadTexImage2D, glfwPollEvents );
+                            rate = PerfMeasureRate(UploadTexImage2D, eglx_PollEvents );
                             break;
 
                         case MODE_CREATE_TEXIMAGE:
-                            rate = PerfMeasureRate(CreateUploadTexImage2D, glfwPollEvents );
+                            rate = PerfMeasureRate(CreateUploadTexImage2D, eglx_PollEvents );
                             break;
 
                         case MODE_TEXSUBIMAGE:
@@ -422,7 +414,7 @@ static void PerfDraw2( GLint mode_, GLuint TexSize_ )
                             glTexImage2D(GL_TEXTURE_2D, 0, TexIntFormat,
                                          TexSize, TexSize, 0,
                                          TexSrcFormat, TexSrcType, NULL);
-                            rate = PerfMeasureRate(UploadTexSubImage2D, glfwPollEvents );
+                            rate = PerfMeasureRate(UploadTexSubImage2D, eglx_PollEvents );
                             break;
 
                         case MODE_GETTEXIMAGE:
@@ -432,7 +424,7 @@ static void PerfDraw2( GLint mode_, GLuint TexSize_ )
                             glTexImage2D(GL_TEXTURE_2D, 0, TexIntFormat,
                                          TexSize, TexSize, 0,
                                          TexSrcFormat, TexSrcType, TexImage);
-                            rate = PerfMeasureRate(GetTexImage2D, glfwPollEvents );
+                            rate = PerfMeasureRate(GetTexImage2D, eglx_PollEvents );
                             break;
 #endif
 
@@ -455,7 +447,7 @@ static void PerfDraw2( GLint mode_, GLuint TexSize_ )
                        mode_name[mode], SrcFormats[fmt].name, TexSize, TexSize,
                        (DrawPoint) ? " + Draw" : "",
                        rate, mbPerSec);
-                glfwSwapBuffers(window);
+                eglx_SwapBuffers();
             }
         }
         printf("\n");
@@ -473,9 +465,9 @@ int main( int argc, const char* argv[] )
     int __testcase = integerFromArgs( "--testcase", argc, argv, NULL );
     int __draw = integerFromArgs("--draw", argc, argv, NULL );
 
-    // glfw: initialize and configure
+    // initialize and configure
     // ------------------------------
-    window = glfw_CreateWindow(api, WinWidth, WinHeight);
+    eglx_CreateWindow( api, WinWidth, WinHeight );
 
     // init
     // -----------
@@ -483,7 +475,7 @@ int main( int argc, const char* argv[] )
 
     // render loop
     // -----------
-    while (!glfwWindowShouldClose(window))
+    while (!eglx_ShouldClose())
     {
         if( __mode != -1 && __testcase != -1 && __draw != -1 ){
             DrawPoint = __draw;
@@ -507,18 +499,18 @@ int main( int argc, const char* argv[] )
         printf("\n");
         exit(0);
 
-        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        // swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+        eglx_SwapBuffers();
+        eglx_PollEvents();
     }
 
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
 
 
-    // glfw: terminate, clearing all previously allocated GLFW resources.
+    // terminate, clearing all previously allocated resources.
     // ------------------------------------------------------------------
-    glfwTerminate();
+    eglx_Terminate();
     return 0;
 }

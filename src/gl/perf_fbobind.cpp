@@ -3,21 +3,11 @@
  * Create two framebuffer objects for rendering to two textures.
  * Ping pong between texturing from one and drawing into the other.
  */
-
-#if IS_GlEs
-#include <glad/gles2.h>
-#else
-#include <glad/gl.h>
-#endif
-
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-
 #include <stdio.h>
-#include <ctype.h>
-#include <string.h>
+#include <stddef.h>
+#include "glad.h"
 #include "glUtils.h"
-#include "glfwUtils.h"
+#include "eglUtils.h"
 #include "myUtils.h"
 
 
@@ -182,7 +172,7 @@ static void FBOBind(unsigned count)
 
 void PerfDraw()
 {
-    double rate = PerfMeasureRate(FBOBind, glfwPollEvents );
+    double rate = PerfMeasureRate(FBOBind, eglx_PollEvents );
     printf("  FBO Binding: %1.f binds/sec\n", rate);
 
     glErrorCheck();
@@ -196,9 +186,9 @@ int main( int argc, const char* argv[] )
 
     int __draw = integerFromArgs("--draw", argc, argv, NULL );
 
-    // glfw: initialize and configure
+    // initialize and configure
     // ------------------------------
-    GLFWwindow* window = glfw_CreateWindow(api, WinWidth, WinHeight);
+    eglx_CreateWindow( api, WinWidth, WinHeight );
 
     // init
     // -----------
@@ -206,7 +196,7 @@ int main( int argc, const char* argv[] )
 
     // render loop
     // -----------
-    while (!glfwWindowShouldClose(window))
+    while (!eglx_ShouldClose())
     {
         if(  __draw != -1 ){
             DrawPoint = __draw;
@@ -230,17 +220,17 @@ int main( int argc, const char* argv[] )
         printf("\n");
         exit(0);
 
-        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        // swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+        eglx_SwapBuffers();
+        eglx_PollEvents();
     }
 
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
 
-    // glfw: terminate, clearing all previously allocated GLFW resources.
+    // terminate, clearing all previously allocated resources.
     // ------------------------------------------------------------------
-    glfwTerminate();
+    eglx_Terminate();
     return 0;
 }

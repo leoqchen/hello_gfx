@@ -2,23 +2,13 @@
  * 等价性测试：
  * glRotate, glOrtho 的等价实现
  */
-
-#if IS_GlEs
-#include <glad/gles2.h>
-#else
-#include <glad/gl.h>
-#endif
-
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-
 #include <stdlib.h>
 #include <stddef.h>
 #include <stdio.h>
-#include <ctype.h>
 #include "linmath.h"
+#include "glad.h"
 #include "glUtils.h"
-#include "glfwUtils.h"
+#include "eglUtils.h"
 #include "myUtils.h"
 
 typedef struct Vertex
@@ -70,9 +60,9 @@ int main( int argc, const char* argv[] )
     api_t api = apiInitial( API_Current, argc, argv );
     printf("%s: %s\n", argv[0], apiName(api));
 
-    // glfw: initialize and configure
+    // initialize and configure
     // ------------------------------
-    GLFWwindow* window = glfw_CreateWindow(api, 640, 480);
+    eglx_CreateWindow( api, 640, 480 );
 
 #if !IS_GlLegacy
     // build and compile our shader program
@@ -117,7 +107,7 @@ int main( int argc, const char* argv[] )
 
     // render loop
     // -----------
-    while (!glfwWindowShouldClose(window))
+    while (!eglx_ShouldClose())
     {
         int width, height;
         glfwGetFramebufferSize(window, &width, &height);
@@ -147,10 +137,10 @@ int main( int argc, const char* argv[] )
 
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
-        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        // swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+        eglx_SwapBuffers();
+        eglx_PollEvents();
     }
     glErrorCheck();
 
@@ -162,10 +152,9 @@ int main( int argc, const char* argv[] )
     glDeleteProgram( program );
 #endif
 
-    // glfw: terminate, clearing all previously allocated GLFW resources.
+    // terminate, clearing all previously allocated resources.
     // ------------------------------------------------------------------
-    glfwDestroyWindow(window);
-    glfwTerminate();
+    eglx_Terminate();
     exit(EXIT_SUCCESS);
 }
 

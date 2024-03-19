@@ -8,28 +8,18 @@
  *  - glDrawRangeElements
  *  - VBO glDrawRangeElements
  */
-#if IS_GlEs
-#include <glad/gles2.h>
-#else
-#include <glad/gl.h>
-#endif
-
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-
-#include <unistd.h>
 #include <stdio.h>
-#include <ctype.h>
 #include <string.h>
+#include "glad.h"
 #include "glUtils.h"
-#include "glfwUtils.h"
+#include "eglUtils.h"
 #include "myUtils.h"
 
 
 // settings
 static const int WinWidth = 500;
 static const int WinHeight = 500;
-static GLFWwindow* window;
+
 
 #define MAX_VERTS (100 * 100)
 
@@ -202,7 +192,7 @@ static void DrawImmediate(unsigned count)
     }
 
     glFinish();
-    glfwSwapBuffers(window);
+    eglx_SwapBuffers();
 }
 #endif
 
@@ -223,7 +213,7 @@ static void DrawArraysMem(unsigned count)
     }
 
     glFinish();
-    glfwSwapBuffers(window);
+    eglx_SwapBuffers();
 }
 
 static void DrawArraysVBO(unsigned count)
@@ -242,7 +232,7 @@ static void DrawArraysVBO(unsigned count)
     }
 
     glFinish();
-    glfwSwapBuffers(window);
+    eglx_SwapBuffers();
 }
 
 static void DrawElementsMem(unsigned count)
@@ -262,7 +252,7 @@ static void DrawElementsMem(unsigned count)
     }
 
     glFinish();
-    glfwSwapBuffers(window);
+    eglx_SwapBuffers();
 }
 
 static void DrawElementsBO(unsigned count)
@@ -281,7 +271,7 @@ static void DrawElementsBO(unsigned count)
     }
 
     glFinish();
-    glfwSwapBuffers(window);
+    eglx_SwapBuffers();
 }
 
 static void DrawRangeElementsMem(unsigned count)
@@ -302,7 +292,7 @@ static void DrawRangeElementsMem(unsigned count)
     }
 
     glFinish();
-    glfwSwapBuffers(window);
+    eglx_SwapBuffers();
 }
 
 static void DrawRangeElementsBO(unsigned count)
@@ -322,7 +312,7 @@ static void DrawRangeElementsBO(unsigned count)
     }
 
     glFinish();
-    glfwSwapBuffers(window);
+    eglx_SwapBuffers();
 }
 
 static void PerfDraw( int mode )
@@ -332,7 +322,7 @@ static void PerfDraw( int mode )
 
 #if IS_GlLegacy
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    rate = PerfMeasureRate(DrawImmediate, glfwPollEvents );
+    rate = PerfMeasureRate(DrawImmediate, eglx_PollEvents );
     rate *= NumVerts;
     printf("  Immediate mode: %s verts/sec\n", PerfHumanFloat(rate));
 #endif
@@ -341,7 +331,7 @@ static void PerfDraw( int mode )
     if( mode == -1 || mode == 0 ) {
         // OpenGL Core profile 不支持让VBO工作在client模式
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        rate = PerfMeasureRate(DrawArraysMem, glfwPollEvents );
+        rate = PerfMeasureRate(DrawArraysMem, eglx_PollEvents );
         rate *= NumVerts;
         printf("  glDrawArrays: %s verts/sec\n", PerfHumanFloat(rate));
     }
@@ -349,7 +339,7 @@ static void PerfDraw( int mode )
 
     if( mode == -1 || mode == 1 ) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        rate = PerfMeasureRate(DrawArraysVBO, glfwPollEvents );
+        rate = PerfMeasureRate(DrawArraysVBO, eglx_PollEvents );
         rate *= NumVerts;
         printf("  VBO glDrawArrays: %s verts/sec\n", PerfHumanFloat(rate));
     }
@@ -358,7 +348,7 @@ static void PerfDraw( int mode )
     if( mode == -1 || mode == 2 ) {
         // OpenGL Core profile 不支持让VBO工作在client模式
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        rate = PerfMeasureRate(DrawElementsMem, glfwPollEvents );
+        rate = PerfMeasureRate(DrawElementsMem, eglx_PollEvents );
         rate *= NumVerts;
         printf("  glDrawElements: %s verts/sec\n", PerfHumanFloat(rate));
     }
@@ -366,7 +356,7 @@ static void PerfDraw( int mode )
 
     if( mode == -1 || mode == 3 ) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        rate = PerfMeasureRate(DrawElementsBO, glfwPollEvents );
+        rate = PerfMeasureRate(DrawElementsBO, eglx_PollEvents );
         rate *= NumVerts;
         printf("  VBO glDrawElements: %s verts/sec\n", PerfHumanFloat(rate));
     }
@@ -375,7 +365,7 @@ static void PerfDraw( int mode )
     if( mode == -1 || mode == 4 ) {
         // OpenGL Core profile 不支持让VBO工作在client模式
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        rate = PerfMeasureRate(DrawRangeElementsMem, glfwPollEvents );
+        rate = PerfMeasureRate(DrawRangeElementsMem, eglx_PollEvents );
         rate *= NumVerts;
         printf("  glDrawRangeElements: %s verts/sec\n", PerfHumanFloat(rate));
     }
@@ -383,7 +373,7 @@ static void PerfDraw( int mode )
 
     if( mode == -1 || mode == 5 ) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        rate = PerfMeasureRate(DrawRangeElementsBO, glfwPollEvents );
+        rate = PerfMeasureRate(DrawRangeElementsBO, eglx_PollEvents );
         rate *= NumVerts;
         printf("  VBO glDrawRangeElements: %s verts/sec\n", PerfHumanFloat(rate));
     }
@@ -399,9 +389,9 @@ int main( int argc, const char* argv[] )
 
     int __mode = integerFromArgs("--mode", argc, argv, NULL );
 
-    // glfw: initialize and configure
+    // initialize and configure
     // ------------------------------
-    window = glfw_CreateWindow(api, WinWidth, WinHeight);
+    eglx_CreateWindow( api, WinWidth, WinHeight );
 
     // init
     // -----------
@@ -409,16 +399,16 @@ int main( int argc, const char* argv[] )
 
     // render loop
     // -----------
-    while (!glfwWindowShouldClose(window))
+    while (!eglx_ShouldClose())
     {
         // render
         // ------
         PerfDraw( __mode );
 
-        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        // swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+        eglx_SwapBuffers();
+        eglx_PollEvents();
     }
     glErrorCheck();
 
@@ -426,8 +416,8 @@ int main( int argc, const char* argv[] )
     // ------------------------------------------------------------------------
 
 
-    // glfw: terminate, clearing all previously allocated GLFW resources.
+    // terminate, clearing all previously allocated resources.
     // ------------------------------------------------------------------
-    glfwTerminate();
+    eglx_Terminate();
     return 0;
 }

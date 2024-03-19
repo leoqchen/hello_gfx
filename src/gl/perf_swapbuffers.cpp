@@ -1,27 +1,18 @@
 /**
  * Measure SwapBuffers.
  */
-#if IS_GlEs
-#include <glad/gles2.h>
-#else
-#include <glad/gl.h>
-#endif
-
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-
 #include <stdio.h>
-#include <ctype.h>
 #include <sched.h>
+#include "glad.h"
 #include "glUtils.h"
-#include "glfwUtils.h"
+#include "eglUtils.h"
 #include "myUtils.h"
 
 
 // settings
 static int WinWidth = 100;
 static int WinHeight = 100;
-static GLFWwindow* window;
+
 
 static GLuint VAO;
 static GLuint VBO;
@@ -107,7 +98,7 @@ static void SwapNaked(unsigned count)
 {
     unsigned i;
     for (i = 0; i < count; i++) {
-        glfwSwapBuffers(window);
+        eglx_SwapBuffers();
     }
 }
 
@@ -117,7 +108,7 @@ static void SwapClear(unsigned count)
     unsigned i;
     for (i = 0; i < count; i++) {
         glClear(GL_COLOR_BUFFER_BIT);
-        glfwSwapBuffers(window);
+        eglx_SwapBuffers();
     }
 }
 
@@ -127,7 +118,7 @@ static void SwapClearPoint(unsigned count)
     for (i = 0; i < count; i++) {
         glClear(GL_COLOR_BUFFER_BIT);
         glDrawArrays(GL_POINTS, 0, 4);
-        glfwSwapBuffers(window);
+        eglx_SwapBuffers();
     }
 }
 
@@ -149,20 +140,20 @@ static void PerfDraw()
     printf("Window %dx%d\n", w, h);
 
     double rate0;
-    rate0 = PerfMeasureRate(SwapNaked, glfwPollEvents );
+    rate0 = PerfMeasureRate(SwapNaked, eglx_PollEvents );
     printf("   Swapbuffers      %dx%d: %s swaps/second, %s pixels/second\n",
            w, h,
            PerfHumanFloat(rate0),
            PerfHumanFloat(rate0 * w * h) );
 
-    rate0 = PerfMeasureRate(SwapClear, glfwPollEvents );
+    rate0 = PerfMeasureRate(SwapClear, eglx_PollEvents );
     printf("   Swap/Clear       %dx%d: %s swaps/second, %s pixels/second\n",
            w, h,
            PerfHumanFloat(rate0),
            PerfHumanFloat(rate0 * w * h) );
 
 
-    rate0 = PerfMeasureRate(SwapClearPoint, glfwPollEvents );
+    rate0 = PerfMeasureRate(SwapClearPoint, eglx_PollEvents );
     printf("   Swap/Clear/Draw  %dx%d: %s swaps/second, %s pixels/second\n",
            w, h,
            PerfHumanFloat(rate0),
@@ -174,11 +165,11 @@ int main( int argc, const char* argv[] )
     api_t api = apiInitial( API_Current, argc, argv );
     printf("%s: %s\n", argv[0], apiName(api));
 
-    // glfw: initialize and configure
+    // initialize and configure
     // ------------------------------
     WinWidth = sizes[0].w;
     WinHeight = sizes[0].h;
-    window = glfw_CreateWindow(api, WinWidth, WinHeight);
+    eglx_CreateWindow( api, WinWidth, WinHeight );
 
     // init
     // -----------
@@ -186,7 +177,7 @@ int main( int argc, const char* argv[] )
 
     // render loop
     // -----------
-    while (!glfwWindowShouldClose(window))
+    while (!eglx_ShouldClose())
     {
         for( int i=0; i < (sizeof(sizes)/sizeof(sizes[0])); i++ ){
             // change window size
@@ -209,10 +200,10 @@ int main( int argc, const char* argv[] )
             // ------
             PerfDraw();
 
-            // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+            // swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
             // -------------------------------------------------------------------------------
-            glfwSwapBuffers(window);
-            glfwPollEvents();
+            eglx_SwapBuffers();
+            eglx_PollEvents();
         }
         glErrorCheck();
         exit( 0 );
@@ -222,8 +213,8 @@ int main( int argc, const char* argv[] )
     // ------------------------------------------------------------------------
 
 
-    // glfw: terminate, clearing all previously allocated GLFW resources.
+    // terminate, clearing all previously allocated resources.
     // ------------------------------------------------------------------
-    glfwTerminate();
+    eglx_Terminate();
     return 0;
 }

@@ -1,27 +1,18 @@
 /**
  * Measure fill rates.
  */
-#if IS_GlEs
-#include <glad/gles2.h>
-#else
-#include <glad/gl.h>
-#endif
-
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-
 #include <stdio.h>
-#include <ctype.h>
 #include "linmath.h"
+#include "glad.h"
 #include "glUtils.h"
-#include "glfwUtils.h"
+#include "eglUtils.h"
 #include "myUtils.h"
 
 
 // settings
 static const int WinWidth = 1000;
 static const int WinHeight = 1000;
-static GLFWwindow* window;
+
 
 static GLuint VAO;
 static GLuint VBO;
@@ -296,7 +287,7 @@ static void DrawQuad(unsigned count)
          * this...
          */
         if (i % 128 == 0) {
-            glfwSwapBuffers(window);
+            eglx_SwapBuffers();
             glClear(GL_COLOR_BUFFER_BIT);
         }
     }
@@ -304,7 +295,7 @@ static void DrawQuad(unsigned count)
     glFinish();
 
     if (1)
-        glfwSwapBuffers(window);
+        eglx_SwapBuffers();
 
 }
 
@@ -317,14 +308,14 @@ static void PerfDraw()
 
     /* simple fill */
     glUseProgram( ShaderProg_simple );
-    rate = PerfMeasureRate(DrawQuad, glfwPollEvents ) * pixelsPerDraw;
+    rate = PerfMeasureRate(DrawQuad, eglx_PollEvents ) * pixelsPerDraw;
     printf("   Simple fill: %s pixels/second\n",
                 PerfHumanFloat(rate));
 
     /* blended fill */
     glEnable(GL_BLEND);
     glUseProgram( ShaderProg_simple );
-    rate = PerfMeasureRate(DrawQuad, glfwPollEvents ) * pixelsPerDraw;
+    rate = PerfMeasureRate(DrawQuad, eglx_PollEvents ) * pixelsPerDraw;
     glDisable(GL_BLEND);
     printf("   Blended fill: %s pixels/second\n",
                 PerfHumanFloat(rate));
@@ -334,7 +325,7 @@ static void PerfDraw()
     glBindTexture( GL_TEXTURE_2D, TexObj );
     glEnableVertexAttribArray(2); //vTexCoord
     glUseProgram( ShaderProg_textured );
-    rate = PerfMeasureRate(DrawQuad, glfwPollEvents ) * pixelsPerDraw;
+    rate = PerfMeasureRate(DrawQuad, eglx_PollEvents ) * pixelsPerDraw;
     printf("   Textured fill: %s pixels/second\n",
                 PerfHumanFloat(rate));
 
@@ -343,7 +334,7 @@ static void PerfDraw()
     glActiveTexture( GL_TEXTURE0 );
     glBindTexture( GL_TEXTURE_2D, TexObj );
     glEnableVertexAttribArray(2); //vTexCoord
-    rate = PerfMeasureRate(DrawQuad, glfwPollEvents ) * pixelsPerDraw;
+    rate = PerfMeasureRate(DrawQuad, eglx_PollEvents ) * pixelsPerDraw;
     glUseProgram(0);
     printf("   Shader1 fill: %s pixels/second\n",
                 PerfHumanFloat(rate));
@@ -353,7 +344,7 @@ static void PerfDraw()
     glActiveTexture( GL_TEXTURE0 );
     glBindTexture( GL_TEXTURE_2D, TexObj );
     glEnableVertexAttribArray(2); //vTexCoord
-    rate = PerfMeasureRate(DrawQuad, glfwPollEvents ) * pixelsPerDraw;
+    rate = PerfMeasureRate(DrawQuad, eglx_PollEvents ) * pixelsPerDraw;
     glUseProgram(0);
     printf("   Shader2 fill: %s pixels/second\n",
                 PerfHumanFloat(rate));
@@ -367,9 +358,9 @@ int main( int argc, const char* argv[] )
     api_t api = apiInitial( API_Current, argc, argv );
     printf("%s: %s\n", argv[0], apiName(api));
 
-    // glfw: initialize and configure
+    // initialize and configure
     // ------------------------------
-    window = glfw_CreateWindow(api, WinWidth, WinHeight);
+    eglx_CreateWindow( api, WinWidth, WinHeight );
 
     // init
     // -----------
@@ -377,24 +368,24 @@ int main( int argc, const char* argv[] )
 
     // render loop
     // -----------
-    while (!glfwWindowShouldClose(window))
+    while (!eglx_ShouldClose())
     {
         // render
         // ------
         PerfDraw();
 
-        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        // swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+        eglx_SwapBuffers();
+        eglx_PollEvents();
     }
 
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
 
 
-    // glfw: terminate, clearing all previously allocated GLFW resources.
+    // terminate, clearing all previously allocated resources.
     // ------------------------------------------------------------------
-    glfwTerminate();
+    eglx_Terminate();
     return 0;
 }

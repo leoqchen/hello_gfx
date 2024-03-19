@@ -2,27 +2,18 @@
  * Measure VBO upload speed.
  * That is, measure glBufferData() and glBufferSubData().
  */
-#if IS_GlEs
-#include <glad/gles2.h>
-#else
-#include <glad/gl.h>
-#endif
-
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-
 #include <stdio.h>
-#include <ctype.h>
 #include <string.h>
+#include "glad.h"
 #include "glUtils.h"
-#include "glfwUtils.h"
+#include "eglUtils.h"
 #include "myUtils.h"
 
 
 // settings
 static const int WinWidth = 200;
 static const int WinHeight = 200;
-static GLFWwindow* window;
+
 
 // Copy data out of a large array to avoid caching effects:
 #define DATA_SIZE (16*1024*1024)
@@ -228,11 +219,11 @@ static void PerfDraw()
      */
     for (sz = 0; Sizes[sz]; sz++) {
         SubSize = VBOSize = Sizes[sz];
-        rate = PerfMeasureRate(UploadVBO, glfwPollEvents );
+        rate = PerfMeasureRate(UploadVBO, eglx_PollEvents );
         mbPerSec = rate * VBOSize / (1024.0 * 1024.0);
         printf("  glBufferData(size = %d): %.1f MB/sec\n",
                     VBOSize, mbPerSec);
-        glfwSwapBuffers(window);
+        eglx_SwapBuffers();
     }
     printf("\n");
 
@@ -240,11 +231,11 @@ static void PerfDraw()
      */
     for (sz = 0; Sizes[sz]; sz++) {
         SubSize = VBOSize = Sizes[sz];
-        rate = PerfMeasureRate(UploadSubVBO, glfwPollEvents );
+        rate = PerfMeasureRate(UploadSubVBO, eglx_PollEvents );
         mbPerSec = rate * VBOSize / (1024.0 * 1024.0);
         printf("  glBufferSubData(size = %d): %.1f MB/sec\n",
                     VBOSize, mbPerSec);
-        glfwSwapBuffers(window);
+        eglx_SwapBuffers();
     }
     printf("\n");
 
@@ -255,22 +246,22 @@ static void PerfDraw()
 
     for (sz = 0; Sizes[sz] < VBOSize; sz++) {
         SubSize = Sizes[sz];
-        rate = PerfMeasureRate(UploadSubVBO, glfwPollEvents );
+        rate = PerfMeasureRate(UploadSubVBO, eglx_PollEvents );
         mbPerSec = rate * SubSize / (1024.0 * 1024.0);
         printf("  glBufferSubData(size = %d, VBOSize = %d): %.1f MB/sec\n",
                     SubSize, VBOSize, mbPerSec);
-        glfwSwapBuffers(window);
+        eglx_SwapBuffers();
     }
     printf("\n");
 
     //TODO:FIXME: IMG gpu hang
 //    for (sz = 0; Sizes[sz] < VBOSize; sz++) {
 //        SubSize = Sizes[sz];
-//        rate = PerfMeasureRate(BatchUploadSubVBO, glfwPollEvents );
+//        rate = PerfMeasureRate(BatchUploadSubVBO, eglx_PollEvents );
 //        mbPerSec = rate * SubSize / (1024.0 * 1024.0);
 //        printf("  glBufferSubData(size = %d, VBOSize = %d), batched: %.1f MB/sec\n",
 //                    SubSize, VBOSize, mbPerSec);
-//        glfwSwapBuffers(window);
+//        eglx_SwapBuffers();
 //    }
 //    printf("\n");
 
@@ -278,11 +269,11 @@ static void PerfDraw()
      */
     for (sz = 0; Sizes[sz]; sz++) {
         SubSize = VBOSize = Sizes[sz];
-        rate = PerfMeasureRate(CreateDrawDestroyVBO, glfwPollEvents );
+        rate = PerfMeasureRate(CreateDrawDestroyVBO, eglx_PollEvents );
         mbPerSec = rate * VBOSize / (1024.0 * 1024.0);
         printf("  VBO Create/Draw/Destroy(size = %d): %.1f draws/sec, %.1f MB/sec\n",
                     VBOSize, rate, mbPerSec);
-        glfwSwapBuffers(window);
+        eglx_SwapBuffers();
     }
     printf("\n");
 
@@ -309,11 +300,11 @@ static void PerfDraw2( int mode, int Sizes_ )
      */
     if( mode == 0 ){
         SubSize = VBOSize = Sizes_;
-        rate = PerfMeasureRate(UploadVBO, glfwPollEvents );
+        rate = PerfMeasureRate(UploadVBO, eglx_PollEvents );
         mbPerSec = rate * VBOSize / (1024.0 * 1024.0);
         printf("  glBufferData(size = %d): %.1f MB/sec\n",
                VBOSize, mbPerSec);
-        glfwSwapBuffers(window);
+        eglx_SwapBuffers();
         printf("\n");
     }
 
@@ -322,11 +313,11 @@ static void PerfDraw2( int mode, int Sizes_ )
     if( mode == 1 ){
         SubSize = VBOSize = Sizes_;
         glBufferData(GL_ARRAY_BUFFER, VBOSize, VBOData, GL_STREAM_DRAW);
-        rate = PerfMeasureRate(UploadSubVBO, glfwPollEvents );
+        rate = PerfMeasureRate(UploadSubVBO, eglx_PollEvents );
         mbPerSec = rate * VBOSize / (1024.0 * 1024.0);
         printf("  glBufferSubData(size = %d): %.1f MB/sec\n",
                VBOSize, mbPerSec);
-        glfwSwapBuffers(window);
+        eglx_SwapBuffers();
         printf("\n");
     }
 
@@ -337,11 +328,11 @@ static void PerfDraw2( int mode, int Sizes_ )
         glBufferData(GL_ARRAY_BUFFER, VBOSize, VBOData, GL_STREAM_DRAW);
 
         SubSize = Sizes_;
-        rate = PerfMeasureRate(UploadSubVBO, glfwPollEvents );
+        rate = PerfMeasureRate(UploadSubVBO, eglx_PollEvents );
         mbPerSec = rate * SubSize / (1024.0 * 1024.0);
         printf("  glBufferSubData(size = %d, VBOSize = %d): %.1f MB/sec\n",
                SubSize, VBOSize, mbPerSec);
-        glfwSwapBuffers(window);
+        eglx_SwapBuffers();
         printf("\n");
     }
 
@@ -350,11 +341,11 @@ static void PerfDraw2( int mode, int Sizes_ )
      */
     if( mode == 3 ){
         SubSize = VBOSize = Sizes_;
-        rate = PerfMeasureRate(CreateDrawDestroyVBO, glfwPollEvents );
+        rate = PerfMeasureRate(CreateDrawDestroyVBO, eglx_PollEvents );
         mbPerSec = rate * VBOSize / (1024.0 * 1024.0);
         printf("  VBO Create/Draw/Destroy(size = %d): %.1f draws/sec, %.1f MB/sec\n",
                VBOSize, rate, mbPerSec);
-        glfwSwapBuffers(window);
+        eglx_SwapBuffers();
         printf("\n");
     }
 
@@ -370,9 +361,9 @@ int main( int argc, const char* argv[] )
     int __mode = integerFromArgs("--mode", argc, argv, NULL );
     int __testcase = integerFromArgs( "--testcase", argc, argv, NULL );
 
-    // glfw: initialize and configure
+    // initialize and configure
     // ------------------------------
-    window = glfw_CreateWindow(api, WinWidth, WinHeight);
+    eglx_CreateWindow( api, WinWidth, WinHeight );
 
     // init
     // -----------
@@ -380,7 +371,7 @@ int main( int argc, const char* argv[] )
 
     // render loop
     // -----------
-    while (!glfwWindowShouldClose(window))
+    while (!eglx_ShouldClose())
     {
         if(  __mode != -1 && __testcase != -1 ){
             PerfDraw2( __mode, __testcase );
@@ -391,18 +382,18 @@ int main( int argc, const char* argv[] )
         // ------
         PerfDraw();
 
-        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        // swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+        eglx_SwapBuffers();
+        eglx_PollEvents();
     }
 
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
 
 
-    // glfw: terminate, clearing all previously allocated GLFW resources.
+    // terminate, clearing all previously allocated resources.
     // ------------------------------------------------------------------
-    glfwTerminate();
+    eglx_Terminate();
     return 0;
 }

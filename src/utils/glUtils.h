@@ -1,10 +1,5 @@
 #pragma once
-
-#if IS_GlEs
-#include <glad/gles2.h>
-#else
-#include <glad/gl.h>
-#endif
+#include "glad.h"
 
 #include <stdio.h>
 #include <stdlib.h>

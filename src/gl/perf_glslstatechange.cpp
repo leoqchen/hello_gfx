@@ -1,33 +1,22 @@
 /**
  * Test states change when using shaders & textures.
  */
-#if IS_GlEs
-#include <glad/gles2.h>
-#else
-#include <glad/gl.h>
-#include <GL/glu.h>
-#endif
-
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
-#include <assert.h>
 #include <stdio.h>
-#include <ctype.h>
 #include <stddef.h>
 #include "linmath.h"
+#include "glad.h"
 #include "glUtils.h"
-#include "glfwUtils.h"
+#include "eglUtils.h"
 #include "myUtils.h"
 #include "SGI_rgb.h"
 
 // settings
 static const int WinWidth = 500;
 static const int WinHeight = 500;
-static GLFWwindow* window;
+
 
 static mat4x4 M;
 static mat4x4 P;
@@ -281,7 +270,7 @@ static void PerfDraw()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     printf("GLSL texture/program change rate\n");
-    double rate = PerfMeasureRate(Draw, glfwPollEvents );
+    double rate = PerfMeasureRate(Draw, eglx_PollEvents );
     printf("  Immediate mode: %s change/sec\n", PerfHumanFloat(rate));
 
     glErrorCheck();
@@ -437,9 +426,9 @@ int main( int argc, const char* argv[] )
     api_t api = apiInitial( API_Current, argc, argv );
     printf("%s: %s\n", argv[0], apiName(api));
 
-    // glfw: initialize and configure
+    // initialize and configure
     // ------------------------------
-    window = glfw_CreateWindow(api, WinWidth, WinHeight);
+    eglx_CreateWindow( api, WinWidth, WinHeight );
 
     // init
     // -----------
@@ -448,16 +437,16 @@ int main( int argc, const char* argv[] )
 
     // render loop
     // -----------
-    while (!glfwWindowShouldClose(window))
+    while (!eglx_ShouldClose())
     {
         // render
         // ------
         PerfDraw();
 
-        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        // swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+        eglx_SwapBuffers();
+        eglx_PollEvents();
     }
     glErrorCheck();
 
@@ -465,8 +454,8 @@ int main( int argc, const char* argv[] )
     // ------------------------------------------------------------------------
 
 
-    // glfw: terminate, clearing all previously allocated GLFW resources.
+    // terminate, clearing all previously allocated resources.
     // ------------------------------------------------------------------
-    glfwTerminate();
+    eglx_Terminate();
     return 0;
 }

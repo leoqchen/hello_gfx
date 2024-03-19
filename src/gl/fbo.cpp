@@ -5,21 +5,11 @@
  * 对于OpenGLES，只能用texture2D 绑定到color attachment
  *
  */
-
-#if IS_GlEs
-#include <glad/gles2.h>
-#else
-#include <glad/gl.h>
-#endif
-
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-
 #include <stdlib.h>
 #include <stdio.h>
-#include <ctype.h>
+#include "glad.h"
 #include "glUtils.h"
-#include "glfwUtils.h"
+#include "eglUtils.h"
 #include "myUtils.h"
 
 
@@ -71,9 +61,9 @@ int main( int argc, const char* argv[] )
     api_t api = apiInitial( API_Current, argc, argv );
     printf("%s: %s\n", argv[0], apiName(api));
 
-    // glfw: initialize and configure
+    // initialize and configure
     // ------------------------------
-    GLFWwindow* window = glfw_CreateWindow(api, WinWidth, WinHeight);
+    eglx_CreateWindow( api, WinWidth, WinHeight );
 
     // build and compile our shader program
     // ------------------------------------
@@ -155,7 +145,7 @@ int main( int argc, const char* argv[] )
     // render loop
     // -----------
     glClearColor ( 1.0f, 1.0f, 1.0f, 0.0f );
-    while (!glfwWindowShouldClose(window))
+    while (!eglx_ShouldClose())
     {
         // render
         // ------
@@ -210,10 +200,10 @@ int main( int argc, const char* argv[] )
                             WinWidth/2, WinHeight/2, WinWidth, WinHeight,
                             GL_COLOR_BUFFER_BIT, GL_LINEAR );
 
-        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        // swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+        eglx_SwapBuffers();
+        eglx_PollEvents();
     }
     glErrorCheck();
 
@@ -230,9 +220,8 @@ int main( int argc, const char* argv[] )
     glDeleteFramebuffers( 1, &fbo );
     glDeleteProgram(program);
 
-    // glfw: terminate, clearing all previously allocated GLFW resources.
+    // terminate, clearing all previously allocated resources.
     // ------------------------------------------------------------------
-    glfwDestroyWindow(window);
-    glfwTerminate();
+    eglx_Terminate();
     return 0;
 }

@@ -1,8 +1,4 @@
-#if IS_GlEs
-#include <glad/gles2.h>
-#else
-#include <glad/gl.h>
-#endif
+#include "glad.h"
 
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
@@ -180,11 +176,11 @@ void eglx_SwapBuffers()
 
 int eglx_ShouldClose()
 {
-    eglx_PoolEvents();
+    eglx_PollEvents();
     return shouldClose;
 }
 
-void eglx_PoolEvents()
+void eglx_PollEvents()
 {
     shouldClose |= xWindowPoolEvents();
 }
