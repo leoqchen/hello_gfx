@@ -14,4 +14,4 @@
 
 #include "myUtils.h"
 
-GLFWwindow* glfwInit_CreateWindow( api_t api, int width, int height );
+GLFWwindow* glfw_CreateWindow(api_t api, int width, int height );

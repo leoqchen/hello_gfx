@@ -26,7 +26,7 @@ int main( int argc, const char* argv[] )
 
     // glfw: initialize and configure
     // ------------------------------
-    GLFWwindow* window = glfwInit_CreateWindow( api, WinWidth, WinHeight );
+    GLFWwindow* window = glfw_CreateWindow(api, WinWidth, WinHeight);
 
     // render loop
     // -----------

@@ -24,7 +24,7 @@ static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
-GLFWwindow* glfwInit_CreateWindow( api_t api, int width, int height )
+GLFWwindow* glfw_CreateWindow(api_t api, int width, int height )
 {
     // glfw: initialize and configure
     // ------------------------------

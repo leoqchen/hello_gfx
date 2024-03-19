@@ -178,7 +178,7 @@ int main( int argc, const char* argv[] )
     // ------------------------------
     WinWidth = sizes[0].w;
     WinHeight = sizes[0].h;
-    window = glfwInit_CreateWindow( api, WinWidth, WinHeight );
+    window = glfw_CreateWindow(api, WinWidth, WinHeight);
 
     // init
     // -----------

@@ -72,7 +72,7 @@ int main( int argc, const char* argv[] )
 
     // glfw: initialize and configure
     // ------------------------------
-    GLFWwindow* window = glfwInit_CreateWindow( api, 640, 480 );
+    GLFWwindow* window = glfw_CreateWindow(api, 640, 480);
 
 #if !IS_GlLegacy
     // build and compile our shader program

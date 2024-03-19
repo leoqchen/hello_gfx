@@ -475,7 +475,7 @@ int main( int argc, const char* argv[] )
 
     // glfw: initialize and configure
     // ------------------------------
-    window = glfwInit_CreateWindow( api, WinWidth, WinHeight );
+    window = glfw_CreateWindow(api, WinWidth, WinHeight);
 
     // init
     // -----------
