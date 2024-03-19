@@ -8,6 +8,7 @@
 #include "stb_image_write.h"
 
 #include <stdio.h>
+#include <stddef.h>
 #include "linmath.h"
 #include "glad.h"
 #include "glUtils.h"

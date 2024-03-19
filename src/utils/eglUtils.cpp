@@ -184,3 +184,13 @@ void eglx_PollEvents()
 {
     shouldClose |= xWindowPoolEvents();
 }
+
+void eglx_GetWindowSize( int *width, int *height )
+{
+    xWindowGetSize( width, height );
+}
+
+void eglx_SetWindowSize( int width, int height )
+{
+    xWindowSetSize( width, height );
+}

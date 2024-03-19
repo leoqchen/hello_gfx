@@ -136,7 +136,7 @@ static const struct {
 static void PerfDraw()
 {
     int w, h;
-    glfwGetWindowSize( window, &w, &h );
+    eglx_GetWindowSize( &w, &h );
     printf("Window %dx%d\n", w, h);
 
     double rate0;
@@ -182,7 +182,7 @@ int main( int argc, const char* argv[] )
         for( int i=0; i < (sizeof(sizes)/sizeof(sizes[0])); i++ ){
             // change window size
             // ------------------
-            glfwSetWindowSize( window, sizes[i].w, sizes[i].h );
+            eglx_SetWindowSize( sizes[i].w, sizes[i].h );
 
             //wait window size change take effect
             int n = 0;
@@ -191,7 +191,7 @@ int main( int argc, const char* argv[] )
                 sched_yield();
 
                 n++;
-                glfwGetWindowSize( window, &w, &h );
+                eglx_GetWindowSize(  &w, &h );
                 if( (w == sizes[i].w && h == sizes[i].h) || (n >= 10000) )
                     break;
             }

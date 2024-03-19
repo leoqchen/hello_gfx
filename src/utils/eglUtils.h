@@ -16,3 +16,5 @@ void eglx_Terminate();
 void eglx_SwapBuffers();
 int eglx_ShouldClose();
 void eglx_PollEvents();
+void eglx_GetWindowSize( int *width, int *height );
+void eglx_SetWindowSize( int width, int height );

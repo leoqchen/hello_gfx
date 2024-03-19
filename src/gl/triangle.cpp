@@ -110,7 +110,7 @@ int main( int argc, const char* argv[] )
     while (!eglx_ShouldClose())
     {
         int width, height;
-        glfwGetFramebufferSize(window, &width, &height);
+        eglx_GetWindowSize( &width, &height);
         const float ratio = width / (float) height;
 
         glClear(GL_COLOR_BUFFER_BIT);
@@ -118,14 +118,14 @@ int main( int argc, const char* argv[] )
 #if IS_GlLegacy
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
-        glRotatef( DegreeFromRadian( glfwGetTime() ), 0.0, 0.0, 1.0 );
+        glRotatef( DegreeFromRadian( (float)PerfGetSecond() ), 0.0, 0.0, 1.0 );
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
         glOrtho(-ratio, ratio, -1.0, 1.0, 1.0, -1.0);
 #else
         mat4x4 m, p, mvp;
         mat4x4_identity(m);
-        mat4x4_rotate_Z(m, m, (float) glfwGetTime());
+        mat4x4_rotate_Z(m, m, (float) PerfGetSecond());
         mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
         mat4x4_mul(mvp, p, m);
 

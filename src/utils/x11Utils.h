@@ -6,5 +6,7 @@ int xWindowCreate( void** nativeDisplayPtr, void** nativeWindowPtr, const char *
 void xWindowSetTitle( const char *name );
 int xWindowPoolEvents();
 void xWindowDestroy();
+void xWindowGetSize( int *width, int *height );
+void xWindowSetSize( int width, int height );
 
 void xWindowSetWindowResizeCallback( xWindowResizeFunc func );

@@ -144,7 +144,26 @@ void xWindowDestroy()
         XCloseDisplay( x_display );
 }
 
+void xWindowGetSize( int *width, int *height )
+{
+    XWindowAttributes attrib;
+    XGetWindowAttributes( x_display, x_win, &attrib );
+
+    *width = attrib.width;
+    *height = attrib.height;
+}
+
+void xWindowSetSize( int width, int height )
+{
+    XWindowChanges change;
+    change.width = width;
+    change.height = height;
+
+    XConfigureWindow( x_display, x_win, CWWidth | CWHeight, &change );
+}
+
 void xWindowSetWindowResizeCallback( xWindowResizeFunc func )
 {
     resizeCallback = func;
 }
+

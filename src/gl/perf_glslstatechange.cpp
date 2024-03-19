@@ -262,7 +262,7 @@ static void Draw(unsigned count)
 #endif
     }
 
-    glfwSwapBuffers( window );
+    eglx_SwapBuffers();
 }
 
 static void PerfDraw()

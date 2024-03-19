@@ -159,10 +159,10 @@ set(targets
   "hello_triangle_gl   \; src/gl/hello_triangle.cpp"
   "hello_triangle_gles \; src/gl/hello_triangle.cpp"
 
-#  "triangle_glLegacy \; src/gl/triangle.cpp"
-#  "triangle_gl       \; src/gl/triangle.cpp"
-#  "triangle_gles     \; src/gl/triangle.cpp"
-#
+  "triangle_glLegacy \; src/gl/triangle.cpp"
+  "triangle_gl       \; src/gl/triangle.cpp"
+  "triangle_gles     \; src/gl/triangle.cpp"
+
   "glClear_gl   \; src/gl/glClear.cpp"
   "glClear_gles \; src/gl/glClear.cpp"
 
@@ -224,17 +224,17 @@ set(targets
   "perf_genmipmap_gl        \; src/gl/perf_genmipmap.cpp"
   "perf_genmipmap_gles      \; src/gl/perf_genmipmap.cpp"
 
-#  "perf_glslstatechange_glLegacy  \; src/gl/perf_glslstatechange.cpp"
-#  "perf_glslstatechange_gl        \; src/gl/perf_glslstatechange.cpp"
-#  "perf_glslstatechange_gles      \; src/gl/perf_glslstatechange.cpp"
+  "perf_glslstatechange_glLegacy  \; src/gl/perf_glslstatechange.cpp"
+  "perf_glslstatechange_gl        \; src/gl/perf_glslstatechange.cpp"
+  "perf_glslstatechange_gles      \; src/gl/perf_glslstatechange.cpp"
 
   "perf_readpixels_glLegacy  \; src/gl/perf_readpixels.cpp"
   "perf_readpixels_gl        \; src/gl/perf_readpixels.cpp"
   "perf_readpixels_gles      \; src/gl/perf_readpixels.cpp"
 
-#  "perf_swapbuffers_glLegacy  \; src/gl/perf_swapbuffers.cpp"
-#  "perf_swapbuffers_gl        \; src/gl/perf_swapbuffers.cpp"
-#  "perf_swapbuffers_gles      \; src/gl/perf_swapbuffers.cpp"
+  "perf_swapbuffers_glLegacy  \; src/gl/perf_swapbuffers.cpp"
+  "perf_swapbuffers_gl        \; src/gl/perf_swapbuffers.cpp"
+  "perf_swapbuffers_gles      \; src/gl/perf_swapbuffers.cpp"
 
   "perf_teximage_glLegacy  \; src/gl/perf_teximage.cpp"
   "perf_teximage_gl        \; src/gl/perf_teximage.cpp"

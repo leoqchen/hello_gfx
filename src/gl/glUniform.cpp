@@ -3,6 +3,7 @@
  * 测试glUniform设置是否能被记录在program里，无需glDraw触发
  */
 #include <stdio.h>
+#include <stddef.h>
 #include "linmath.h"
 #include "glad.h"
 #include "glUtils.h"
