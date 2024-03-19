@@ -146,6 +146,12 @@ void xWindowDestroy()
 
 void xWindowGetSize( int *width, int *height )
 {
+    if( x_display == NULL ){
+        *width = 0;
+        *height = 0;
+        return;
+    }
+
     XWindowAttributes attrib;
     XGetWindowAttributes( x_display, x_win, &attrib );
 
@@ -155,6 +161,9 @@ void xWindowGetSize( int *width, int *height )
 
 void xWindowSetSize( int width, int height )
 {
+    if( x_display == NULL )
+        return;
+
     XWindowChanges change;
     change.width = width;
     change.height = height;
