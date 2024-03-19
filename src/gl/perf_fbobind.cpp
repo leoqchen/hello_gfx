@@ -182,7 +182,7 @@ static void FBOBind(unsigned count)
 
 void PerfDraw()
 {
-    double rate = PerfMeasureRate(FBOBind);
+    double rate = PerfMeasureRate(FBOBind, glfwPollEvents );
     printf("  FBO Binding: %1.f binds/sec\n", rate);
 
     glErrorCheck();

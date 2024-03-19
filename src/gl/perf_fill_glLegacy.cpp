@@ -183,13 +183,13 @@ static void PerfDraw()
     Ortho();
 
     /* simple fill (fixed function pipeline) */
-    rate = PerfMeasureRate(DrawQuad) * pixelsPerDraw;
+    rate = PerfMeasureRate(DrawQuad, glfwPollEvents ) * pixelsPerDraw;
     printf("   Simple fill: %s pixels/second\n",
                 PerfHumanFloat(rate));
 
     /* blended fill (fixed function pipeline) */
     glEnable(GL_BLEND);
-    rate = PerfMeasureRate(DrawQuad) * pixelsPerDraw;
+    rate = PerfMeasureRate(DrawQuad, glfwPollEvents ) * pixelsPerDraw;
     glDisable(GL_BLEND);
     printf("   Blended fill: %s pixels/second\n",
                 PerfHumanFloat(rate));
@@ -197,7 +197,7 @@ static void PerfDraw()
     /* textured fill (fixed function pipeline) */
     glEnable(GL_TEXTURE_2D);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    rate = PerfMeasureRate(DrawQuad) * pixelsPerDraw;
+    rate = PerfMeasureRate(DrawQuad, glfwPollEvents ) * pixelsPerDraw;
     glDisable(GL_TEXTURE_2D);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     printf("   Textured fill: %s pixels/second\n",
@@ -206,7 +206,7 @@ static void PerfDraw()
     /* shader1 fill */
     glUseProgram(ShaderProg1);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    rate = PerfMeasureRate(DrawQuad) * pixelsPerDraw;
+    rate = PerfMeasureRate(DrawQuad, glfwPollEvents ) * pixelsPerDraw;
     glUseProgram(0);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     printf("   Shader1 fill: %s pixels/second\n",
@@ -215,7 +215,7 @@ static void PerfDraw()
     /* shader2 fill */
     glUseProgram(ShaderProg2);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    rate = PerfMeasureRate(DrawQuad) * pixelsPerDraw;
+    rate = PerfMeasureRate(DrawQuad, glfwPollEvents ) * pixelsPerDraw;
     glUseProgram(0);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     printf("   Shader2 fill: %s pixels/second\n",

@@ -228,7 +228,7 @@ static void PerfDraw()
      */
     for (sz = 0; Sizes[sz]; sz++) {
         SubSize = VBOSize = Sizes[sz];
-        rate = PerfMeasureRate(UploadVBO);
+        rate = PerfMeasureRate(UploadVBO, glfwPollEvents );
         mbPerSec = rate * VBOSize / (1024.0 * 1024.0);
         printf("  glBufferData(size = %d): %.1f MB/sec\n",
                     VBOSize, mbPerSec);
@@ -240,7 +240,7 @@ static void PerfDraw()
      */
     for (sz = 0; Sizes[sz]; sz++) {
         SubSize = VBOSize = Sizes[sz];
-        rate = PerfMeasureRate(UploadSubVBO);
+        rate = PerfMeasureRate(UploadSubVBO, glfwPollEvents );
         mbPerSec = rate * VBOSize / (1024.0 * 1024.0);
         printf("  glBufferSubData(size = %d): %.1f MB/sec\n",
                     VBOSize, mbPerSec);
@@ -255,7 +255,7 @@ static void PerfDraw()
 
     for (sz = 0; Sizes[sz] < VBOSize; sz++) {
         SubSize = Sizes[sz];
-        rate = PerfMeasureRate(UploadSubVBO);
+        rate = PerfMeasureRate(UploadSubVBO, glfwPollEvents );
         mbPerSec = rate * SubSize / (1024.0 * 1024.0);
         printf("  glBufferSubData(size = %d, VBOSize = %d): %.1f MB/sec\n",
                     SubSize, VBOSize, mbPerSec);
@@ -266,7 +266,7 @@ static void PerfDraw()
     //TODO:FIXME: IMG gpu hang
 //    for (sz = 0; Sizes[sz] < VBOSize; sz++) {
 //        SubSize = Sizes[sz];
-//        rate = PerfMeasureRate(BatchUploadSubVBO);
+//        rate = PerfMeasureRate(BatchUploadSubVBO, glfwPollEvents );
 //        mbPerSec = rate * SubSize / (1024.0 * 1024.0);
 //        printf("  glBufferSubData(size = %d, VBOSize = %d), batched: %.1f MB/sec\n",
 //                    SubSize, VBOSize, mbPerSec);
@@ -278,7 +278,7 @@ static void PerfDraw()
      */
     for (sz = 0; Sizes[sz]; sz++) {
         SubSize = VBOSize = Sizes[sz];
-        rate = PerfMeasureRate(CreateDrawDestroyVBO);
+        rate = PerfMeasureRate(CreateDrawDestroyVBO, glfwPollEvents );
         mbPerSec = rate * VBOSize / (1024.0 * 1024.0);
         printf("  VBO Create/Draw/Destroy(size = %d): %.1f draws/sec, %.1f MB/sec\n",
                     VBOSize, rate, mbPerSec);
@@ -309,7 +309,7 @@ static void PerfDraw2( int mode, int Sizes_ )
      */
     if( mode == 0 ){
         SubSize = VBOSize = Sizes_;
-        rate = PerfMeasureRate(UploadVBO);
+        rate = PerfMeasureRate(UploadVBO, glfwPollEvents );
         mbPerSec = rate * VBOSize / (1024.0 * 1024.0);
         printf("  glBufferData(size = %d): %.1f MB/sec\n",
                VBOSize, mbPerSec);
@@ -322,7 +322,7 @@ static void PerfDraw2( int mode, int Sizes_ )
     if( mode == 1 ){
         SubSize = VBOSize = Sizes_;
         glBufferData(GL_ARRAY_BUFFER, VBOSize, VBOData, GL_STREAM_DRAW);
-        rate = PerfMeasureRate(UploadSubVBO);
+        rate = PerfMeasureRate(UploadSubVBO, glfwPollEvents );
         mbPerSec = rate * VBOSize / (1024.0 * 1024.0);
         printf("  glBufferSubData(size = %d): %.1f MB/sec\n",
                VBOSize, mbPerSec);
@@ -337,7 +337,7 @@ static void PerfDraw2( int mode, int Sizes_ )
         glBufferData(GL_ARRAY_BUFFER, VBOSize, VBOData, GL_STREAM_DRAW);
 
         SubSize = Sizes_;
-        rate = PerfMeasureRate(UploadSubVBO);
+        rate = PerfMeasureRate(UploadSubVBO, glfwPollEvents );
         mbPerSec = rate * SubSize / (1024.0 * 1024.0);
         printf("  glBufferSubData(size = %d, VBOSize = %d): %.1f MB/sec\n",
                SubSize, VBOSize, mbPerSec);
@@ -350,7 +350,7 @@ static void PerfDraw2( int mode, int Sizes_ )
      */
     if( mode == 3 ){
         SubSize = VBOSize = Sizes_;
-        rate = PerfMeasureRate(CreateDrawDestroyVBO);
+        rate = PerfMeasureRate(CreateDrawDestroyVBO, glfwPollEvents );
         mbPerSec = rate * VBOSize / (1024.0 * 1024.0);
         printf("  VBO Create/Draw/Destroy(size = %d): %.1f draws/sec, %.1f MB/sec\n",
                VBOSize, rate, mbPerSec);

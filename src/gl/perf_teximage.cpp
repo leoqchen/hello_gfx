@@ -313,11 +313,11 @@ static void PerfDraw()
 
                     switch (mode) {
                         case MODE_TEXIMAGE:
-                            rate = PerfMeasureRate(UploadTexImage2D);
+                            rate = PerfMeasureRate(UploadTexImage2D, glfwPollEvents );
                             break;
 
                         case MODE_CREATE_TEXIMAGE:
-                            rate = PerfMeasureRate(CreateUploadTexImage2D);
+                            rate = PerfMeasureRate(CreateUploadTexImage2D, glfwPollEvents );
                             break;
 
                         case MODE_TEXSUBIMAGE:
@@ -325,7 +325,7 @@ static void PerfDraw()
                             glTexImage2D(GL_TEXTURE_2D, 0, TexIntFormat,
                                          TexSize, TexSize, 0,
                                          TexSrcFormat, TexSrcType, NULL);
-                            rate = PerfMeasureRate(UploadTexSubImage2D);
+                            rate = PerfMeasureRate(UploadTexSubImage2D, glfwPollEvents );
                             break;
 
                         case MODE_GETTEXIMAGE:
@@ -335,7 +335,7 @@ static void PerfDraw()
                             glTexImage2D(GL_TEXTURE_2D, 0, TexIntFormat,
                                          TexSize, TexSize, 0,
                                          TexSrcFormat, TexSrcType, TexImage);
-                            rate = PerfMeasureRate(GetTexImage2D);
+                            rate = PerfMeasureRate(GetTexImage2D, glfwPollEvents );
                             break;
 #endif
 
@@ -410,11 +410,11 @@ static void PerfDraw2( GLint mode_, GLuint TexSize_ )
 
                     switch (mode) {
                         case MODE_TEXIMAGE:
-                            rate = PerfMeasureRate(UploadTexImage2D);
+                            rate = PerfMeasureRate(UploadTexImage2D, glfwPollEvents );
                             break;
 
                         case MODE_CREATE_TEXIMAGE:
-                            rate = PerfMeasureRate(CreateUploadTexImage2D);
+                            rate = PerfMeasureRate(CreateUploadTexImage2D, glfwPollEvents );
                             break;
 
                         case MODE_TEXSUBIMAGE:
@@ -422,7 +422,7 @@ static void PerfDraw2( GLint mode_, GLuint TexSize_ )
                             glTexImage2D(GL_TEXTURE_2D, 0, TexIntFormat,
                                          TexSize, TexSize, 0,
                                          TexSrcFormat, TexSrcType, NULL);
-                            rate = PerfMeasureRate(UploadTexSubImage2D);
+                            rate = PerfMeasureRate(UploadTexSubImage2D, glfwPollEvents );
                             break;
 
                         case MODE_GETTEXIMAGE:
@@ -432,7 +432,7 @@ static void PerfDraw2( GLint mode_, GLuint TexSize_ )
                             glTexImage2D(GL_TEXTURE_2D, 0, TexIntFormat,
                                          TexSize, TexSize, 0,
                                          TexSrcFormat, TexSrcType, TexImage);
-                            rate = PerfMeasureRate(GetTexImage2D);
+                            rate = PerfMeasureRate(GetTexImage2D, glfwPollEvents );
                             break;
 #endif
 

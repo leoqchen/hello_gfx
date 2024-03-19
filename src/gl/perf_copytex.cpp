@@ -255,13 +255,13 @@ void PerfDraw()
                 GLint bytesPerImage = 4 * TexSize * TexSize;
 
                 if (sub == 0)
-                    rate = PerfMeasureRate(CopyTexImage);
+                    rate = PerfMeasureRate(CopyTexImage, glfwPollEvents );
                 else {
                     /* setup empty dest texture */
                     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
                                  TexSize, TexSize, 0,
                                  GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-                    rate = PerfMeasureRate(CopyTexSubImage);
+                    rate = PerfMeasureRate(CopyTexSubImage, glfwPollEvents );
                 }
 
                 mbPerSec = rate * bytesPerImage / (1024.0 * 1024.0);
@@ -298,13 +298,13 @@ void PerfDraw2( int sub, int TexSize_ )
                 GLint bytesPerImage = 4 * TexSize * TexSize;
 
                 if (sub == 0)
-                    rate = PerfMeasureRate(CopyTexImage);
+                    rate = PerfMeasureRate(CopyTexImage, glfwPollEvents );
                 else {
                     /* setup empty dest texture */
                     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
                                  TexSize, TexSize, 0,
                                  GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-                    rate = PerfMeasureRate(CopyTexSubImage);
+                    rate = PerfMeasureRate(CopyTexSubImage, glfwPollEvents );
                 }
 
                 mbPerSec = rate * bytesPerImage / (1024.0 * 1024.0);

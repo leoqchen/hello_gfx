@@ -281,7 +281,7 @@ static void PerfDraw()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     printf("GLSL texture/program change rate\n");
-    double rate = PerfMeasureRate(Draw);
+    double rate = PerfMeasureRate(Draw, glfwPollEvents );
     printf("  Immediate mode: %s change/sec\n", PerfHumanFloat(rate));
 
     glErrorCheck();

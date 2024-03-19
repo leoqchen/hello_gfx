@@ -332,7 +332,7 @@ static void PerfDraw( int mode )
 
 #if IS_GlLegacy
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    rate = PerfMeasureRate(DrawImmediate);
+    rate = PerfMeasureRate(DrawImmediate, glfwPollEvents );
     rate *= NumVerts;
     printf("  Immediate mode: %s verts/sec\n", PerfHumanFloat(rate));
 #endif
@@ -341,7 +341,7 @@ static void PerfDraw( int mode )
     if( mode == -1 || mode == 0 ) {
         // OpenGL Core profile 不支持让VBO工作在client模式
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        rate = PerfMeasureRate(DrawArraysMem);
+        rate = PerfMeasureRate(DrawArraysMem, glfwPollEvents );
         rate *= NumVerts;
         printf("  glDrawArrays: %s verts/sec\n", PerfHumanFloat(rate));
     }
@@ -349,7 +349,7 @@ static void PerfDraw( int mode )
 
     if( mode == -1 || mode == 1 ) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        rate = PerfMeasureRate(DrawArraysVBO);
+        rate = PerfMeasureRate(DrawArraysVBO, glfwPollEvents );
         rate *= NumVerts;
         printf("  VBO glDrawArrays: %s verts/sec\n", PerfHumanFloat(rate));
     }
@@ -358,7 +358,7 @@ static void PerfDraw( int mode )
     if( mode == -1 || mode == 2 ) {
         // OpenGL Core profile 不支持让VBO工作在client模式
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        rate = PerfMeasureRate(DrawElementsMem);
+        rate = PerfMeasureRate(DrawElementsMem, glfwPollEvents );
         rate *= NumVerts;
         printf("  glDrawElements: %s verts/sec\n", PerfHumanFloat(rate));
     }
@@ -366,7 +366,7 @@ static void PerfDraw( int mode )
 
     if( mode == -1 || mode == 3 ) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        rate = PerfMeasureRate(DrawElementsBO);
+        rate = PerfMeasureRate(DrawElementsBO, glfwPollEvents );
         rate *= NumVerts;
         printf("  VBO glDrawElements: %s verts/sec\n", PerfHumanFloat(rate));
     }
@@ -375,7 +375,7 @@ static void PerfDraw( int mode )
     if( mode == -1 || mode == 4 ) {
         // OpenGL Core profile 不支持让VBO工作在client模式
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        rate = PerfMeasureRate(DrawRangeElementsMem);
+        rate = PerfMeasureRate(DrawRangeElementsMem, glfwPollEvents );
         rate *= NumVerts;
         printf("  glDrawRangeElements: %s verts/sec\n", PerfHumanFloat(rate));
     }
@@ -383,7 +383,7 @@ static void PerfDraw( int mode )
 
     if( mode == -1 || mode == 5 ) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        rate = PerfMeasureRate(DrawRangeElementsBO);
+        rate = PerfMeasureRate(DrawRangeElementsBO, glfwPollEvents );
         rate *= NumVerts;
         printf("  VBO glDrawRangeElements: %s verts/sec\n", PerfHumanFloat(rate));
     }

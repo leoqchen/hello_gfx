@@ -48,9 +48,9 @@ include_directories(${CMAKE_BINARY_DIR}/configuration)
 #  libraries
 #-----------------------------------------------------------------------------------------
 
-# utils
+# myutils
 add_library(
-  utils
+  myutils
   STATIC
   src/utils/myutils.cpp
 )
@@ -279,13 +279,13 @@ foreach(target ${targets})
 
   if(${targetName} MATCHES "_gl$")
     list(APPEND targetCompileOptions ${IS_Gl})
-    list(APPEND targetLinkLibraries utils glad_gl glutils_gl glfwutils_gl)
+    list(APPEND targetLinkLibraries myutils glad_gl glutils_gl glfwutils_gl)
   elseif(${targetName} MATCHES "_glLegacy$")
     list(APPEND targetCompileOptions ${IS_GlLegacy})
-    list(APPEND targetLinkLibraries utils glad_gl glutils_gl glfwutils_gl -lGLU)
+    list(APPEND targetLinkLibraries myutils glad_gl glutils_gl glfwutils_gl -lGLU)
   elseif(${targetName} MATCHES "_gles$")
     list(APPEND targetCompileOptions ${IS_GlEs})
-    list(APPEND targetLinkLibraries utils glad_gles2 glutils_gles2 glfwutils_gles2)
+    list(APPEND targetLinkLibraries myutils glad_gles2 glutils_gles2 glfwutils_gles2)
   endif()
 
   #message("target=${target}")
@@ -307,7 +307,7 @@ target_compile_options(
 )
 target_link_libraries(
   eglHelloTriangle_gles
-  -Wl,--start-group utils glfwutils_gles2 glad_gles2 glutils_gles2 x11utils eglutils_gles2 -Wl,--end-group
+  -Wl,--start-group myutils glfwutils_gles2 glad_gles2 glutils_gles2 x11utils eglutils_gles2 -Wl,--end-group
   -lX11
   -lEGL
   -lGLESv2

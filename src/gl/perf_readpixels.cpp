@@ -168,7 +168,7 @@ static void PerfDraw()
             imgSize = ReadWidth * ReadHeight * DstFormats[fmt].pixel_size;
             ReadBuffer = malloc(imgSize);
 
-            double rate = PerfMeasureRate(ReadPixels);
+            double rate = PerfMeasureRate(ReadPixels, glfwPollEvents );
             double mbPerSec = rate * imgSize / (1024.0 * 1024.0);
 
             printf("glReadPixels(%d x %d, %s): %.1f images/sec, %.1f Mpixels/sec\n",
@@ -198,7 +198,7 @@ static void PerfDraw2( int Sizes_)
             imgSize = ReadWidth * ReadHeight * DstFormats[fmt].pixel_size;
             ReadBuffer = malloc(imgSize);
 
-            double rate = PerfMeasureRate(ReadPixels);
+            double rate = PerfMeasureRate(ReadPixels, glfwPollEvents );
             double mbPerSec = rate * imgSize / (1024.0 * 1024.0);
 
             printf("glReadPixels(%d x %d, %s): %.1f images/sec, %.1f Mpixels/sec\n",

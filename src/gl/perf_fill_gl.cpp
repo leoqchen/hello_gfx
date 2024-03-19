@@ -317,14 +317,14 @@ static void PerfDraw()
 
     /* simple fill */
     glUseProgram( ShaderProg_simple );
-    rate = PerfMeasureRate(DrawQuad) * pixelsPerDraw;
+    rate = PerfMeasureRate(DrawQuad, glfwPollEvents ) * pixelsPerDraw;
     printf("   Simple fill: %s pixels/second\n",
                 PerfHumanFloat(rate));
 
     /* blended fill */
     glEnable(GL_BLEND);
     glUseProgram( ShaderProg_simple );
-    rate = PerfMeasureRate(DrawQuad) * pixelsPerDraw;
+    rate = PerfMeasureRate(DrawQuad, glfwPollEvents ) * pixelsPerDraw;
     glDisable(GL_BLEND);
     printf("   Blended fill: %s pixels/second\n",
                 PerfHumanFloat(rate));
@@ -334,7 +334,7 @@ static void PerfDraw()
     glBindTexture( GL_TEXTURE_2D, TexObj );
     glEnableVertexAttribArray(2); //vTexCoord
     glUseProgram( ShaderProg_textured );
-    rate = PerfMeasureRate(DrawQuad) * pixelsPerDraw;
+    rate = PerfMeasureRate(DrawQuad, glfwPollEvents ) * pixelsPerDraw;
     printf("   Textured fill: %s pixels/second\n",
                 PerfHumanFloat(rate));
 
@@ -343,7 +343,7 @@ static void PerfDraw()
     glActiveTexture( GL_TEXTURE0 );
     glBindTexture( GL_TEXTURE_2D, TexObj );
     glEnableVertexAttribArray(2); //vTexCoord
-    rate = PerfMeasureRate(DrawQuad) * pixelsPerDraw;
+    rate = PerfMeasureRate(DrawQuad, glfwPollEvents ) * pixelsPerDraw;
     glUseProgram(0);
     printf("   Shader1 fill: %s pixels/second\n",
                 PerfHumanFloat(rate));
@@ -353,7 +353,7 @@ static void PerfDraw()
     glActiveTexture( GL_TEXTURE0 );
     glBindTexture( GL_TEXTURE_2D, TexObj );
     glEnableVertexAttribArray(2); //vTexCoord
-    rate = PerfMeasureRate(DrawQuad) * pixelsPerDraw;
+    rate = PerfMeasureRate(DrawQuad, glfwPollEvents ) * pixelsPerDraw;
     glUseProgram(0);
     printf("   Shader2 fill: %s pixels/second\n",
                 PerfHumanFloat(rate));

@@ -148,20 +148,20 @@ static void PerfDraw(int mode)
     double rate0, rate1, rate2, overhead;
 
     if( mode == -1 || mode == 0 ) {
-        rate0 = PerfMeasureRate(DrawNoStateChange);
+        rate0 = PerfMeasureRate(DrawNoStateChange, glfwPollEvents );
         printf("   Draw only: %s draws/second\n", PerfHumanFloat(rate0));
         glfwSwapBuffers(window);
     }
 
     if( mode == -1 || mode == 1 ) {
-        rate1 = PerfMeasureRate(DrawNopStateChange);
+        rate1 = PerfMeasureRate(DrawNopStateChange, glfwPollEvents );
         overhead = 1000.0 * (1.0 / rate1 - 1.0 / rate0);
         printf("   Draw w/ nop state change: %s draws/sec (overhead: %f ms/draw)\n", PerfHumanFloat(rate1), overhead);
         glfwSwapBuffers(window);
     }
 
     if( mode == -1 || mode == 2 ) {
-        rate2 = PerfMeasureRate(DrawStateChange);
+        rate2 = PerfMeasureRate(DrawStateChange, glfwPollEvents );
         overhead = 1000.0 * (1.0 / rate2 - 1.0 / rate0);
         printf("   Draw w/ state change: %s draws/sec (overhead: %f ms/draw)\n", PerfHumanFloat(rate2), overhead);
         glfwSwapBuffers(window);

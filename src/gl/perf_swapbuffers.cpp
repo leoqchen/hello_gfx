@@ -149,20 +149,20 @@ static void PerfDraw()
     printf("Window %dx%d\n", w, h);
 
     double rate0;
-    rate0 = PerfMeasureRate(SwapNaked);
+    rate0 = PerfMeasureRate(SwapNaked, glfwPollEvents );
     printf("   Swapbuffers      %dx%d: %s swaps/second, %s pixels/second\n",
            w, h,
            PerfHumanFloat(rate0),
            PerfHumanFloat(rate0 * w * h) );
 
-    rate0 = PerfMeasureRate(SwapClear);
+    rate0 = PerfMeasureRate(SwapClear, glfwPollEvents );
     printf("   Swap/Clear       %dx%d: %s swaps/second, %s pixels/second\n",
            w, h,
            PerfHumanFloat(rate0),
            PerfHumanFloat(rate0 * w * h) );
 
 
-    rate0 = PerfMeasureRate(SwapClearPoint);
+    rate0 = PerfMeasureRate(SwapClearPoint, glfwPollEvents );
     printf("   Swap/Clear/Draw  %dx%d: %s swaps/second, %s pixels/second\n",
            w, h,
            PerfHumanFloat(rate0),

@@ -49,7 +49,8 @@ const char* apiName( int api );
 uint64_t PerfGetMillisecond();
 double PerfGetSecond();
 typedef void (*PerfRateFunc)(unsigned count);
-double PerfMeasureRate(PerfRateFunc f);
+typedef void (*PollEventFunc)(void);
+double PerfMeasureRate(PerfRateFunc f, PollEventFunc poolevent = NULL);
 const char* PerfHumanFloat( double d );
 
 float DegreeFromRadian( float radian );

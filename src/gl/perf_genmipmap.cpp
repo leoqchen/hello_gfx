@@ -178,7 +178,7 @@ static void PerfDraw()
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, BaseLevel);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, MaxLevel);
 
-            rate = PerfMeasureRate(GenMipmap);
+            rate = PerfMeasureRate(GenMipmap, glfwPollEvents );
 
             printf("   glGenerateMipmap(levels %d..%d)%s: %.2f gens/sec\n",
                    BaseLevel + 1, MaxLevel,
@@ -220,7 +220,7 @@ static void PerfDraw2( int BaseLevel_, int MaxLevel_ )
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, BaseLevel_);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, MaxLevel_);
 
-        rate = PerfMeasureRate(GenMipmap);
+        rate = PerfMeasureRate(GenMipmap, glfwPollEvents );
 
         printf("   glGenerateMipmap(levels %d..%d)%s: %.2f gens/sec\n",
                BaseLevel_ + 1, MaxLevel_,

@@ -1,6 +1,3 @@
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-
 #include <ctype.h>
 #include <time.h>
 #include <stdio.h>
@@ -197,7 +194,7 @@ double PerfGetSecond()
  * Run function 'f' for enough iterations to reach a steady state.
  * Return the rate (iterations/second).
  */
-double PerfMeasureRate(PerfRateFunc f)
+double PerfMeasureRate(PerfRateFunc f, PollEventFunc poolevent)
 {
     const double minDuration = 1.0;
     double rate = 0.0, prevRate = 0.0;
@@ -209,7 +206,8 @@ double PerfMeasureRate(PerfRateFunc f)
      */
     subiters = 2;
     {
-        glfwPollEvents();
+        if( poolevent )
+            poolevent();
 
         const double t0 = PerfGetSecond();
         double t1;
@@ -222,7 +220,8 @@ double PerfMeasureRate(PerfRateFunc f)
     //printf("initial subIters = %u\n", subiters);
 
     while (1) {
-        glfwPollEvents();
+        if( poolevent )
+            poolevent();
 
         const double t0 = PerfGetSecond();
         unsigned iters = 0;
