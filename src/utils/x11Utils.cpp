@@ -87,7 +87,8 @@ int xWindowCreate( void** nativeDisplayPtr, void** nativeWindowPtr, const char *
 
 void xWindowSetTitle( const char *name )
 {
-    XStoreName( x_display, x_win, name );
+    if( x_display )
+        XStoreName( x_display, x_win, name );
 }
 
 // Reads from X11 event loop and interrupt program if there is a keypress, or window close action.
