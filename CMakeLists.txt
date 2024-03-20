@@ -291,20 +291,3 @@ foreach(target ${targets})
   target_compile_options(${targetName} PUBLIC ${targetCompileOptions})
   target_link_libraries(${targetName} -Wl,--start-group ${targetLinkLibraries} -Wl,--end-group)
 endforeach(target)
-
-add_executable(
-  eglHelloTriangle_gles
-  src/gl/eglHelloTriangle.cpp
-)
-target_compile_options(
-  eglHelloTriangle_gles
-  PUBLIC
-  ${IS_GlEs}
-)
-target_link_libraries(
-  eglHelloTriangle_gles
-  -Wl,--start-group myUtils glfwUtils_gles2 glad_gles2 glUtils_gles2 x11Utils eglUtils_gles2 -Wl,--end-group
-  -lX11
-  -lEGL
-  glfw
-)
