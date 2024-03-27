@@ -199,6 +199,9 @@ set(targets
   "textureDisplay_gl        \; src/gl/textureDisplay.cpp"
   "textureDisplay_gles      \; src/gl/textureDisplay.cpp"
 
+  "textureRead_gl        \; src/gl/textureRead.cpp"
+  "textureRead_gles      \; src/gl/textureRead.cpp"
+
   # Bug复现测试
   #----------------------------------------------------
   "bug_gl_PointSize_glLegacy  \; src/gl/bug_img/bug_gl_PointSize.cpp"
