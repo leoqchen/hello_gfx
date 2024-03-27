@@ -71,21 +71,21 @@ int main( int argc, const char* argv[] )
         exit(1);
     }
 
-    // copy FBO's color attachment to Default Framebuffer
-    // ---------------------------------------------------
-    glBindFramebuffer( GL_FRAMEBUFFER, defaultFramebuffer );
-    glBindFramebuffer( GL_READ_FRAMEBUFFER, fbo );
-    glReadBuffer ( GL_COLOR_ATTACHMENT0 );
-    glBlitFramebuffer( 0, 0, imgWidth, imgHeight,
-                       0, 0, WinWidth, WinHeight,
-                       GL_COLOR_BUFFER_BIT, GL_LINEAR );
-
     // render loop
     // -----------
     while (!eglx_ShouldClose())
     {
         // render
         // ------
+
+        // copy FBO's color attachment to Default Framebuffer
+        // ---------------------------------------------------
+        glBindFramebuffer( GL_FRAMEBUFFER, defaultFramebuffer );
+        glBindFramebuffer( GL_READ_FRAMEBUFFER, fbo );
+        glReadBuffer ( GL_COLOR_ATTACHMENT0 );
+        glBlitFramebuffer( 0, 0, imgWidth, imgHeight,
+                           0, 0, WinWidth, WinHeight,
+                           GL_COLOR_BUFFER_BIT, GL_LINEAR );
 
         // swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------

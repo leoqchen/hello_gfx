@@ -196,8 +196,8 @@ set(targets
   "multiVBO_gl        \; src/gl/multiVBO.cpp"
   "multiVBO_gles      \; src/gl/multiVBO.cpp"
 
-  "displayTexture_gl        \; src/gl/displayTexture.cpp"
-  "displayTexture_gles      \; src/gl/displayTexture.cpp"
+  "textureDisplay_gl        \; src/gl/textureDisplay.cpp"
+  "textureDisplay_gles      \; src/gl/textureDisplay.cpp"
 
   # Bug复现测试
   #----------------------------------------------------
