@@ -188,7 +188,7 @@ set(targets
   "fbo_ColorAttachRenderbuffer_gles \; src/gl/fbo.cpp \; ${IS_ColorAttachRenderbuffer}"
   "fbo_ColorAttachTexture_gles      \; src/gl/fbo.cpp \; ${IS_ColorAttachTexture}"
 
-  # 行为测试
+  # 功能测试
   #----------------------------------------------------
   "glUniform_gl        \; src/gl/glUniform.cpp"
   "glUniform_gles      \; src/gl/glUniform.cpp"

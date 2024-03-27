@@ -1,5 +1,5 @@
 /*
- * 行为测试：
+ * 功能测试：
  * 测试glUniform设置是否能被记录在program里，无需glDraw触发
  */
 #include <stdio.h>

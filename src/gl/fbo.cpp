@@ -149,8 +149,6 @@ int main( int argc, const char* argv[] )
     {
         // render
         // ------
-        glGetIntegerv ( GL_FRAMEBUFFER_BINDING, &defaultFramebuffer );
-
         // FIRST: use MRTs to output four colors to four buffers
         glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
         glClear ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );

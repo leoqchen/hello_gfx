@@ -81,7 +81,6 @@ static void PerfInit()
     // ------------------------------------
 #if !IS_GlLegacy
     program = CreateProgramFromSource( vertexShaderSource, fragmentShaderSource );
-    samplerLoc = glGetUniformLocation( program, "s_texture" );
 #endif
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
@@ -168,11 +167,11 @@ static void PerfInit()
     glActiveTexture( GL_TEXTURE0 );
     glBindTexture( GL_TEXTURE_2D, Tex );
 
-    glUseProgram(program);
     // set the sampler texture unit to 0
+    glUseProgram(program);
+    samplerLoc = glGetUniformLocation( program, "s_texture" );
     glUniform1i( samplerLoc, 0 );
 #endif
-
 }
 
 
@@ -340,7 +339,7 @@ int main( int argc, const char* argv[] )
             DrawPoint = __draw;
 
             printf("Draw = %d\n", DrawPoint);
-            PerfDraw2( __mode, __testcase );//TODO
+            PerfDraw2( __mode, __testcase );
             printf("\n");
             exit(0);
         }
