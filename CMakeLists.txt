@@ -196,6 +196,9 @@ set(targets
   "multiVBO_gl        \; src/gl/multiVBO.cpp"
   "multiVBO_gles      \; src/gl/multiVBO.cpp"
 
+  "displayTexture_gl        \; src/gl/displayTexture.cpp"
+  "displayTexture_gles      \; src/gl/displayTexture.cpp"
+
   # Bug复现测试
   #----------------------------------------------------
   "bug_gl_PointSize_glLegacy  \; src/gl/bug_img/bug_gl_PointSize.cpp"
