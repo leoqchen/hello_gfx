@@ -317,3 +317,29 @@ void MatrixPrint( GLenum pname, const char *file, int line )
     }
     printf("\n");
 }
+
+void ReadPixels_FromFboColorAttachment( void *dstData, GLuint texture, GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type )
+{
+    GLint originalFBO = 0;
+    glGetIntegerv( GL_FRAMEBUFFER_BINDING, &originalFBO );
+
+    // create FBO, and its color attachment
+    GLuint fbo;
+    glGenFramebuffers( 1, &fbo );
+    glBindFramebuffer( GL_FRAMEBUFFER, fbo );
+    glFramebufferTexture2D( GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0 );
+    GLenum stat = glCheckFramebufferStatus( GL_FRAMEBUFFER );
+    if( stat != GL_FRAMEBUFFER_COMPLETE ){
+        printf("%s: Error: incomplete FBO!: 0x%X, %s\n", __func__, stat, framebufferStatusName(stat));
+        exit(1);
+    }
+
+    // read pixels from FBO color attachment
+    glReadBuffer( GL_COLOR_ATTACHMENT0 );
+    glReadPixels(0, 0, width, height, format, type, dstData );
+
+    // Restore the original framebuffer
+    glDeleteFramebuffers( 1, &fbo );
+    glBindFramebuffer ( GL_FRAMEBUFFER, originalFBO );
+}
+

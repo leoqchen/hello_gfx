@@ -56,34 +56,18 @@ int main( int argc, const char* argv[] )
 
     // texture upload
     // ------------------------------------
-    GLuint fboTex;
-    glGenTextures( 1, &fboTex );
-    glBindTexture( GL_TEXTURE_2D, fboTex );
+    GLuint srcTex;
+    glGenTextures( 1, &srcTex );
+    glBindTexture( GL_TEXTURE_2D, srcTex );
     glTexImage2D( GL_TEXTURE_2D, 0, imgFormat,imgWidth, imgHeight,
                    0, imgFormat, GL_UNSIGNED_BYTE, image );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 
-    // setup fbo
-    // ------------------------------------
-    GLint defaultFramebuffer = 0;
-    glGetIntegerv( GL_FRAMEBUFFER_BINDING, &defaultFramebuffer );
-
-    GLuint fbo;
-    glGenFramebuffers( 1, &fbo );
-    glBindFramebuffer( GL_FRAMEBUFFER, fbo );
-    glFramebufferTexture2D( GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fboTex, 0 );
-    GLenum stat = glCheckFramebufferStatus( GL_FRAMEBUFFER );
-    if( stat != GL_FRAMEBUFFER_COMPLETE ){
-        printf("Error: incomplete FBO!: 0x%X, %s\n", stat, framebufferStatusName(stat));
-        exit(1);
-    }
-
     // CPU read texture
     // ------------------------------------
     GLubyte* imageDst = (GLubyte*) malloc( imgWidth * imgHeight * 4 );
-    glReadBuffer ( GL_COLOR_ATTACHMENT0 );
-    glReadPixels(0, 0, imgWidth, imgHeight, imgFormat, GL_UNSIGNED_BYTE, imageDst);
+    ReadPixels_FromFboColorAttachment( imageDst, srcTex, 0, 0, imgWidth, imgHeight, imgFormat, GL_UNSIGNED_BYTE );
 
     stbi_write_png("/tmp/dst.png", imgWidth, imgHeight, 4, imageDst, imgWidth*4 );
     printf("dump to /tmp/dst.png\n");
@@ -96,6 +80,22 @@ int main( int argc, const char* argv[] )
         printf("src and dst are diff !!!\n");
         exit(1);
     }
+
+#if IS_Gl
+    GLubyte* imageDst2 = (GLubyte*) malloc( imgWidth * imgHeight * 4 );
+    glBindTexture( GL_TEXTURE_2D, srcTex );
+    glGetTexImage( GL_TEXTURE_2D, 0, imgFormat, GL_UNSIGNED_BYTE, imageDst2 );
+
+    stbi_write_png("/tmp/dst2.png", imgWidth, imgHeight, 4, imageDst2, imgWidth*4 );
+    printf("\ndump to /tmp/dst2.png\n");
+
+    if( memcmp(imageDst2, image, imgWidth * imgHeight * 4) == 0 ){
+        printf("src and dst2 are the same\n");
+    }else{
+        printf("src and dst2 are diff !!!\n");
+        exit(1);
+    }
+#endif
 
     // render loop
     // -----------
@@ -113,10 +113,12 @@ int main( int argc, const char* argv[] )
 
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
-    glDeleteTextures( 1, &fboTex );
-    glDeleteFramebuffers( 1, &fbo );
+    glDeleteTextures( 1, &srcTex );
     free(image);
     free( imageDst );
+#if IS_Gl
+    free( imageDst2 );
+#endif
 
     // terminate, clearing all previously allocated resources.
     // ------------------------------------------------------------------

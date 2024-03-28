@@ -29,6 +29,8 @@ GLuint CreateProgramFromSource( const char *vertShaderSource, const char *fragSh
 
 GLuint CreateTexture_FillWithCheckboard( GLsizei width, GLsizei height );
 
+void ReadPixels_FromFboColorAttachment( void *dstData, GLuint texture, GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type );
+
 #if IS_GlLegacy
 void MatrixPrint( GLenum pname, const char *file, int line );
 #endif
