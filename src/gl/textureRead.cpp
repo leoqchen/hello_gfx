@@ -64,10 +64,26 @@ int main( int argc, const char* argv[] )
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 
+    // setup fbo
+    // ------------------------------------
+    GLint defaultFramebuffer = 0;
+    glGetIntegerv( GL_FRAMEBUFFER_BINDING, &defaultFramebuffer );
+
+    GLuint fbo;
+    glGenFramebuffers( 1, &fbo );
+    glBindFramebuffer( GL_FRAMEBUFFER, fbo );
+    glFramebufferTexture2D( GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, srcTex, 0 );
+    GLenum stat = glCheckFramebufferStatus( GL_FRAMEBUFFER );
+    if( stat != GL_FRAMEBUFFER_COMPLETE ){
+        printf("Error: incomplete FBO!: 0x%X, %s\n", stat, framebufferStatusName(stat));
+        exit(1);
+    }
+
     // CPU read texture
     // ------------------------------------
     GLubyte* imageDst = (GLubyte*) malloc( imgWidth * imgHeight * 4 );
-    ReadPixels_FromFboColorAttachment( imageDst, srcTex, 0, 0, imgWidth, imgHeight, imgFormat, GL_UNSIGNED_BYTE );
+    glReadBuffer ( GL_COLOR_ATTACHMENT0 );
+    glReadPixels(0, 0, imgWidth, imgHeight, imgFormat, GL_UNSIGNED_BYTE, imageDst);
 
     stbi_write_png("/tmp/dst.png", imgWidth, imgHeight, 4, imageDst, imgWidth*4 );
     printf("dump to /tmp/dst.png\n");
@@ -114,6 +130,7 @@ int main( int argc, const char* argv[] )
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
     glDeleteTextures( 1, &srcTex );
+    glDeleteFramebuffers( 1, &fbo );
     free(image);
     free( imageDst );
 #if IS_Gl
