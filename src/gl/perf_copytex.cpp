@@ -177,6 +177,9 @@ static void PerfInit()
 
 static void CopyTexImage(unsigned count)
 {
+    glBindTexture(GL_TEXTURE_2D, Tex);
+    glReadBuffer( GL_COLOR_ATTACHMENT0 );
+
     unsigned i;
     for (i = 1; i < count; i++) {
         /* draw something */
@@ -194,6 +197,9 @@ static void CopyTexImage(unsigned count)
 static void
 CopyTexSubImage(unsigned count)
 {
+    glBindTexture(GL_TEXTURE_2D, Tex);
+    glReadBuffer( GL_COLOR_ATTACHMENT0 );
+
     unsigned i;
     for (i = 1; i < count; i++) {
         /* draw something */
