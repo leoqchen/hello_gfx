@@ -64,7 +64,7 @@ int main( int argc, const char* argv[] )
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 
-    // setup fbo
+    // CPU read texture by FBO color attachment
     // ------------------------------------
     GLint defaultFramebuffer = 0;
     glGetIntegerv( GL_FRAMEBUFFER_BINDING, &defaultFramebuffer );
@@ -80,7 +80,6 @@ int main( int argc, const char* argv[] )
     }
 
     // CPU read texture
-    // ------------------------------------
     GLubyte* imageDst = (GLubyte*) malloc( imgWidth * imgHeight * 4 );
     glReadBuffer ( GL_COLOR_ATTACHMENT0 );
     glReadPixels(0, 0, imgWidth, imgHeight, imgFormat, GL_UNSIGNED_BYTE, imageDst);
@@ -89,7 +88,6 @@ int main( int argc, const char* argv[] )
     printf("dump to /tmp/dst.png\n");
 
     // compare result
-    // ------------------------------------
     if( memcmp(imageDst, image, imgWidth * imgHeight * 4) == 0 ){
         printf("src and dst are the same\n");
     }else{
@@ -97,6 +95,8 @@ int main( int argc, const char* argv[] )
         exit(1);
     }
 
+    // CPU read texture by glGetTexImage
+    // ------------------------------------
 #if IS_Gl
     GLubyte* imageDst2 = (GLubyte*) malloc( imgWidth * imgHeight * 4 );
     glBindTexture( GL_TEXTURE_2D, srcTex );

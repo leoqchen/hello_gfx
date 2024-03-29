@@ -196,8 +196,8 @@ set(targets
   "multiVBO_gl        \; src/gl/multiVBO.cpp"
   "multiVBO_gles      \; src/gl/multiVBO.cpp"
 
-  "textureDisplay_gl        \; src/gl/textureDisplay.cpp"
-  "textureDisplay_gles      \; src/gl/textureDisplay.cpp"
+  "textureDisplayByFbo_gl        \; src/gl/textureDisplayByFbo.cpp"
+  "textureDisplayByFbo_gles      \; src/gl/textureDisplayByFbo.cpp"
 
   "textureRead_gl        \; src/gl/textureRead.cpp"
   "textureRead_gles      \; src/gl/textureRead.cpp"
