@@ -297,3 +297,9 @@ foreach(target ${targets})
   target_compile_options(${targetName} PUBLIC ${targetCompileOptions})
   target_link_libraries(${targetName} -Wl,--start-group ${targetLinkLibraries} -Wl,--end-group)
 endforeach(target)
+
+
+add_executable(
+  stbTest
+  src/utils/stbTest.cpp
+)
