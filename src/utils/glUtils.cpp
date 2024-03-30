@@ -1,4 +1,10 @@
+#include <filesystem>
 #include "glUtils.h"
+#include "SGI_rgb.h"
+
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_STATIC
+#include "stb_image.h"
 
 const char* glErrorName( GLenum error )
 {
@@ -222,6 +228,18 @@ const char* glslVersion( api_t api )
     return "";
 }
 
+void MatrixPrint( GLenum pname, const char *file, int line )
+{
+    GLfloat matrix[16];
+    glGetFloatv (pname, matrix);
+
+    printf("%s: %s:%d\n", __func__, file, line);
+    for( int i=0; i < 16; i+=4 ){
+        printf("%f %f %f %f\n", matrix[i+0], matrix[i+1], matrix[i+2], matrix[i+3]);
+    }
+    printf("\n");
+}
+
 GLuint CreateShaderFromSource( GLenum type, const char *shaderSource )
 {
     GLuint shader = glCreateShader( type );
@@ -306,16 +324,35 @@ GLuint CreateTexture_FillWithCheckboard( GLsizei width, GLsizei height )
     return obj;
 }
 
-void MatrixPrint( GLenum pname, const char *file, int line )
+GLubyte* imageFromFile( const char *filename, GLsizei *width, GLsizei *height, GLenum *format )
 {
-    GLfloat matrix[16];
-    glGetFloatv (pname, matrix);
+    GLubyte *imgData = NULL;
+    GLsizei imgWidth = 0;
+    GLsizei imgHeight= 0;
+    GLenum imgFormat = 0;
 
-    printf("%s: %s:%d\n", __func__, file, line);
-    for( int i=0; i < 16; i+=4 ){
-        printf("%f %f %f %f\n", matrix[i+0], matrix[i+1], matrix[i+2], matrix[i+3]);
+    std::filesystem::path suffix = std::filesystem::path( filename ).extension();
+    if( suffix == ".rgba" || suffix == ".rgb" ){
+        imgData = SGI_LoadRGBImage( filename, &imgWidth, &imgHeight, &imgFormat);
+    }else{
+        int imgChannels = 0;
+        imgData = stbi_load( filename, &imgWidth, &imgHeight, &imgChannels, 0);
+        imgFormat = (imgChannels == 3) ? GL_RGB : (imgChannels == 4) ? GL_RGBA : 0;
     }
-    printf("\n");
+
+    if( imgData == NULL ){
+        printf("%s: read image fail: %s\n", __func__, filename);
+        exit( 0 );
+    }
+
+    printf("%s: image file %s, %d x %d, %s\n", __func__, filename, imgWidth, imgHeight, glFormatName(imgFormat));
+    if( width != NULL )
+        *width = imgWidth;
+    if( height != NULL )
+        *height = imgHeight;
+    if( format != NULL )
+        *format = imgFormat;
+    return imgData;
 }
 
 void ReadPixels_FromFboColorAttachment( void *dstData, GLuint texture, GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type )

@@ -24,21 +24,15 @@ int main( int argc, const char* argv[] )
     api_t api = apiInitial( API_Current, argc, argv );
     printf("%s: %s\n", argv[0], apiName(api));
 
+    const char* __file = stringFromArgs("--file", argc, argv );
+    const char *imgFile = (__file) ? __file : PROJECT_SOURCE_DIR "data/basemap.tga";
+    int imgWidth, imgHeight;
+    GLenum imgFormat;
+    GLubyte *imgData = imageFromFile( imgFile, &imgWidth, &imgHeight, &imgFormat );
+
     // initialize and configure
     // ------------------------------
     eglx_CreateWindow( api, WinWidth, WinHeight );
-
-    // load image from file
-    // ------------------------------------
-    const char *TexFile = PROJECT_SOURCE_DIR  "data/tree2.rgba";
-    GLint imgWidth, imgHeight;
-    GLenum imgFormat;
-    GLubyte *image = SGI_LoadRGBImage( TexFile, &imgWidth, &imgHeight, &imgFormat);
-    printf("%s: width = %d, height = %d, format = %s\n", TexFile, imgWidth, imgHeight, glFormatName(imgFormat));
-    if (!image) {
-        printf("Couldn't read %s\n", TexFile);
-        exit(0);
-    }
 
     // build and compile our shader program
     // ------------------------------------
@@ -52,7 +46,7 @@ int main( int argc, const char* argv[] )
     glGenTextures( 1, &fboTex );
     glBindTexture( GL_TEXTURE_2D, fboTex );
     glTexImage2D( GL_TEXTURE_2D, 0, imgFormat,imgWidth, imgHeight,
-                   0, imgFormat, GL_UNSIGNED_BYTE, image );
+                   0, imgFormat, GL_UNSIGNED_BYTE, imgData );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 
@@ -98,7 +92,7 @@ int main( int argc, const char* argv[] )
     // ------------------------------------------------------------------------
     glDeleteTextures( 1, &fboTex );
     glDeleteFramebuffers( 1, &fbo );
-    free(image);
+    free( imgData );
 
     // terminate, clearing all previously allocated resources.
     // ------------------------------------------------------------------

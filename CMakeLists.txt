@@ -196,8 +196,11 @@ set(targets
   "multiVBO_gl        \; src/gl/multiVBO.cpp"
   "multiVBO_gles      \; src/gl/multiVBO.cpp"
 
-  "textureDisplayByFbo_gl        \; src/gl/textureDisplayByFbo.cpp"
-  "textureDisplayByFbo_gles      \; src/gl/textureDisplayByFbo.cpp"
+  "textureDisplayByFboBlit_gl        \; src/gl/textureDisplayByFboBlit.cpp"
+  "textureDisplayByFboBlit_gles      \; src/gl/textureDisplayByFboBlit.cpp"
+
+  "textureDisplayByShader_gl        \; src/gl/textureDisplayByShader.cpp"
+  "textureDisplayByShader_gles      \; src/gl/textureDisplayByShader.cpp"
 
   "textureRead_gl        \; src/gl/textureRead.cpp"
   "textureRead_gles      \; src/gl/textureRead.cpp"
