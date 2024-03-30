@@ -32,6 +32,6 @@ GLuint CreateProgramFromSource( const char *vertShaderSource, const char *fragSh
 
 GLuint CreateTexture_FillWithCheckboard( GLsizei width, GLsizei height );
 
-GLubyte* imageFromFile( const char *filename, GLsizei *width, GLsizei *height, GLenum *format );
+GLubyte* imageFromFile( const char *filename, GLsizei *width, GLsizei *height, GLenum *format, GLsizei *channels );
 
 void ReadPixels_FromFboColorAttachment( void *dstData, GLuint texture, GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type );

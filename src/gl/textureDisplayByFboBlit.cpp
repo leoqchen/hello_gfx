@@ -28,7 +28,7 @@ int main( int argc, const char* argv[] )
     const char *imgFile = (__file) ? __file : PROJECT_SOURCE_DIR "data/basemap.tga";
     int imgWidth, imgHeight;
     GLenum imgFormat;
-    GLubyte *imgData = imageFromFile( imgFile, &imgWidth, &imgHeight, &imgFormat );
+    GLubyte *imgData = imageFromFile( imgFile, &imgWidth, &imgHeight, &imgFormat, NULL );
 
     // initialize and configure
     // ------------------------------

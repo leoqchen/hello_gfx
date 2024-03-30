@@ -324,18 +324,19 @@ GLuint CreateTexture_FillWithCheckboard( GLsizei width, GLsizei height )
     return obj;
 }
 
-GLubyte* imageFromFile( const char *filename, GLsizei *width, GLsizei *height, GLenum *format )
+GLubyte* imageFromFile( const char *filename, GLsizei *width, GLsizei *height, GLenum *format, GLsizei *channels )
 {
     GLubyte *imgData = NULL;
     GLsizei imgWidth = 0;
     GLsizei imgHeight= 0;
     GLenum imgFormat = 0;
+    GLsizei imgChannels = 0;
 
     std::filesystem::path suffix = std::filesystem::path( filename ).extension();
     if( suffix == ".rgba" || suffix == ".rgb" ){
         imgData = SGI_LoadRGBImage( filename, &imgWidth, &imgHeight, &imgFormat);
+        imgChannels = (imgFormat == GL_RGB) ? 3 : (imgFormat == GL_RGBA) ? 4 : 0;
     }else{
-        int imgChannels = 0;
         imgData = stbi_load( filename, &imgWidth, &imgHeight, &imgChannels, 0);
         imgFormat = (imgChannels == 3) ? GL_RGB : (imgChannels == 4) ? GL_RGBA : 0;
     }
@@ -352,6 +353,8 @@ GLubyte* imageFromFile( const char *filename, GLsizei *width, GLsizei *height, G
         *height = imgHeight;
     if( format != NULL )
         *format = imgFormat;
+    if( channels != NULL )
+        *channels = imgChannels;
     return imgData;
 }
 

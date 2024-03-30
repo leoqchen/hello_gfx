@@ -28,25 +28,19 @@ int main( int argc, const char* argv[] )
     api_t api = apiInitial( API_Current, argc, argv );
     printf("%s: %s\n", argv[0], apiName(api));
 
+    const char* __file = stringFromArgs("--file", argc, argv );
+    const char *imgFile = (__file) ? __file : PROJECT_SOURCE_DIR "data/tree2.rgba";
+    int imgWidth, imgHeight, imgChannels;
+    GLenum imgFormat;
+    GLubyte *imgData = imageFromFile( imgFile, &imgWidth, &imgHeight, &imgFormat, &imgChannels );
+
+    stbi_flip_vertically_on_write( 1 );
+    stbi_write_png("/tmp/src.png", imgWidth, imgHeight, 4, imgData, imgWidth*4 );
+    printf("dump to /tmp/src.png\n");
+
     // initialize and configure
     // ------------------------------
     eglx_CreateWindow( api, WinWidth, WinHeight );
-
-    // load image from file
-    // ------------------------------------
-    const char *TexFile = PROJECT_SOURCE_DIR  "data/tree2.rgba";
-    GLint imgWidth, imgHeight;
-    GLenum imgFormat;
-    GLubyte *image = SGI_LoadRGBImage( TexFile, &imgWidth, &imgHeight, &imgFormat);
-    printf("%s: width = %d, height = %d, format = %s\n", TexFile, imgWidth, imgHeight, glFormatName(imgFormat));
-    if (!image) {
-        printf("Couldn't read %s\n", TexFile);
-        exit(0);
-    }
-
-    stbi_flip_vertically_on_write( 1 );
-    stbi_write_png("/tmp/src.png", imgWidth, imgHeight, 4, image, imgWidth*4 );
-    printf("dump to /tmp/src.png\n");
 
     // build and compile our shader program
     // ------------------------------------
@@ -60,7 +54,7 @@ int main( int argc, const char* argv[] )
     glGenTextures( 1, &srcTex );
     glBindTexture( GL_TEXTURE_2D, srcTex );
     glTexImage2D( GL_TEXTURE_2D, 0, imgFormat,imgWidth, imgHeight,
-                   0, imgFormat, GL_UNSIGNED_BYTE, image );
+                   0, imgFormat, GL_UNSIGNED_BYTE, imgData );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 
@@ -80,15 +74,15 @@ int main( int argc, const char* argv[] )
     }
 
     // CPU read texture
-    GLubyte* imageDst = (GLubyte*) malloc( imgWidth * imgHeight * 4 );
+    GLubyte* imageDst = (GLubyte*) malloc( imgWidth * imgHeight * imgChannels );
     glReadBuffer ( GL_COLOR_ATTACHMENT0 );
     glReadPixels(0, 0, imgWidth, imgHeight, imgFormat, GL_UNSIGNED_BYTE, imageDst);
 
-    stbi_write_png("/tmp/dst.png", imgWidth, imgHeight, 4, imageDst, imgWidth*4 );
+    stbi_write_png("/tmp/dst.png", imgWidth, imgHeight, imgChannels, imageDst, imgWidth * imgChannels );
     printf("dump to /tmp/dst.png\n");
 
     // compare result
-    if( memcmp(imageDst, image, imgWidth * imgHeight * 4) == 0 ){
+    if( memcmp(imageDst, imgData, imgWidth * imgHeight * imgChannels) == 0 ){
         printf("src and dst are the same\n");
     }else{
         printf("src and dst are diff !!!\n");
@@ -98,14 +92,14 @@ int main( int argc, const char* argv[] )
     // CPU read texture by glGetTexImage
     // ------------------------------------
 #if IS_Gl
-    GLubyte* imageDst2 = (GLubyte*) malloc( imgWidth * imgHeight * 4 );
+    GLubyte* imageDst2 = (GLubyte*) malloc( imgWidth * imgHeight * imgChannels );
     glBindTexture( GL_TEXTURE_2D, srcTex );
     glGetTexImage( GL_TEXTURE_2D, 0, imgFormat, GL_UNSIGNED_BYTE, imageDst2 );
 
-    stbi_write_png("/tmp/dst2.png", imgWidth, imgHeight, 4, imageDst2, imgWidth*4 );
+    stbi_write_png("/tmp/dst2.png", imgWidth, imgHeight, imgChannels, imageDst2, imgWidth * imgChannels );
     printf("\ndump to /tmp/dst2.png\n");
 
-    if( memcmp(imageDst2, image, imgWidth * imgHeight * 4) == 0 ){
+    if( memcmp(imageDst2, imgData, imgWidth * imgHeight * imgChannels) == 0 ){
         printf("src and dst2 are the same\n");
     }else{
         printf("src and dst2 are diff !!!\n");
@@ -120,6 +114,15 @@ int main( int argc, const char* argv[] )
         // render
         // ------
 
+        // copy FBO's color attachment to Default Framebuffer
+        // ---------------------------------------------------
+        glBindFramebuffer( GL_FRAMEBUFFER, defaultFramebuffer );
+        glBindFramebuffer( GL_READ_FRAMEBUFFER, fbo );
+        glReadBuffer ( GL_COLOR_ATTACHMENT0 );
+        glBlitFramebuffer( 0, 0, imgWidth, imgHeight,
+                           0, 0, WinWidth, WinHeight,
+                           GL_COLOR_BUFFER_BIT, GL_LINEAR );
+
         // swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         eglx_SwapBuffers();
@@ -131,7 +134,7 @@ int main( int argc, const char* argv[] )
     // ------------------------------------------------------------------------
     glDeleteTextures( 1, &srcTex );
     glDeleteFramebuffers( 1, &fbo );
-    free(image);
+    free(imgData);
     free( imageDst );
 #if IS_Gl
     free( imageDst2 );
