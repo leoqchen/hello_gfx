@@ -12,8 +12,6 @@
 #include "glUtils.h"
 #include "eglUtils.h"
 #include "myUtils.h"
-#include "SGI_rgb.h"
-
 
 // settings
 static const int WinWidth = 800;

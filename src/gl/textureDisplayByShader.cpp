@@ -10,9 +10,6 @@
 #include "eglUtils.h"
 #include "myUtils.h"
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-
 // settings
 static const int WinWidth = 800;
 static const int WinHeight = 600;

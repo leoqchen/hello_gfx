@@ -14,7 +14,6 @@
 #include "glUtils.h"
 #include "eglUtils.h"
 #include "myUtils.h"
-#include "SGI_rgb.h"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
