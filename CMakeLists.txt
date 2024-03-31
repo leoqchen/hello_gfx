@@ -205,6 +205,8 @@ set(targets
   "textureRead_gl        \; src/gl/textureRead.cpp"
   "textureRead_gles      \; src/gl/textureRead.cpp"
 
+  "textureCopy_gl        \; src/gl/textureCopy.cpp"
+
   # Bug复现测试
   #----------------------------------------------------
   "bug_gl_PointSize_glLegacy  \; src/gl/bug_img/bug_gl_PointSize.cpp"
