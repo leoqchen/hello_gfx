@@ -34,7 +34,7 @@ int main( int argc, const char* argv[] )
     GLubyte *imgData = imageFromFile( imgFile, &imgWidth, &imgHeight, &imgFormat, &imgChannels );
 
     stbi_flip_vertically_on_write( 1 );
-    stbi_write_png("/tmp/src.png", imgWidth, imgHeight, 4, imgData, imgWidth*4 );
+    stbi_write_png("/tmp/src.png", imgWidth, imgHeight, imgChannels, imgData, imgWidth * imgChannels );
     printf("dump to /tmp/src.png\n");
 
     // initialize and configure
