@@ -35,3 +35,6 @@ GLuint CreateTexture_FillWithCheckboard( GLsizei width, GLsizei height );
 GLubyte* imageFromFile( const char *filename, GLsizei *width, GLsizei *height, GLenum *format, GLsizei *channels );
 
 void ReadPixels_FromFboColorAttachment( void *dstData, GLuint texture, GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type );
+#if !IS_GlEs
+void ReadPixels_FromTexture( void *dstData, GLuint texture, GLenum format, GLenum type );
+#endif

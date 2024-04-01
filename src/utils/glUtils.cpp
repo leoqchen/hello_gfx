@@ -383,3 +383,16 @@ void ReadPixels_FromFboColorAttachment( void *dstData, GLuint texture, GLint x, 
     glBindFramebuffer ( GL_FRAMEBUFFER, originalFBO );
 }
 
+#if !IS_GlEs
+void ReadPixels_FromTexture( void *dstData, GLuint texture, GLenum format, GLenum type )
+{
+    GLint originalTex;
+    glGetIntegerv( GL_TEXTURE_BINDING_2D, &originalTex );
+
+    glBindTexture( GL_TEXTURE_2D, texture );
+    glGetTexImage( GL_TEXTURE_2D, 0, format, type, dstData );
+
+    glBindTexture( GL_TEXTURE_2D, originalTex );
+}
+#endif
+
