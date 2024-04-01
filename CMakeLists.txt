@@ -39,6 +39,7 @@ include_directories(
   "${CMAKE_BINARY_DIR}"
   "${CMAKE_SOURCE_DIR}/ext"
   "${CMAKE_SOURCE_DIR}/ext/glad/include"
+  "${CMAKE_SOURCE_DIR}/ext/stb"
   "${CMAKE_SOURCE_DIR}/src/utils"
 )
 include_directories(${CMAKE_BINARY_DIR}/configuration)
