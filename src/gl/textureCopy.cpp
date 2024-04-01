@@ -243,6 +243,7 @@ int main( int argc, const char* argv[] )
         glUniform1i( samplerLoc, 0 );
 
         glViewport( 0, 0, imgWidth, imgHeight );
+        glDrawBuffer( GL_COLOR_ATTACHMENT0 );
         glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices );
 
         // compare dst, src
