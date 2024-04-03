@@ -208,12 +208,6 @@ set(targets
 
   "textureCopy_gl        \; src/gl/textureCopy.cpp"
 
-  # Bug复现测试
-  #----------------------------------------------------
-  "bug_gl_PointSize_glLegacy  \; src/gl/bug_img/bug_gl_PointSize.cpp"
-  "bug_gl_PointSize_gl        \; src/gl/bug_img/bug_gl_PointSize.cpp"
-  "bug_gl_PointSize_gles      \; src/gl/bug_img/bug_gl_PointSize.cpp"
-
   # perf test 性能测试
   #----------------------------------------------------
   "perf_copytex_glLegacy  \; src/gl/perf_copytex.cpp"
@@ -259,6 +253,17 @@ set(targets
   "perf_vertexrate_glLegacy  \; src/gl/perf_vertexrate.cpp"
   "perf_vertexrate_gl        \; src/gl/perf_vertexrate.cpp"
   "perf_vertexrate_gles      \; src/gl/perf_vertexrate.cpp"
+
+  # verify test 验证测试
+  #----------------------------------------------------
+  "verify_copytex_gl        \; src/gl/verify_copytex.cpp"
+
+  # Bug复现测试
+  #----------------------------------------------------
+  "bug_gl_PointSize_glLegacy  \; src/gl/bug_img/bug_gl_PointSize.cpp"
+  "bug_gl_PointSize_gl        \; src/gl/bug_img/bug_gl_PointSize.cpp"
+  "bug_gl_PointSize_gles      \; src/gl/bug_img/bug_gl_PointSize.cpp"
+
 )
 
 foreach(target ${targets})
