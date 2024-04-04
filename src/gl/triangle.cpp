@@ -28,7 +28,7 @@ static const char* vertex_shader_text =
 #if IS_GlEs
     "#version 320 es\n"
 #else
-    "#version 400\n"
+    "#version 330\n"
 #endif
     "uniform mat4 MVP;\n"
     "layout (location = 0) in vec3 vCol;\n"
@@ -45,7 +45,7 @@ static const char* fragment_shader_text =
     "#version 320 es\n"
     "precision mediump float;\n"
 #else
-    "#version 400\n"
+    "#version 330\n"
 #endif
     "in vec3 color;\n"
     "layout (location = 0) out vec4 FragColor;\n"

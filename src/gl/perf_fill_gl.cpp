@@ -45,7 +45,7 @@ const char *vertexShaderSource_simple =
 #if IS_GlEs
     "#version 320 es\n"
 #else
-    "#version 400\n"
+    "#version 330\n"
 #endif
     "uniform mat4 MVP;\n"
     "layout (location = 0) in vec2 vPos;\n"
@@ -62,7 +62,7 @@ const char *fragmentShaderSource_simple =
     "#version 320 es\n"
     "precision mediump float;\n"
 #else
-    "#version 400\n"
+    "#version 330\n"
 #endif
     "in vec4 v_color;\n"
     "layout (location = 0) out vec4 outColor;\n"
@@ -78,7 +78,7 @@ const char *vertexShaderSource_textured =
 #if IS_GlEs
     "#version 320 es\n"
 #else
-    "#version 400\n"
+    "#version 330\n"
     #endif
     "uniform mat4 MVP;\n"
     "layout (location = 0) in vec2 vPos;\n"
@@ -98,7 +98,7 @@ const char *fragmentShaderSource_textured =
     "#version 320 es\n"
     "precision mediump float;\n"
 #else
-    "#version 400\n"
+    "#version 330\n"
     #endif
     "uniform sampler2D Tex;\n"
     "in vec2 v_texCoord;\n"
@@ -117,7 +117,7 @@ const char *vertexShaderSource =
 #if IS_GlEs
     "#version 320 es\n"
 #else
-    "#version 400\n"
+    "#version 330\n"
 #endif
     "uniform mat4 MVP;\n"
     "layout (location = 0) in vec2 vPos;\n"
@@ -138,7 +138,7 @@ const char *fragmentShaderSource1 =
     "#version 320 es\n"
     "precision mediump float;\n"
 #else
-    "#version 400\n"
+    "#version 330\n"
 #endif
     "uniform sampler2D Tex;\n"
     "in vec2 v_texCoord;\n"
@@ -160,7 +160,7 @@ const char *fragmentShaderSource2 =
     "#version 320 es\n"
     "precision mediump float;\n"
 #else
-    "#version 400\n"
+    "#version 330\n"
 #endif
     "uniform sampler2D Tex;\n"
     "in vec2 v_texCoord;\n"

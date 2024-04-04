@@ -16,7 +16,7 @@ const char *vertexShaderSource =
 #if IS_GlEs
     "#version 320 es\n"
 #else
-    "#version 400\n"
+    "#version 330\n"
 #endif
     "uniform float u_offset;                    \n"
     "layout(location = 0) in vec4 a_position;   \n"
@@ -34,7 +34,7 @@ const char *fragmentShaderSource =
     "#version 320 es\n"
     "precision mediump float;\n"
 #else
-    "#version 400\n"
+    "#version 330\n"
 #endif
     "in vec2 v_texCoord;                                 \n"
     "layout(location = 0) out vec4 outColor;             \n"
