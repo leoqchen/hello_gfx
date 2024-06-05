@@ -21,6 +21,9 @@ static GLenum ReadFormat, ReadType;
 static GLint ReadWidth, ReadHeight;
 static GLvoid *ReadBuffer;
 
+static GLuint PBO;
+static int use_PBO = 0;
+
 static const GLfloat vertices[2] = { 0.0, 0.0 };
 
 const char *vertexShaderSource =
@@ -87,6 +90,14 @@ static void PerfInit()
     // ------------------------------------------------------------------
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
+    // PBO
+    // ------------------------------------------------------------------
+    glGenBuffers( 1, &PBO );
+    glBindBuffer( GL_PIXEL_PACK_BUFFER, PBO );
+    glBufferData( GL_PIXEL_PACK_BUFFER, 1000 * 1000 *4, NULL, GL_STREAM_READ );
+    glBindBuffer( GL_PIXEL_PACK_BUFFER, 0 );
+
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_STENCIL_TEST);
@@ -94,6 +105,11 @@ static void PerfInit()
 
 static void ReadPixels(unsigned count)
 {
+    if( use_PBO )
+        glBindBuffer( GL_PIXEL_PACK_BUFFER, PBO );
+    else
+        glBindBuffer( GL_PIXEL_PACK_BUFFER, 0 );
+
     unsigned i;
     for (i = 0; i < count; i++) {
         /* read from random pos */
@@ -110,10 +126,11 @@ static void ReadPixels(unsigned count)
             glDrawArrays(GL_POINTS, 0, 1);
 
         glReadPixels(x, y, ReadWidth, ReadHeight,
-                     ReadFormat, ReadType, ReadBuffer);
+                     ReadFormat, ReadType, use_PBO ? 0 : ReadBuffer);
     }
     glFinish();
 }
+
 
 static const GLsizei Sizes[] = {
     10,
@@ -211,6 +228,7 @@ int main( int argc, const char* argv[] )
     printf("%s: %s\n", argv[0], apiName(api));
 
     int __testcase = integerFromArgs( "--testcase", argc, argv, NULL );
+    int __pbo = integerFromArgs( "--pbo", argc, argv, NULL );
 
     // initialize and configure
     // ------------------------------
@@ -225,6 +243,9 @@ int main( int argc, const char* argv[] )
     while (!eglx_ShouldClose())
     {
         if( __testcase != -1 ){
+            if( __pbo != -1 )
+                use_PBO = __pbo;
+
             PerfDraw2( __testcase );
             exit(0);
         }

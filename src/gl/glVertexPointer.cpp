@@ -143,6 +143,38 @@ int main( int argc, const char* argv[] )
             printf("dump to /tmp/glVertexPointer.jpg\n");
 
             free( pixels );
+            //------------------
+
+            if( 1 ){
+                // glReadPixels by PBO
+                // --------------------
+                GLuint pbo;
+                glGenBuffers( 1, &pbo );
+
+                glBindBuffer( GL_PIXEL_PACK_BUFFER, pbo );
+                glBufferData( GL_PIXEL_PACK_BUFFER, WinWidth * WinHeight *4, NULL, GL_DYNAMIC_READ );
+
+                glPixelStorei(GL_PACK_ALIGNMENT, 1);
+                glPixelStorei(GL_PACK_ROW_LENGTH, WinWidth);
+                glReadPixels(0, 0, WinWidth, WinHeight, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+#if IS_GlEs
+                GLubyte *pixels = (GLubyte*) glMapBufferRange( GL_PIXEL_PACK_BUFFER, 0, WinWidth * WinHeight * 4, GL_MAP_READ_BIT );
+#else
+                GLubyte *pixels = (GLubyte*) glMapBuffer( GL_PIXEL_PACK_BUFFER, GL_READ_ONLY );
+#endif
+                if( pixels ){
+                    // Write image Y-flipped because OpenGL
+                    stbi_flip_vertically_on_write( 1 );
+                    stbi_write_png("/tmp/glVertexPointer_PBO.png", WinWidth, WinHeight, 4, pixels, WinWidth*4);
+                    printf("dump to /tmp/glVertexPointer_PBO.png\n");
+
+                    stbi_write_jpg("/tmp/glVertexPointer_PBO.jpg", WinWidth, WinHeight, 4, pixels, 95);
+                    printf("dump to /tmp/glVertexPointer_PBO.jpg\n");
+
+                    glUnmapBuffer( GL_PIXEL_PACK_BUFFER );
+                }
+            }
         }
 
         // swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
