@@ -60,7 +60,7 @@ int main( int argc, const char* argv[] )
     api_t api = apiInitial( API_Current, argc, argv );
     printf("%s: %s\n", argv[0], apiName(api));
 
-    int __frame = integerFromArgs("--frame", argc, argv, NULL );
+    int __frame = integerFromArgs("--f", argc, argv, NULL );
 
     // initialize and configure
     // ------------------------------
