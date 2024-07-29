@@ -16,6 +16,8 @@ int main( int argc, const char* argv[] )
     api_t api = apiInitial( API_Current, argc, argv );
     printf("%s: %s\n", argv[0], apiName(api));
 
+    int __frame = integerFromArgs("--f", argc, argv, NULL );
+
     // initialize and configure
     // ------------------------------
     eglx_CreateWindow( api, WinWidth, WinHeight );
@@ -44,6 +46,11 @@ int main( int argc, const char* argv[] )
         // -------------------------------------------------------------------------------
         eglx_SwapBuffers();
         eglx_PollEvents();
+
+        if( __frame != -1 && frame >= __frame ){
+            printf("frame count: %d\n", frame);
+            break;
+        }
     }
     glErrorCheck();
 
